@@ -8,7 +8,7 @@ internal class SerializerTest : TestMorphia {
 		serializer = Serializer() { }
 	}
 	
-	Void testDeserialiseMongoLiterals() {
+	Void testDeserializeMongoLiterals() {
 		mongoDoc := [
 			"float" 	: 69.0f,
 			"str" 		: "dude",
@@ -34,10 +34,32 @@ internal class SerializerTest : TestMorphia {
 		verifyEq(entity.regex, 		mongoDoc["regex"])	
 	}
 	
-	Void testSerialiseMongoLiterals() {
+	Void testSerializeMongoLiterals() {
+		entity := T_Entity01() {
+			float 		= 69.0f
+			str 		= "dude"
+			buf			= Buf().writeChars("vampire")
+			objectId	= ObjectId.makeAll(1, 2, 3)
+			bool		= true
+			date		= Date.today
+			dateTime	= DateTime.now
+			nul			= null
+			regex		= Regex.fromStr("2 problems")
+		}
 		
+		mongoDoc := serializer.toMongoDoc(entity)
+		
+		verifyEq(entity.float, 		mongoDoc["float"])	
+		verifyEq(entity.str, 		mongoDoc["str"])	
+		verifyEq(entity.buf, 		mongoDoc["buf"])	
+		verifyEq(entity.objectId,	mongoDoc["objectId"])
+		verifyEq(entity.bool, 		mongoDoc["bool"])	
+		verifyEq(entity.date, 		mongoDoc["date"])	
+		verifyEq(entity.dateTime,	mongoDoc["dateTime"])	
+		verifyEq(entity.nul, 		mongoDoc["nul"])	
+		verifyEq(entity.regex, 		mongoDoc["regex"])			
 	}
-
+	
 }
 
 ** Mongo Literals
