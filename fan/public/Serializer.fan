@@ -4,19 +4,23 @@ const class Serializer {
 
 	new make(|This|in) { in(this) }
 	
-	Obj fromMongoDoc(Str:Obj? mongoDoc, Type type) {
-		
-		// TODO: will turn into IoC autobuild... somehow
+	Obj fromMongoDoc(Str:Obj? mongoDoc, Type type) {		
 		maker := Maker(type)
 		
-		type.fields.each {
-			maker[f] = mongoDoc[it.name]
+		type.fields.each |field| {
+			maker[field] = mongoDoc[field.name]
 		}
 		
+		// TODO: will turn into IoC autobuild... somehow
 		return maker.make
 	}
 	
-	Str:Obj? toMongoDoc(Obj entity, Type type) {
-		[:]
+	Str:Obj? toMongoDoc(Obj entity) {
+		mongoDoc := Str:Obj?[:]
+		entity.typeof.fields.each |field| {
+			val := field.get(entity)
+			mongoDoc[field.name] = val
+		}
+		return mongoDoc
 	}
 }
