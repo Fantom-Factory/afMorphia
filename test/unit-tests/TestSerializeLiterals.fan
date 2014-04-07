@@ -1,12 +1,9 @@
+using afIoc
 using afMongo
 
 internal class TestSerializeLiterals : MorphiaTest {
 
-	Serializer? serializer
-	
-	override Void setup() {
-		serializer = Serializer() { }
-	}
+	@Inject Serializer? serializer
 	
 	Void testDeserializeMongoLiterals() {
 		mongoDoc := [

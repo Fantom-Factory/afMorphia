@@ -9,10 +9,9 @@ facet class Property {
 //	** 
 //	** Defaults to the field name.
 //	const Str? 	name
-//	
-	// TODO: @Property implType
-//	** The implementation class to instantiate.
-//	const Type?	implType
+	
+	** The implementation class to instantiate.
+	const Type?	surrogate
 	
 //	// BAD-IDEA: 'cos MongoDB treats non-existant properties as null 
 //	** If true, it prevents an error from occurring if the MongoDB document does not contain a property for this field. 

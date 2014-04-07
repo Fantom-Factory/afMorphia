@@ -1,11 +1,8 @@
+using afIoc
 
 internal class TestSerializeErrs: MorphiaTest {
 	
-	Serializer? serializer
-	
-	override Void setup() {
-		serializer = Serializer() { }
-	}
+	@Inject Serializer? serializer
 
 	Void testPropertyNotFound() {
 		verifyMorphiaErrMsg(Msgs.serializer_propertyNotFound(T_Entity02#name, ["wot":"ever"])) {

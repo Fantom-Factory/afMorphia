@@ -6,13 +6,13 @@ using afIoc
 const class MorphiaModule {
 
 	static Void bind(ServiceBinder binder) {
-		binder.bind(MorphiaService#)
+		binder.bind(Serializer#)
 	}
 
-	@Contribute { serviceType=RegistryStartup# }
-	static Void contributeToStartup(OrderedConfig config, MorphiaService service) {
-		config.add |->| {
-			// do stuff on application startup
-		}
-	}
+//	@Contribute { serviceType=RegistryStartup# }
+//	static Void contributeToStartup(OrderedConfig config, MorphiaService service) {
+//		config.add |->| {
+//			// do stuff on application startup
+//		}
+//	}
 }
