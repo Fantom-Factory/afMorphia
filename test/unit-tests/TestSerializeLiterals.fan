@@ -1,6 +1,6 @@
 using afMongo
 
-internal class SerializerTest : TestMorphia {
+internal class TestSerializeLiterals : MorphiaTest {
 
 	Serializer? serializer
 	
@@ -11,9 +11,10 @@ internal class SerializerTest : TestMorphia {
 	Void testDeserializeMongoLiterals() {
 		mongoDoc := [
 			"float" 	: 69.0f,
+			"int" 		: 69,
 			"str" 		: "dude",
 			"buf"		: Buf().writeChars("vampire"),
-			"objectId"	: ObjectId.makeAll(1, 2, 3),
+			"objectId"	: ObjectId(DateTime.fromJava(1), 2, 3, 4),
 			"bool"		: true,
 			"date"		: Date.today,
 			"dateTime"	: DateTime.now,
@@ -24,6 +25,7 @@ internal class SerializerTest : TestMorphia {
 		entity := (T_Entity01) serializer.fromMongoDoc(mongoDoc, T_Entity01#)
 		
 		verifyEq(entity.float, 		mongoDoc["float"])	
+		verifyEq(entity.int, 		mongoDoc["int"])	
 		verifyEq(entity.str, 		mongoDoc["str"])	
 		verifyEq(entity.buf, 		mongoDoc["buf"])	
 		verifyEq(entity.objectId,	mongoDoc["objectId"])
@@ -37,9 +39,10 @@ internal class SerializerTest : TestMorphia {
 	Void testSerializeMongoLiterals() {
 		entity := T_Entity01() {
 			float 		= 69.0f
+			int 		= 69
 			str 		= "dude"
 			buf			= Buf().writeChars("vampire")
-			objectId	= ObjectId.makeAll(1, 2, 3)
+			objectId	= ObjectId(DateTime.fromJava(1), 2, 3, 4)
 			bool		= true
 			date		= Date.today
 			dateTime	= DateTime.now
@@ -50,6 +53,7 @@ internal class SerializerTest : TestMorphia {
 		mongoDoc := serializer.toMongoDoc(entity)
 		
 		verifyEq(entity.float, 		mongoDoc["float"])	
+		verifyEq(entity.int, 		mongoDoc["int"])	
 		verifyEq(entity.str, 		mongoDoc["str"])	
 		verifyEq(entity.buf, 		mongoDoc["buf"])	
 		verifyEq(entity.objectId,	mongoDoc["objectId"])
@@ -64,15 +68,16 @@ internal class SerializerTest : TestMorphia {
 
 ** Mongo Literals
 internal class T_Entity01 {
-	Float		float
-	Str			str
-	Buf			buf
-	ObjectId	objectId
-	Bool		bool
-	Date		date
-	DateTime	dateTime
-	Obj?		nul
-	Regex		regex
+	@Property	Float		float
+	@Property	Int?		int
+	@Property	Str			str
+	@Property	Buf?		buf
+	@Property	ObjectId	objectId
+	@Property	Bool?		bool
+	@Property	Date		date
+	@Property	DateTime?	dateTime
+	@Property	Obj?		nul
+	@Property	Regex		regex
 	
 	// TODO: Fantom literals
 //    sys::Decimal
