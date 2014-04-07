@@ -30,7 +30,7 @@ class Build : BuildPod {
 			"afIoc 1.5.4+"
 		]
 		
-		srcDirs = [`test/unit-tests/`, `fan/`, `fan/public/`, `fan/internal/`, `fan/internal/utils/`]
+		srcDirs = [`test/unit-tests/`, `test/unit-tests/utils/`, `fan/`, `fan/public/`, `fan/internal/`, `fan/internal/utils/`]
 		resDirs = [`doc/`]
 
 		docApi = true

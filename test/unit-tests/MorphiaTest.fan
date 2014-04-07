@@ -1,5 +1,17 @@
+using afIoc
 
 abstract internal class MorphiaTest : Test {
+
+	Registry? reg
+	
+	override Void setup() {
+		reg = RegistryBuilder().addModule(MorphiaModule#).build.startup
+		reg.injectIntoFields(this)
+	}
+	
+	override Void teardown() {
+		reg?.shutdown
+	}
 
 	Void verifyMorphiaErrMsg(Str errMsg, |Obj| func) {
 		verifyErrMsg(MorphiaErr#, errMsg, func)
