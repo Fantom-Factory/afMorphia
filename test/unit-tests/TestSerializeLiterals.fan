@@ -16,7 +16,8 @@ internal class TestSerializeLiterals : MorphiaTest {
 			"date"		: Date.today,
 			"dateTime"	: DateTime.now,
 			"nul"		: null,
-			"regex"		: Regex.fromStr("2 problems")
+			"regex"		: Regex.fromStr("2 problems"),
+			"enumm"		: T_Entity01_Enum.wot
 		]
 		
 		entity := (T_Entity01) serializer.fromMongoDoc(mongoDoc, T_Entity01#)
@@ -31,6 +32,7 @@ internal class TestSerializeLiterals : MorphiaTest {
 		verifyEq(entity.dateTime,	mongoDoc["dateTime"])	
 		verifyEq(entity.nul, 		mongoDoc["nul"])	
 		verifyEq(entity.regex, 		mongoDoc["regex"])	
+		verifyEq(entity.enumm, 		mongoDoc["enumm"])
 	}
 	
 	Void testSerializeMongoLiterals() {
@@ -45,6 +47,7 @@ internal class TestSerializeLiterals : MorphiaTest {
 			dateTime	= DateTime.now
 			nul			= null
 			regex		= Regex.fromStr("2 problems")
+			enumm		= T_Entity01_Enum.wot
 		}
 		
 		mongoDoc := serializer.toMongoDoc(entity)
@@ -59,12 +62,14 @@ internal class TestSerializeLiterals : MorphiaTest {
 		verifyEq(entity.dateTime,	mongoDoc["dateTime"])	
 		verifyEq(entity.nul, 		mongoDoc["nul"])	
 		verifyEq(entity.regex, 		mongoDoc["regex"])			
+		verifyEq(entity.enumm, 		mongoDoc["enumm"])
 	}
 	
 }
 
 ** Mongo Literals
 internal class T_Entity01 {
+	// Mongo Literals
 	@Property	Float		float
 	@Property	Int?		int
 	@Property	Str			str
@@ -77,6 +82,8 @@ internal class T_Entity01 {
 	@Property	Regex		regex
 	
 	// TODO: Fantom literals
+	@Property	T_Entity01_Enum	enumm
+	
 //    sys::Decimal
 //    sys::Duration
 //    sys::Uri
@@ -96,4 +103,8 @@ internal class T_Entity01 {
 //	MinKey
 //	MaxKey
 //	number int -> same as Int?
+}
+
+internal enum class T_Entity01_Enum {
+	wot, ever;
 }

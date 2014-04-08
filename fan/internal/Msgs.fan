@@ -37,4 +37,8 @@ internal const mixin Msgs {
 		"Ctor '${ctor.qname}' is static!"
 	}
 
+	static Str serializer_notMongoLiteral(Type mongoType, Field field) {
+		"Type '${mongoType.signature}' is NOT a MongoDB literal. It was converted from ${field.qname}"
+	}
+
 }
