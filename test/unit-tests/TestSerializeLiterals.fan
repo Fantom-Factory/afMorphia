@@ -17,7 +17,7 @@ internal class TestSerializeLiterals : MorphiaTest {
 			"dateTime"	: DateTime.now,
 			"nul"		: null,
 			"regex"		: Regex.fromStr("2 problems"),
-			"enumm"		: T_Entity01_Enum.wot
+			"enumm"		: "wot"
 		]
 		
 		entity := (T_Entity01) serializer.fromMongoDoc(mongoDoc, T_Entity01#)
@@ -32,7 +32,7 @@ internal class TestSerializeLiterals : MorphiaTest {
 		verifyEq(entity.dateTime,	mongoDoc["dateTime"])	
 		verifyEq(entity.nul, 		mongoDoc["nul"])	
 		verifyEq(entity.regex, 		mongoDoc["regex"])	
-		verifyEq(entity.enumm, 		mongoDoc["enumm"])
+		verifyEq(entity.enumm,		T_Entity01_Enum.wot)
 	}
 	
 	Void testSerializeMongoLiterals() {
@@ -52,17 +52,17 @@ internal class TestSerializeLiterals : MorphiaTest {
 		
 		mongoDoc := serializer.toMongoDoc(entity)
 		
-		verifyEq(entity.float, 		mongoDoc["float"])	
-		verifyEq(entity.int, 		mongoDoc["int"])	
-		verifyEq(entity.str, 		mongoDoc["str"])	
-		verifyEq(entity.buf, 		mongoDoc["buf"])	
-		verifyEq(entity.objectId,	mongoDoc["objectId"])
-		verifyEq(entity.bool, 		mongoDoc["bool"])	
-		verifyEq(entity.date, 		mongoDoc["date"])	
-		verifyEq(entity.dateTime,	mongoDoc["dateTime"])	
-		verifyEq(entity.nul, 		mongoDoc["nul"])	
-		verifyEq(entity.regex, 		mongoDoc["regex"])			
-		verifyEq(entity.enumm, 		mongoDoc["enumm"])
+		verifyEq(mongoDoc["float"],		entity.float)
+		verifyEq(mongoDoc["int"],		entity.int)
+		verifyEq(mongoDoc["str"],		entity.str)
+		verifyEq(mongoDoc["buf"],		entity.buf)
+		verifyEq(mongoDoc["objectId"],	entity.objectId)
+		verifyEq(mongoDoc["bool"],		entity.bool)
+		verifyEq(mongoDoc["date"],		entity.date)
+		verifyEq(mongoDoc["dateTime"],	entity.dateTime)
+		verifyEq(mongoDoc["nul"],		entity.nul)
+		verifyEq(mongoDoc["regex"],		entity.regex)
+		verifyEq(mongoDoc["enumm"],		"wot")
 	}
 	
 }
