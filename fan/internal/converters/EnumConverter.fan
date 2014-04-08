@@ -2,7 +2,7 @@
 const class EnumConverter : Converter {
 
 	override Obj? toFantom(Field field, Obj? obj) {
-		obj
+		field.type.method("fromStr").call(obj, true)
 //		Env.cur.err.printLine(obj)
 //		Env.cur.err.printLine(obj.typeof)
 //		m:=field.type.method("fromStr")

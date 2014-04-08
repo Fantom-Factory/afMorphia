@@ -148,14 +148,31 @@ const class Serializer {
 				return
 			}
 
+			converter := converters[implType]
+			Env.cur.err.printLine(converter)
+			if (converter != null) {
+				propVal := converter.toMongo(field, fieldVal)
+
+				mongoDoc[propName] = propVal
+
+//				if (propVal == null) {
+//					// TODO: do NullStrategy
+//					mongoDoc[propName] = propVal
+//					return
+//				}
+				
+				return
+			}
+
 			if (isMongoLiteralType(field.type)) {
 				mongoDoc[propName] = fieldVal
 				return
 			}
 
 			if (fieldVal == null) {
+				propVal := fieldVal
 				// TODO: do NullStrategy
-				mongoDoc[propName] = fieldVal
+				mongoDoc[propName] = propVal
 				return
 			}
 
@@ -184,7 +201,7 @@ const class Serializer {
 
 	private Bool isMongoLiteralType(Type? type) {
 		// TODO: recurse into lists & maps -> diff name, it's then not a literal!
-		(type == null) ? true : literals.contains(type.toNonNullable) 		
+		(type == null) ? true : literals.any { type.fits(it) } 		
 	}
 
 	private Bool isMongoLiteral(Obj? obj) {
