@@ -2,7 +2,8 @@
 class Maker {
 	Type type
 	
-	private Field:Obj? vals	:= [:]
+	Field:Obj? vals	:= [:]
+//	private Field:Obj? vals	:= [:]
 
 	new makeFromType(Type type) {
 		this.type = type

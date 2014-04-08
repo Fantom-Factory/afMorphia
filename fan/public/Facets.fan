@@ -10,8 +10,9 @@ facet class Property {
 //	** Defaults to the field name.
 //	const Str? 	name
 	
-	** The implementation class to instantiate.
-	const Type?	surrogate
+	** The implementation type to instantiate. 
+	** FIXME: mention fromMongo() et al
+//	const Type?	type
 	
 //	// BAD-IDEA: 'cos MongoDB treats non-existant properties as null 
 //	** If true, it prevents an error from occurring if the MongoDB document does not contain a property for this field. 

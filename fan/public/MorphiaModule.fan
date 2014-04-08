@@ -7,12 +7,11 @@ const class MorphiaModule {
 
 	static Void bind(ServiceBinder binder) {
 		binder.bind(Serializer#)
+		binder.bind(Converters#).withoutProxy
 	}
-
-//	@Contribute { serviceType=RegistryStartup# }
-//	static Void contributeToStartup(OrderedConfig config, MorphiaService service) {
-//		config.add |->| {
-//			// do stuff on application startup
-//		}
-//	}
+	
+	@Contribute { serviceType=Converters# }
+	static Void contributeConverters(MappedConfig config) {
+		config[Enum#]		= config.autobuild(EnumConverter#)
+	}
 }
