@@ -11,6 +11,6 @@ const class Morphia {
 	}
 	
 	Str:Obj? toMongoDoc(Obj entity) {
-		converters.toMongo(entity.typeof, entity)		
+		converters.toMongo(entity)		
 	}	
 }

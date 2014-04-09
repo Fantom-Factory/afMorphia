@@ -44,21 +44,18 @@ internal const class DocumentConverter : Converter {
 		return registry.autobuild(fantomType, Obj#.emptyList, fieldVals)
 	}
 	
-	override Obj? toMongo(Type fantomType, Obj? fantomObj) {
-		if (fantomObj == null)	return null
-
+	override Obj? toMongo(Obj fantomObj) {
 		mongoDoc := Str:Obj?[:]
 		
-		fantomType.fields.each |field| {
+		fantomObj.typeof.fields.each |field| {
 			property := (Property?) Field#.method("facet").callOn(field, [Property#, false])
 			if (property == null)
 				return
 
 			fieldVal := field.get(fantomObj)
 			propName := field.name	// TODO: @Property property.name ?: field.name			
-			implType := field.type	// TODO: @Property property.type ?: field.type
 			
-			propVal	 := converters.toMongo(implType, fieldVal)			
+			propVal	 := converters.toMongo(fieldVal)			
 			
 			if (propVal == null) {
 				// TODO: do NullStrategy -> no custom, just do or don't

@@ -14,10 +14,7 @@ internal const class ListConverter : Converter {
 		return fanList
 	}
 	
-	override Obj? toMongo(Type type, Obj? fantomObj) {
-		listType	:= type.params["V"]
-		fanList		:= (List?) fantomObj
-		// use 'typeof' 
-		return fanList?.map { converters.toMongo(it?.typeof ?: listType, it) }
+	override Obj? toMongo(Obj fantomObj) {
+		((List) fantomObj).map { converters.toMongo(it) }
 	}
 }

@@ -4,6 +4,6 @@ internal const class LiteralConverter : Converter {
 
 	override Obj? toFantom(Type type, Obj? mongoObj) { mongoObj }
 
-	override Obj? toMongo(Type type, Obj? fantomObj) { fantomObj }
+	override Obj? toMongo(Obj fantomObj) { fantomObj }
 
 }

@@ -20,14 +20,12 @@ internal const class MapConverter : Converter {
 		return fanMap
 	}
 	
-	override Obj? toMongo(Type mapType, Obj? fantomObj) {
-		keyType 	:= mapType.params["K"]
-		valType 	:= mapType.params["V"]
-		fanMap		:= (Map?) fantomObj
+	override Obj? toMongo(Obj fantomObj) {
+		fanMap		:= (Map) fantomObj
 		mongoMap	:= Obj:Obj?[:]
-		fanMap?.each |fVal, fKey| {
-			mKey := converters.toMongo(keyType, fKey)
-			mVal := converters.toMongo(valType, fVal)
+		fanMap.each |fVal, fKey| {
+			mKey := converters.toMongo(fKey)
+			mVal := converters.toMongo(fVal)
 			mongoMap[mKey] = mVal
 		}		
 		return mongoMap
