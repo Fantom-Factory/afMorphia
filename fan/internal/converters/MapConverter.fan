@@ -7,7 +7,9 @@ internal const class MapConverter : Converter {
 	new make(|This|in) { in(this) }
 	
 	override Obj? toFantom(Type mapType, Obj? mongoObj) {
-		if (mongoObj == null)	return null
+		// TODO: Map strategy
+		if (mongoObj == null) return null
+
 		keyType 	:= mapType.params["K"]
 		valType 	:= mapType.params["V"]
 		mongoMap	:= (Map?) mongoObj

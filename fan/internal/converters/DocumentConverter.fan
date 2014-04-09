@@ -9,7 +9,7 @@ internal const class DocumentConverter : Converter {
 	new make(|This|in) { in(this) }
 	
 	override Obj? toFantom(Type fantomType, Obj? mongoObj) {
-		if (mongoObj == null)	return null
+		if (mongoObj == null) return null
 
 		fieldVals	:= [Field:Obj?][:]
 		mongoDoc	:= (Str:Obj?) mongoObj
@@ -62,7 +62,7 @@ internal const class DocumentConverter : Converter {
 				return
 			}
 
-			mongoDoc[propName] = propVal			
+			mongoDoc[propName] = propVal
 		}
 
 		return mongoDoc

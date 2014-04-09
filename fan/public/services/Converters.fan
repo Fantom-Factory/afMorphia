@@ -7,8 +7,10 @@ using afMongo::ObjectId
 @NoDoc	// don't overwhelm the masses!
 const mixin Converters {
 	
+	** 'mongoObj' is nullable so converters can create empty lists and maps.
 	abstract Obj? toFantom(Type fantomType, Obj? mongoObj)
 	
+	** 'fantomObj' is nullable so converters don't have to worry about it.
 	abstract Obj? toMongo(Obj? fantomObj)
 	
 }

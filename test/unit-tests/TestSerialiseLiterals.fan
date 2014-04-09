@@ -17,7 +17,13 @@ internal class TestSerialiseLiterals : MorphiaTest {
 			"dateTime"	: DateTime.now,
 			"nul"		: null,
 			"regex"		: Regex.fromStr("2 problems"),
-			"enumm"		: "wot"
+			"enumm"		: "wot",
+			"uri"		: "http://uri",
+			"decimal"	: "6.9",
+			"duration"	: "3sec",
+			"type"		: "afMorphia::MorphiaTest",
+			"slot"		: "afMorphia::MorphiaTest.setup",
+			"range"		: "2..<4"
 		]
 		
 		entity := (T_Entity01) serialiser.fromMongoDoc(T_Entity01#, mongoDoc)
@@ -33,6 +39,12 @@ internal class TestSerialiseLiterals : MorphiaTest {
 		verifyEq(entity.nul, 		mongoDoc["nul"])	
 		verifyEq(entity.regex, 		mongoDoc["regex"])	
 		verifyEq(entity.enumm,		T_Entity01_Enum.wot)
+		verifyEq(entity.uri,		`http://uri/`)
+		verifyEq(entity.decimal,	6.9d)
+		verifyEq(entity.duration,	3sec)
+		verifyEq(entity.type,		MorphiaTest#)
+		verifyEq(entity.slot,		MorphiaTest#setup)
+		verifyEq(entity.range,		2..<4)
 	}
 	
 	Void testSerializeMongoLiterals() {
@@ -48,6 +60,12 @@ internal class TestSerialiseLiterals : MorphiaTest {
 			nul			= null
 			regex		= Regex.fromStr("2 problems")
 			enumm		= T_Entity01_Enum.wot
+			uri			= `http://uri`
+			decimal		= 6.9d
+			duration	= 3sec
+			type		= MorphiaTest#
+			slot		= MorphiaTest#setup
+			range		= (2..<4)
 		}
 		
 		mongoDoc := serialiser.toMongoDoc(entity)
@@ -63,8 +81,13 @@ internal class TestSerialiseLiterals : MorphiaTest {
 		verifyEq(mongoDoc["nul"],		entity.nul)
 		verifyEq(mongoDoc["regex"],		entity.regex)
 		verifyEq(mongoDoc["enumm"],		"wot")
+		verifyEq(mongoDoc["uri"],		"http://uri/")
+		verifyEq(mongoDoc["decimal"],	"6.9")
+		verifyEq(mongoDoc["duration"],	"3sec")
+		verifyEq(mongoDoc["type"],		"afMorphia::MorphiaTest")
+		verifyEq(mongoDoc["slot"],		"afMorphia::MorphiaTest.setup")
+		verifyEq(mongoDoc["range"],		"2..<4")
 	}
-	
 }
 
 ** Mongo Literals
@@ -81,12 +104,17 @@ internal class T_Entity01 {
 	@Property	Obj?		nul
 	@Property	Regex		regex
 	
-	// TODO: Fantom literals
+	// Fantom literals
 	@Property	T_Entity01_Enum	enumm
+	@Property	Uri			uri
+	@Property	Decimal		decimal
+	@Property	Duration	duration
+	@Property	Type		type
+	@Property	Slot		slot
+	@Property	Range		range
 	
 //    sys::Decimal
 //    sys::Duration
-//    sys::Uri
 //    sys::Type
 //    sys::Slot
 //    sys::Range
@@ -103,6 +131,7 @@ internal class T_Entity01 {
 //	MinKey
 //	MaxKey
 //	number int -> same as Int?
+
 }
 
 internal enum class T_Entity01_Enum {
