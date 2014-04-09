@@ -9,7 +9,7 @@ const mixin Converters {
 	
 	abstract Obj? toFantom(Type fantomType, Obj? mongoObj)
 	
-	abstract Obj? toMongo(Type fantomType, Obj? fantomObj)
+	abstract Obj? toMongo(Obj? fantomObj)
 	
 }
 
@@ -26,9 +26,9 @@ internal const class ConvertersImpl : Converters {
 	override Obj? toFantom(Type fantomType, Obj? mongoObj) {
 		get(fantomType).toFantom(fantomType, mongoObj)
 	}
-	
-	override Obj? toMongo(Type fantomType, Obj? fantomObj) {
-		get(fantomType).toMongo(fantomType, fantomObj)
+
+	override Obj? toMongo(Obj? fantomObj) {
+		(fantomObj == null) ? null : get(fantomObj.typeof).toMongo(fantomObj)
 	}
 	
 	private Converter get(Type type) {

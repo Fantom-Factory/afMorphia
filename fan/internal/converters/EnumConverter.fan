@@ -5,8 +5,8 @@ internal const class EnumConverter : Converter {
 		type.method("fromStr").call(mongoObj, true)
 	}
 	
-	override Obj? toMongo(Type type, Obj? fantomObj) {
-		((Enum?) fantomObj)?.name
+	override Obj? toMongo(Obj fantomObj) {
+		((Enum) fantomObj).name
 	}
 
 }
