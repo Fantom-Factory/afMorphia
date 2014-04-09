@@ -3,7 +3,7 @@ using afMongo
 
 internal class TestSerialiseLiterals : MorphiaTest {
 
-	@Inject Serialiser? serialiser
+	@Inject Morphia? serialiser
 	
 	Void testDeserializeMongoLiterals() {
 		mongoDoc := [

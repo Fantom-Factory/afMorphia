@@ -7,7 +7,7 @@ using afMongo
 const class MorphiaModule {
 
 	static Void bind(ServiceBinder binder) {
-		binder.bind(Serialiser#)
+		binder.bind(Morphia#)
 		binder.bind(Converters#).withoutProxy
 	}
 	

@@ -2,7 +2,7 @@ using afIoc
 
 internal class TestSerialiseErrs: MorphiaTest {
 	
-	@Inject Serialiser? serialiser
+	@Inject Morphia? serialiser
 
 	Void testPropertyNotFound() {
 		verifyMorphiaErrMsg(Msgs.serializer_propertyNotFound(T_Entity02#name, ["wot":"ever"])) {
