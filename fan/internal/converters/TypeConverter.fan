@@ -1,13 +1,13 @@
 
-internal const class EnumConverter : Converter {
+internal const class TypeConverter : Converter {
 
 	override Obj? toFantom(Type type, Obj? mongoObj) {
 		if (mongoObj == null) return null
-		return type.method("fromStr").call(mongoObj, true)
+		return Type.find((Str) mongoObj)
 	}
 	
 	override Obj? toMongo(Obj fantomObj) {
-		((Enum) fantomObj).name
+		((Type) fantomObj).qname
 	}
 
 }

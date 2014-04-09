@@ -1,13 +1,13 @@
 
-internal const class EnumConverter : Converter {
+internal const class UriConverter : Converter {
 
 	override Obj? toFantom(Type type, Obj? mongoObj) {
 		if (mongoObj == null) return null
-		return type.method("fromStr").call(mongoObj, true)
+		return ((Str) mongoObj).toUri
 	}
 	
 	override Obj? toMongo(Obj fantomObj) {
-		((Enum) fantomObj).name
+		((Uri) fantomObj).toStr
 	}
 
 }

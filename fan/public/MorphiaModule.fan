@@ -25,8 +25,16 @@ const class MorphiaModule {
 		config[Regex#]		= mongoLiteral
 		config[Str#]		= mongoLiteral
 		
-		config[Enum#]		= config.autobuild(EnumConverter#)
 		config[List#]		= config.createProxy(Converter#, ListConverter#)
 		config[Map#]		= config.createProxy(Converter#, MapConverter#)
+
+		// Mongo Literals
+		config[Decimal#]	= DecimalConverter()
+		config[Duration#]	= DurationConverter()
+		config[Enum#]		= EnumConverter()
+		config[Range#]		= RangeConverter()
+		config[Slot#]		= SlotConverter()
+		config[Type#]		= TypeConverter()
+		config[Uri#]		= UriConverter()
 	}
 }
