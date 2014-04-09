@@ -1,9 +1,9 @@
 using afIoc
 using afMongo
 
-internal class TestSerializeLiterals : MorphiaTest {
+internal class TestSerialiseLiterals : MorphiaTest {
 
-	@Inject Serializer? serializer
+	@Inject Serialiser? serialiser
 	
 	Void testDeserializeMongoLiterals() {
 		mongoDoc := [
@@ -20,7 +20,7 @@ internal class TestSerializeLiterals : MorphiaTest {
 			"enumm"		: "wot"
 		]
 		
-		entity := (T_Entity01) serializer.fromMongoDoc(mongoDoc, T_Entity01#)
+		entity := (T_Entity01) serialiser.fromMongoDoc(T_Entity01#, mongoDoc)
 		
 		verifyEq(entity.float, 		mongoDoc["float"])	
 		verifyEq(entity.int, 		mongoDoc["int"])	
@@ -50,7 +50,7 @@ internal class TestSerializeLiterals : MorphiaTest {
 			enumm		= T_Entity01_Enum.wot
 		}
 		
-		mongoDoc := serializer.toMongoDoc(entity)
+		mongoDoc := serialiser.toMongoDoc(entity)
 		
 		verifyEq(mongoDoc["float"],		entity.float)
 		verifyEq(mongoDoc["int"],		entity.int)

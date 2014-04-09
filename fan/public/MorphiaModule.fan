@@ -1,4 +1,5 @@
 using afIoc
+using afMongo
 
 ** The [IoC]`http://www.fantomfactory.org/pods/afIoc` module class.
 ** 
@@ -6,12 +7,25 @@ using afIoc
 const class MorphiaModule {
 
 	static Void bind(ServiceBinder binder) {
-		binder.bind(Serializer#)
+		binder.bind(Serialiser#)
 		binder.bind(Converters#).withoutProxy
 	}
 	
 	@Contribute { serviceType=Converters# }
 	static Void contributeConverters(MappedConfig config) {
+		
+		mongoLiteral		:= config.autobuild(LiteralConverter#)
+		config[Bool#]		= mongoLiteral
+		config[Buf#]		= mongoLiteral
+		config[Date#]		= mongoLiteral
+		config[DateTime#]	= mongoLiteral
+		config[Float#]		= mongoLiteral
+		config[Int#]		= mongoLiteral
+		config[ObjectId#]	= mongoLiteral
+		config[Regex#]		= mongoLiteral
+		config[Str#]		= mongoLiteral
+		
 		config[Enum#]		= config.autobuild(EnumConverter#)
+		config[List#]		= config.createProxy(Converter#, ListConverter#)
 	}
 }
