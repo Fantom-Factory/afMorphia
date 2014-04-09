@@ -27,5 +27,6 @@ const class MorphiaModule {
 		
 		config[Enum#]		= config.autobuild(EnumConverter#)
 		config[List#]		= config.createProxy(Converter#, ListConverter#)
+		config[Map#]		= config.createProxy(Converter#, MapConverter#)
 	}
 }
