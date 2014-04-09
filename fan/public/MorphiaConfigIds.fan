@@ -1,0 +1,6 @@
+
+const mixin MorphiaConfigIds {
+	
+	
+
+}

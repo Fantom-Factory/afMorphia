@@ -4,11 +4,13 @@ using afMongo
 internal const class DocumentConverter : Converter {
 
 	@Inject private const Registry registry
-	@Inject private const Serialiser serialiser
+	@Inject private const Converters converters
 	
 	new make(|This|in) { in(this) }
 	
 	override Obj? toFantom(Type fantomType, Obj? mongoObj) {
+		if (mongoObj == null)	return null
+
 		fieldVals	:= [Field:Obj?][:]
 		mongoDoc	:= (Str:Obj?) mongoObj
 
@@ -21,7 +23,7 @@ internal const class DocumentConverter : Converter {
 			propVal  := mongoDoc.get(propName, null)
 			implType := field.type	// TODO: @Property property.type ?: field.type
 			
-			fieldVal := serialiser.toFantom(implType, propVal)
+			fieldVal := converters.toFantom(implType, propVal)
 			
 			if (fieldVal == null && !field.type.isNullable) {
 				// a value *is* required so decide which Err msg to throw 
@@ -43,6 +45,8 @@ internal const class DocumentConverter : Converter {
 	}
 	
 	override Obj? toMongo(Type fantomType, Obj? fantomObj) {
+		if (fantomObj == null)	return null
+
 		mongoDoc := Str:Obj?[:]
 		
 		fantomType.fields.each |field| {
@@ -54,7 +58,7 @@ internal const class DocumentConverter : Converter {
 			propName := field.name	// TODO: @Property property.name ?: field.name			
 			implType := field.type	// TODO: @Property property.type ?: field.type
 			
-			propVal	 := serialiser.toMongo(implType, fieldVal)			
+			propVal	 := converters.toMongo(implType, fieldVal)			
 			
 			if (propVal == null) {
 				// TODO: do NullStrategy -> no custom, just do or don't

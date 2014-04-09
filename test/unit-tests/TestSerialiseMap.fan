@@ -2,10 +2,11 @@ using afIoc
 
 internal class TestSerialiseMap : MorphiaTest {
 	
-	@Inject Serialiser? serialiser
+	@Inject Morphia? serialiser
 
 	Void testSerialiseMapKeys() {
 		ent := T_Entity06()
+		ent.keys = [:]
 		ent.keys[T_Entity06_Enum.wot] = 6
 		ent.keys[T_Entity06_Enum.ever] = 9
 
@@ -27,6 +28,7 @@ internal class TestSerialiseMap : MorphiaTest {
 
 	Void testSerializeMapVals() {
 		ent := T_Entity06()
+		ent.vals = [:]
 		ent.vals[6] = T_Entity06_Enum.wot
 		ent.vals[9] = T_Entity06_Enum.ever
 

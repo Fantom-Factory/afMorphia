@@ -2,7 +2,7 @@ using afIoc
 
 internal class TestSerialiseList : MorphiaTest {
 	
-	@Inject Serialiser? serialiser
+	@Inject Morphia? serialiser
 
 	Void testSerializeListVals() {
 		ent := T_Entity07() {

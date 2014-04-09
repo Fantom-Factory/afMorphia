@@ -2,7 +2,7 @@ using afIoc
 
 internal const class ListConverter : Converter {
 
-	@Inject private const Serialiser serialiser
+	@Inject private const Converters converters
 	
 	new make(|This|in) { in(this) }
 	
@@ -10,14 +10,13 @@ internal const class ListConverter : Converter {
 		listType 	:= fantomType.params["V"]
 		mongoList	:= (List?) mongoObj
 		fanList		:= List(listType, mongoList.size)
-		// TODO: what if val is a complicated type
-		fanList.addAll(mongoList.map { serialiser.toFantom(listType, it) })
+		fanList.addAll(mongoList.map { converters.toFantom(listType, it) })
 		return fanList
 	}
 	
 	override Obj? toMongo(Type type, Obj? fantomObj) {
 		listType := type.params["V"]
-		// TODO: what if val is a complicated type
-		return ((List?) fantomObj)?.map { serialiser.toMongo(it?.typeof ?: listType, it) }
+		// use 'typeof' 
+		return ((List?) fantomObj)?.map { converters.toMongo(it?.typeof ?: listType, it) }
 	}
 }
