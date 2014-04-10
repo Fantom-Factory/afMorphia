@@ -1,4 +1,5 @@
 using afIoc
+using afIocConfig
 using afMongo
 
 ** The [IoC]`http://www.fantomfactory.org/pods/afIoc` module class.
@@ -25,8 +26,8 @@ const class MorphiaModule {
 		config[Regex#]		= mongoLiteral
 		config[Str#]		= mongoLiteral
 		
-		config[List#]		= config.createProxy(Converter#, ListConverter#)
-		config[Map#]		= config.createProxy(Converter#, MapConverter#)
+		config[List#]		= config.createProxy(Converter#, ListConverter#, [true])
+		config[Map#]		= config.createProxy(Converter#, MapConverter#, [true])
 
 		// Mongo Literals
 		config[Decimal#]	= DecimalConverter()
@@ -36,5 +37,10 @@ const class MorphiaModule {
 		config[Slot#]		= SlotConverter()
 		config[Type#]		= TypeConverter()
 		config[Uri#]		= UriConverter()
+	}
+	
+	@Contribute { serviceType=FactoryDefaults# }
+	static Void contributeFactoryDefaults(MappedConfig config) {
+		config[MorphiaConfigIds.documentConverter]	= config.createProxy(Converter#, DocumentConverter#, [false])
 	}
 }

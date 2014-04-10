@@ -1,4 +1,5 @@
 using afIoc
+using afIocConfig::Config
 using afMongo::ObjectId
 
 ** (Service) - Contribute your 'Converter' classes to this.
@@ -18,12 +19,12 @@ const mixin Converters {
 internal const class ConvertersImpl : Converters {
 	private const StrategyRegistry 	converterStrategy
 	
+	@Inject @Config { id="afMorphia.documentConverter" }
 	private const Converter documentConverter
 	
-	new make(Type:Converter converters, Registry registry) {
+	new make(Type:Converter converters, |This|in) {
+		in(this)
 		this.converterStrategy = StrategyRegistry(converters)
-		// TODO: Don't new this up here, it means people can't override it
-		this.documentConverter = registry.createProxy(Converter#, DocumentConverter#)
 	}
 
 	override Obj? toFantom(Type fantomType, Obj? mongoObj) {
@@ -35,6 +36,7 @@ internal const class ConvertersImpl : Converters {
 	}
 	
 	private Converter get(Type type) {
+		// if a converter can't be found then embed a document
 		converterStrategy.findBestFit(type, false) ?: documentConverter
 	}	
 }

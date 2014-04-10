@@ -1,16 +1,23 @@
 using afIoc
 
-internal const class ListConverter : Converter {
+@NoDoc	// public so people can change the null strategy
+const class ListConverter : Converter {
 
-	@Inject private const Converters converters
+	@Inject private const Converters 	converters
+			private const Bool 			convertNullToEmptyList
 	
-	new make(|This|in) { in(this) }
+	new make(Bool convertNullToEmptyList, |This|in) {
+		in(this)
+		this.convertNullToEmptyList = convertNullToEmptyList
+	}
 	
 	override Obj? toFantom(Type fantomType, Obj? mongoObj) {
-		// TODO: List strategy
-		if (mongoObj == null) return null
-
 		listType 	:= fantomType.params["V"]
+
+		if (mongoObj == null)
+			// as most entities are const, don't allocate any capacity to the list
+			return convertNullToEmptyList ? List(listType, 0) : null
+
 		mongoList	:= (List) mongoObj
 		fanList		:= List(listType, mongoList.size)
 		fanList.addAll(mongoList.map { converters.toFantom(listType, it) })
