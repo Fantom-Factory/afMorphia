@@ -28,7 +28,7 @@ const class DocumentConverter : Converter {
 			if (property == null)
 				return
 			
-			propName := field.name	// TODO: @Property property.name ?: field.name
+			propName := property.name ?: field.name
 			propVal  := mongoDoc.get(propName, null)
 			implType := field.type	// TODO: @Property property.type ?: field.type
 			
@@ -62,7 +62,7 @@ const class DocumentConverter : Converter {
 				return
 
 			fieldVal := field.get(fantomObj)
-			propName := field.name	// TODO: @Property property.name ?: field.name			
+			propName := property.name ?: field.name			
 			
 			propVal	 := converters.toMongo(fieldVal)			
 			

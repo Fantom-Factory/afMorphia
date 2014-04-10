@@ -90,7 +90,6 @@ internal class TestSerialiseLiterals : MorphiaTest {
 	}
 }
 
-** Mongo Literals
 internal class T_Entity01 {
 	// Mongo Literals
 	@Property	Float		float
@@ -113,15 +112,9 @@ internal class T_Entity01 {
 	@Property	Slot		slot
 	@Property	Range		range
 	
-//    sys::Decimal
-//    sys::Duration
-//    sys::Type
-//    sys::Slot
-//    sys::Range
-		
 	new make(|This|in) { in(this) }
 	
-	// wierd Mongo literals
+	// wierd Mongo literals - http://bsonspec.org/spec.html
 //	Symbol -> same as string?
 //	Object (Fantom Map)
 //	Array (Fantom List)
