@@ -11,8 +11,12 @@ internal const class DocumentConverter : Converter {
 	override Obj? toFantom(Type fantomType, Obj? mongoObj) {
 		if (mongoObj == null) return null
 
-		fieldVals	:= [Field:Obj?][:]
+		// because DocumentConverter is a catch-all converter, we sometimes get sent here by mistake
+		if (!mongoObj.typeof.fits(Map#))
+			throw MorphiaErr(Msgs.document_noConverter(fantomType, mongoObj))
+		
 		mongoDoc	:= (Str:Obj?) mongoObj
+		fieldVals	:= [Field:Obj?][:]
 
 		fantomType.fields.each |field| {
 			property := (Property?) Field#.method("facet").callOn(field, [Property#, false])
@@ -27,15 +31,15 @@ internal const class DocumentConverter : Converter {
 			
 			if (fieldVal == null && !field.type.isNullable) {
 				// a value *is* required so decide which Err msg to throw 
-				if (!mongoDoc.containsKey(propName))
-					throw MorphiaErr(Msgs.serializer_propertyNotFound(field, logDoc(mongoDoc)))
+				if (mongoDoc.containsKey(propName))
+					throw MorphiaErr(Msgs.document_propertyIsNull(propName, field, logDoc(mongoDoc)))
 				else 
-					throw MorphiaErr(Msgs.serializer_propertyIsNull(propName, field, logDoc(mongoDoc)))
+					throw MorphiaErr(Msgs.document_propertyNotFound(field, logDoc(mongoDoc)))
 			}
 	
 			// for .toNonNullable see http://fantom.org/sidewalk/topic/2256
 			if (fieldVal != null && !fieldVal.typeof.toNonNullable.fits(field.type.toNonNullable)) {
-				throw MorphiaErr(Msgs.serializer_propertyDoesNotFitField(propName, fieldVal.typeof, field, logDoc(mongoDoc)))
+				throw MorphiaErr(Msgs.document_propertyDoesNotFitField(propName, fieldVal.typeof, field, logDoc(mongoDoc)))
 			}
 
 			fieldVals[field] = fieldVal
@@ -62,14 +66,16 @@ internal const class DocumentConverter : Converter {
 				return
 			}
 
-			mongoDoc[propName] = propVal
+			// use add, rather than set, so an Err is thrown should we accidently try to add the 
+			// same name twice (from using the Property@name facet)
+			mongoDoc.add(propName, propVal)
 		}
 
 		return mongoDoc
 	}
 
 	
-	private static const Type[] literals	:= [Bool#, Buf#, Date#, DateTime#, Float#, Int#, List#, Map#, ObjectId#, Regex#, Str#]
+	private static const Type[] literals	:= [Bool#, Buf#, Date#, DateTime#, Float#, Int#, ObjectId#, Regex#, Str#]
 
 	private Str:Str logDoc(Str:Obj? document) {
 		document.map |val->Str| {

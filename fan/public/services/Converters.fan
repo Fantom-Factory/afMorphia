@@ -22,6 +22,7 @@ internal const class ConvertersImpl : Converters {
 	
 	new make(Type:Converter converters, Registry registry) {
 		this.converterStrategy = StrategyRegistry(converters)
+		// TODO: Don't new this up here, it means people can't override it
 		this.documentConverter = registry.createProxy(Converter#, DocumentConverter#)
 	}
 
