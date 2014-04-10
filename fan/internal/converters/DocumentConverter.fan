@@ -1,12 +1,17 @@
 using afIoc
 using afMongo
 
-internal const class DocumentConverter : Converter {
+@NoDoc	// public so people can change the null strategy
+const class DocumentConverter : Converter {
 
-	@Inject private const Registry registry
-	@Inject private const Converters converters
+	@Inject private const Registry		registry
+	@Inject private const Converters	converters
+			private const Bool			storeNullFields
 	
-	new make(|This|in) { in(this) }
+	new make(Bool storeNullFields, |This|in) {
+		this.storeNullFields = storeNullFields
+		in(this) 
+	}
 	
 	override Obj? toFantom(Type fantomType, Obj? mongoObj) {
 		if (mongoObj == null) return null
@@ -61,10 +66,8 @@ internal const class DocumentConverter : Converter {
 			
 			propVal	 := converters.toMongo(fieldVal)			
 			
-			if (propVal == null) {
-				// TODO: do NullStrategy -> no custom, just do or don't
+			if (propVal == null && !storeNullFields)
 				return
-			}
 
 			// use add, rather than set, so an Err is thrown should we accidently try to add the 
 			// same name twice (from using the Property@name facet)

@@ -23,10 +23,16 @@ pre>
 <pre
 
 
+Null Strategies
+
+ - Document Converter (to Mongo)
+ - List Converter (to Fantom) - 0 capacity
+ - Map Converter (to Fantom)
+
 
 Release Notes [#releaseNotes]
 *****************************
 
 v0.0.2 [#v0.0.2]
 ----------------
- - New: Preview Release 
+ - New: Preview Release

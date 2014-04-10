@@ -1,19 +1,26 @@
 using afIoc
 
-internal const class MapConverter : Converter {
+@NoDoc	// public so people can change the null strategy
+const class MapConverter : Converter {
 
-	@Inject private const Converters converters
+	@Inject private const Converters 	converters
+			private const Bool 			convertNullToEmptyMap
 	
-	new make(|This|in) { in(this) }
+	new make(Bool convertNullToEmptyMap, |This|in) {
+		in(this)
+		this.convertNullToEmptyMap = convertNullToEmptyMap
+	}	
 	
 	override Obj? toFantom(Type mapType, Obj? mongoObj) {
-		// TODO: Map strategy
-		if (mongoObj == null) return null
-
 		keyType 	:= mapType.params["K"]
+
+		if (mongoObj == null) {
+			return convertNullToEmptyMap ? makeMap(mapType, keyType) : null
+		}
+
 		valType 	:= mapType.params["V"]
-		mongoMap	:= (Map?) mongoObj
-		fanMap		:= keyType.fits(Str#) ? Map.make(mapType.toNonNullable) { caseInsensitive = true } : Map.make(mapType.toNonNullable) { ordered = true }
+		mongoMap	:= (Map) mongoObj
+		fanMap		:= makeMap(mapType, keyType)
 		mongoMap.each |mVal, mKey| {
 			fKey := converters.toFantom(keyType, mKey)
 			fVal := converters.toFantom(valType, mVal)
@@ -33,8 +40,7 @@ internal const class MapConverter : Converter {
 		return mongoMap
 	}
 	
-	static Void main(Str[] args) {
-	  mapType := Map?#
-	  map := Map(mapType)
+	private static Map makeMap(Type mapType, Type keyType) {
+		keyType.fits(Str#) ? Map.make(mapType.toNonNullable) { caseInsensitive = true } : Map.make(mapType.toNonNullable) { ordered = true }
 	}
 }

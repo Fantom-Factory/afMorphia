@@ -1,11 +1,13 @@
 using afIoc
+using afIocConfig
 
 abstract internal class MorphiaTest : Test {
 
 	Registry? reg
 	
 	override Void setup() {
-		reg = RegistryBuilder().addModule(MorphiaModule#).build.startup
+		reg = RegistryBuilder().addModules([MorphiaModule#, IocConfigModule#]).build.startup
+//		reg = RegistryBuilder().addModulesFromDependencies(MorphiaModule#.pod).build.startup
 		reg.injectIntoFields(this)
 	}
 	
