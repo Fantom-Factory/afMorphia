@@ -1,6 +1,6 @@
 using afIoc
 using afIocConfig::Config
-using afMongo::ObjectId
+using afBson::ObjectId
 
 ** (Service) - Contribute your 'Converter' classes to this.
 ** 
@@ -37,6 +37,6 @@ internal const class ConvertersImpl : Converters {
 	
 	private Converter get(Type type) {
 		// if a converter can't be found then embed a document
-		converterStrategy.findBestFit(type, false) ?: documentConverter
+		converterStrategy.findClosestParent(type, false) ?: documentConverter
 	}	
 }

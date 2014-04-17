@@ -1,6 +1,6 @@
 using afIoc
 using afIocConfig
-using afMongo
+using afBson
 
 ** The [IoC]`http://www.fantomfactory.org/pods/afIoc` module class.
 ** 
