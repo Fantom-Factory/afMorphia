@@ -4,7 +4,7 @@ class Build : BuildPod {
 
 	new make() {
 		podName = "afMorphia"
-		summary = "A Fantom to MongoDB mapping library."
+		summary = "A Fantom to MongoDB mapping library"
 		version = Version("0.0.1")
 
 		meta = [
@@ -26,8 +26,9 @@ class Build : BuildPod {
 		depends = [
 			"sys 1.0", 
 			
+			"afBson 0+",
 			"afMongo 0+",
-			"afIoc 1.5.5+",
+			"afIoc 1.5.6+",
 			"afIocConfig 1.0.4+"
 		]
 		
@@ -36,9 +37,23 @@ class Build : BuildPod {
 
 		docApi = true
 		docSrc = true
-
+	}
+	
+	@Target { help = "Compile to pod file and associated natives" }
+	override Void compile() {
 		// exclude test code when building the pod
 		srcDirs = srcDirs.exclude { it.toStr.startsWith("test/") }
-		resDirs = resDirs.exclude { it.toStr.startsWith("test/") }
+		resDirs = resDirs.exclude { it.toStr.startsWith("res/test/") }
+		
+		super.compile
+		
+		// copy src to %FAN_HOME% for F4 debugging
+		log.indent
+		destDir := Env.cur.homeDir.plus(`src/${podName}/`)
+		destDir.delete
+		destDir.create		
+		`fan/`.toFile.copyInto(destDir)		
+		log.info("Copied `fan/` to ${destDir.normalize}")
+		log.unindent
 	}
 }

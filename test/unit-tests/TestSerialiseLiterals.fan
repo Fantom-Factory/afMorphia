@@ -1,5 +1,5 @@
 using afIoc
-using afMongo
+using afBson
 
 internal class TestSerialiseLiterals : MorphiaTest {
 

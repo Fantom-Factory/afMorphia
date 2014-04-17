@@ -1,4 +1,5 @@
 using afIoc
+using afBson
 using afMongo
 
 @NoDoc	// public so people can change the null strategy

@@ -23,6 +23,10 @@ pre>
 <pre
 
 
+Anything should be possible with afMongo, but here in Morphia land we enforce good strategies and best practices.
+
+All entities should have an ID
+
 Null Strategies
 
  - Document Converter (to Mongo)
