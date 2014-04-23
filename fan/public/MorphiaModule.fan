@@ -13,23 +13,29 @@ const class MorphiaModule {
 	}
 	
 	@Contribute { serviceType=Converters# }
-	static Void contributeConverters(MappedConfig config) {
-		
+	static Void contributeConverters(MappedConfig config) {		
 		mongoLiteral		:= config.autobuild(LiteralConverter#)
+		
+		// Mongo Literals
 		config[Bool#]		= mongoLiteral
+		config[Binary#]		= mongoLiteral
 		config[Buf#]		= mongoLiteral
+		config[Code#]		= mongoLiteral
 		config[Date#]		= mongoLiteral
 		config[DateTime#]	= mongoLiteral
 		config[Float#]		= mongoLiteral
 		config[Int#]		= mongoLiteral
+		config[MaxKey#]		= mongoLiteral
+		config[MinKey#]		= mongoLiteral
 		config[ObjectId#]	= mongoLiteral
 		config[Regex#]		= mongoLiteral
 		config[Str#]		= mongoLiteral
+		config[Timestamp#]	= mongoLiteral
 		
 		config[List#]		= config.createProxy(Converter#, ListConverter#, [true])
 		config[Map#]		= config.createProxy(Converter#, MapConverter#, [true])
 
-		// Mongo Literals
+		// Fantom Literals
 		config[Decimal#]	= DecimalConverter()
 		config[Duration#]	= DurationConverter()
 		config[Enum#]		= EnumConverter()

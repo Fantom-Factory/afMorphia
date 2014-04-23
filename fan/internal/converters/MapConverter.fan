@@ -1,4 +1,5 @@
 using afIoc
+using afBson
 
 @NoDoc	// public so people can change the null strategy
 const class MapConverter : Converter {
@@ -14,12 +15,16 @@ const class MapConverter : Converter {
 	override Obj? toFantom(Type mapType, Obj? mongoObj) {
 		keyType 	:= mapType.params["K"]
 
-		if (mongoObj == null) {
+		if (mongoObj == null) 
 			return convertNullToEmptyMap ? makeMap(mapType, keyType) : null
-		}
 
-		valType 	:= mapType.params["V"]
 		mongoMap	:= (Map) mongoObj
+		valType 	:= mapType.params["V"]
+		
+		// if the whole map is a valid BSON document, then return it as is
+		if (keyType == Str# && BsonType.isBsonLiteral(valType))
+			return mongoObj		
+		
 		fanMap		:= makeMap(mapType, keyType)
 		mongoMap.each |mVal, mKey| {
 			fKey := converters.toFantom(keyType, mKey)
@@ -31,9 +36,19 @@ const class MapConverter : Converter {
 	
 	override Obj? toMongo(Obj fantomObj) {
 		fanMap		:= (Map) fantomObj
+		mapType		:= fanMap.typeof
+		
+		// if the whole map is a valid BSON document, then return it as is
+		if (!mapType.isGeneric) {
+			keyType 	:= mapType.params["K"]
+			valType 	:= mapType.params["V"]
+			if (BsonType.isBsonLiteral(keyType) && BsonType.isBsonLiteral(valType))
+				return fantomObj
+		}
+		
 		mongoMap	:= Obj:Obj?[:]
 		fanMap.each |fVal, fKey| {
-			mKey := converters.toMongo(fKey)
+			mKey := converters.toMongo(fKey)	// FIXME: to Str!! check we can convert back to Fantom!
 			mVal := converters.toMongo(fVal)
 			mongoMap[mKey] = mVal
 		}		

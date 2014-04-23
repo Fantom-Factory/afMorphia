@@ -1,4 +1,5 @@
 using afIoc
+using afBson
 
 @NoDoc	// public so people can change the null strategy
 const class ListConverter : Converter {
@@ -17,14 +18,27 @@ const class ListConverter : Converter {
 		if (mongoObj == null)
 			// as most entities are const, don't allocate any capacity to the list
 			return convertNullToEmptyList ? List(listType, 0) : null
-
 		mongoList	:= (List) mongoObj
+
+		// if the whole list is a valid BSON document, then return it as is
+		if (BsonType.isBsonLiteral(listType))
+			return mongoObj
+
 		fanList		:= List(listType, mongoList.size)
 		fanList.addAll(mongoList.map { converters.toFantom(listType, it) })
 		return fanList
 	}
 	
 	override Obj? toMongo(Obj fantomObj) {
-		((List) fantomObj).map { converters.toMongo(it) }
+		fanList	 := (List) fantomObj
+		listType := fanList.typeof
+		
+		// if the whole list is a valid BSON document, then return it as is
+		if (!listType.isGeneric)
+			if (BsonType.isBsonLiteral(listType) || fanList.all { BsonType.isBsonLiteral(it?.typeof) })
+				return fantomObj
+		
+		
+		return ((List) fantomObj).map { converters.toMongo(it) }
 	}
 }

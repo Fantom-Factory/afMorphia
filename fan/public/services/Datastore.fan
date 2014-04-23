@@ -1,26 +1,64 @@
+using afIoc
 using afMongo
 
-const class Datastore {
+// rename to Entities?
+class Datastore {
 	
-	private const Type			collectionType
-	private const Collection 	collection
+	@Inject private const Converters converters
+
+	private const Type	type
+	private Collection 	collection
 	
-	new make(Type collectionType, DB db) {
-		this.collectionType	= collectionType
-		this.collection		= db.collection(collectionType.name)
-	}
-	
-	Obj? find(Type collectionType, Obj id) {
-		collection.findOne
+	internal new make(Database database, Type type, |This|in) {
+		in(this)
+		// TODO: check for Document facet, use the optional name
+		this.collection	= Collection(database, type.name)
+		this.type		= type
 	}
 
-	Obj[] listAll(Type collectionType) {
-		collection.find.toList
+	Obj? findById(Obj id, Bool checked := true) {
+		// TODO: check ID is of correct type
+		findOne(["_id":id])
 	}
 	
-//	save
+	Obj? findOne(Str:Obj? query, Bool checked := true) {
+		fromMongoDoc(collection.findOne(query, checked))
+	}
+
+	** Returns the result of the given 'query' as a list of documents.
+	Obj[] findList(Str:Obj? query := [:], Int skip := 0, Int? limit := null) {
+		collection.findList(query, skip, limit).map { fromMongoDoc(it) }
+	}
+
+	** Returns the number of documents that would be returned by the given 'query'.
+	Int findCount(Str:Obj? query) {
+		collection.find(query) { it.count }
+	}
+
+	** Returns the number of documents in the collection.
+	Int size() {
+		collection.size
+	}
+
+	Obj upsert(Obj entity) {
+		// TODO: type check entity
+		return entity
+	}
 	
-//	update
+	Void deleteById(Obj id) {
+		// TODO: type check entity
+	}
+
+	Obj delete(Obj entity) {
+		// TODO: type check entity
+		return entity		
+	}
 	
-//	delete
+	Obj fromMongoDoc(Str:Obj? mongoDoc) {
+		converters.toFantom(type, mongoDoc)
+	}
+	
+	Str:Obj? toMongoDoc(Obj entity) {
+		converters.toMongo(entity)		
+	}	
 }

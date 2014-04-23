@@ -2,14 +2,14 @@ using afIoc
 
 internal class TestPropertyName : MorphiaTest {
 	
-	@Inject Morphia? serialiser
+	@Inject Converters? serialiser
 	
 	Void testDeserializeMongoLiterals() {
 		mongoDoc := [
 			"judge"		: "dude"
 		]
 		
-		entity := (T_Entity08) serialiser.fromMongoDoc(T_Entity08#, mongoDoc)
+		entity := (T_Entity08) serialiser.toFantom(T_Entity08#, mongoDoc)
 		
 		verifyEq(entity.wotever, 	"dude")
 	}
@@ -19,7 +19,7 @@ internal class TestPropertyName : MorphiaTest {
 			wotever		= "dude"
 		}
 		
-		mongoDoc := serialiser.toMongoDoc(entity)
+		mongoDoc := serialiser.toMongo(entity) as Map
 		
 		verifyEq(mongoDoc["judge"],		"dude")
 	}
