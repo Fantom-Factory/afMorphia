@@ -12,23 +12,41 @@ const class MapConverter : Converter {
 		this.convertNullToEmptyMap = convertNullToEmptyMap
 	}	
 	
-	override Obj? toFantom(Type mapType, Obj? mongoObj) {
-		keyType 	:= mapType.params["K"]
+	override Obj? toFantom(Type fanMapType, Obj? mongoObj) {
+		fanKeyType 	:= fanMapType.params["K"]
+		fanValType 	:= fanMapType.params["V"]
 
 		if (mongoObj == null) 
-			return convertNullToEmptyMap ? makeMap(mapType, keyType) : null
+			return convertNullToEmptyMap ? makeMap(fanMapType, fanKeyType) : null
 
 		mongoMap	:= (Map) mongoObj
-		valType 	:= mapType.params["V"]
+		monMapType	:= mongoMap.typeof
+		monKeyType 	:= monMapType.params["K"]
+		monValType 	:= monMapType.params["V"]
 		
-		// if the whole map is a valid BSON document, then return it as is
-		if (keyType == Str# && BsonType.isBsonLiteral(valType))
-			return mongoObj		
+		// monKeyType should always be Str#
+		if (fanKeyType == Str# && monKeyType == Str#) {
+			if (monValType.fits(fanValType))
+				return mongoMap
+
+			fanMap := makeMap(fanMapType, fanKeyType)
+			if (BsonType.isBsonLiteral(fanValType)) {
+				// if the Fantom val type is BSON, just copy the vals over 'cos they wouldn't have changed
+				fanMap.addAll(mongoMap)
+
+			} else {
+				// keep the keys, just convert the vals
+				mongoMap.each |mVal, mKey| {
+					fanMap[mKey] = converters.toFantom(fanValType, mVal)
+				}				
+			}
+			return fanMap
+		}
 		
-		fanMap		:= makeMap(mapType, keyType)
+		fanMap		:= makeMap(fanMapType, fanKeyType)
 		mongoMap.each |mVal, mKey| {
-			fKey := converters.toFantom(keyType, mKey)
-			fVal := converters.toFantom(valType, mVal)
+			fKey := converters.toFantom(fanKeyType, mKey)
+			fVal := converters.toFantom(fanValType, mVal)
 			fanMap[fKey] = fVal
 		}
 		return fanMap

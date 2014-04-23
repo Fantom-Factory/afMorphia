@@ -12,20 +12,27 @@ const class ListConverter : Converter {
 		this.convertNullToEmptyList = convertNullToEmptyList
 	}
 	
-	override Obj? toFantom(Type fantomType, Obj? mongoObj) {
-		listType 	:= fantomType.params["V"]
+	override Obj? toFantom(Type fanListType, Obj? mongoObj) {
+		fanValType := fanListType.params["V"]
 
 		if (mongoObj == null)
 			// as most entities are const, don't allocate any capacity to the list
-			return convertNullToEmptyList ? List(listType, 0) : null
+			return convertNullToEmptyList ? List(fanValType, 0) : null
+
 		mongoList	:= (List) mongoObj
-
+		monListType	:= mongoList.typeof
+		monValType	:= monListType.params["V"]
+		
 		// if the whole list is a valid BSON document, then return it as is
-		if (BsonType.isBsonLiteral(listType))
-			return mongoObj
+		if (monValType.fits(fanValType))
+			return mongoList
+		
+		fanList		:= List(fanValType, mongoList.size)
+		if (BsonType.isBsonLiteral(fanValType))
+			fanList.addAll(mongoList)
+		else
+			fanList.addAll(mongoList.map { converters.toFantom(fanValType, it) })
 
-		fanList		:= List(listType, mongoList.size)
-		fanList.addAll(mongoList.map { converters.toFantom(listType, it) })
 		return fanList
 	}
 	

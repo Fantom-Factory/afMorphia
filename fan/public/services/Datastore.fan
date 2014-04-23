@@ -42,6 +42,7 @@ class Datastore {
 
 	Obj upsert(Obj entity) {
 		// TODO: type check entity
+		collection.insert(toMongoDoc(entity))
 		return entity
 	}
 	

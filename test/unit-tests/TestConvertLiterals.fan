@@ -30,7 +30,7 @@ internal class TestConvertLiterals : MorphiaTest {
 			"maxKey"		: MaxKey(),
 			
 			// Fantom literals
-			"date"			: Date.today,
+			"date"			: Date.today.toDateTime(Time.defVal),
 			"enumm"			: "wot",
 			"uri"			: "http://uri",
 			"decimal"		: "6.9",
@@ -128,7 +128,7 @@ internal class TestConvertLiterals : MorphiaTest {
 		verifySame(mongoDoc["minKey"],		entity.minKey)
 		verifySame(mongoDoc["maxKey"],		entity.maxKey)
 		
-		verifyEq(mongoDoc["date"],			Date.today)
+		verifyEq(mongoDoc["date"],			Date.today.toDateTime(Time.defVal))
 		verifyEq(mongoDoc["enumm"],			"wot")
 		verifyEq(mongoDoc["uri"],			"http://uri/")
 		verifyEq(mongoDoc["decimal"],		"6.9")
