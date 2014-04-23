@@ -21,7 +21,6 @@ const class MorphiaModule {
 		config[Binary#]		= mongoLiteral
 		config[Buf#]		= mongoLiteral
 		config[Code#]		= mongoLiteral
-		config[Date#]		= mongoLiteral
 		config[DateTime#]	= mongoLiteral
 		config[Float#]		= mongoLiteral
 		config[Int#]		= mongoLiteral
@@ -36,6 +35,7 @@ const class MorphiaModule {
 		config[Map#]		= config.createProxy(Converter#, MapConverter#, [true])
 
 		// Fantom Literals
+		config[Date#]		= DateConverter()
 		config[Decimal#]	= DecimalConverter()
 		config[Duration#]	= DurationConverter()
 		config[Enum#]		= EnumConverter()
