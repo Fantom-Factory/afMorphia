@@ -2,12 +2,12 @@ using afIoc
 
 internal class TestSerialiseEmbedded : MorphiaTest {
 	
-	@Inject Morphia? serialiser
+	@Inject Converters? serialiser
 	
 	Void testSerializeEmbedded() {
 		ent := T_Entity02()
 
-		doc := serialiser.toMongoDoc(ent)
+		doc := serialiser.toMongo(ent) as Map
 		
 		map := (Str:Obj?) doc["name"]
 		verifyEq(map["name"], "Dredd")
@@ -17,7 +17,7 @@ internal class TestSerialiseEmbedded : MorphiaTest {
 	Void testDeserializeEmbedded() {
 		doc := ["name":["name":"Dredd", "badge":69]]
 
-		ent := (T_Entity02) serialiser.fromMongoDoc(T_Entity02#, doc)
+		ent := (T_Entity02) serialiser.toFantom(T_Entity02#, doc)
 		
 		verifyEq(ent.name.name, "Dredd")
 		verifyEq(ent.name.badge, 69)
