@@ -20,7 +20,7 @@ const class DocumentConverter : Converter {
 		// because DocumentConverter is a catch-all converter, we sometimes get sent here by mistake
 		if (!mongoObj.typeof.fits(Map#))
 			throw MorphiaErr(Msgs.document_noConverter(fantomType, mongoObj))
-		
+
 		mongoDoc	:= (Str:Obj?) mongoObj
 		fieldVals	:= [Field:Obj?][:]
 

@@ -12,8 +12,8 @@ internal class TestConvertLiterals : MorphiaTest {
 			// Mongo literals
 			"float"			: 69f,
 			"str"			: "string",
-			"doc"			: ["wot":"ever"],
-			"list"			: ["wot","ever"],
+			"doc"			: Str:Obj?["wot":"ever"],
+			"list"			: Obj?["wot","ever"],
 			"binaryMd5"		: Binary("dragon".toBuf, Binary.BIN_MD5),
 			"binaryOld"		: Binary("dragon".toBuf, Binary.BIN_BINARY_OLD),
 			"binaryBuf"		: "vampire".toBuf,
@@ -37,7 +37,8 @@ internal class TestConvertLiterals : MorphiaTest {
 			"duration"		: "3sec",
 			"type"			: "afMorphia::MorphiaTest",
 			"slot"			: "afMorphia::MorphiaTest.setup",
-			"range"			: "2..<4"
+			"range"			: "2..<4",
+			"map"			: Str:Obj?["3":"ever"],
 		]
 		
 		entity := (T_Entity01) serialiser.toFantom(T_Entity01#, mongoDoc)
@@ -45,8 +46,8 @@ internal class TestConvertLiterals : MorphiaTest {
 		// Mongo literals
 		verifyEq  (entity.float,		mongoDoc["float"])
 		verifySame(entity.str, 			mongoDoc["str"])
-		verifySame(entity.doc,			mongoDoc["doc"])
-		verifySame(entity.list, 		mongoDoc["list"])
+		verifyEq  (entity.doc.size,		mongoDoc["doc"]->size)	// the two maps have diff sigs Str:Obj? vs Str:Str?
+		verifyEq  (entity.list.size,	mongoDoc["list"]->size)	// again Obj? vs Str?
 		verifySame(entity.binaryMd5,	mongoDoc["binaryMd5"])
 		verifySame(entity.binaryOld,	mongoDoc["binaryOld"])
 		verifySame(entity.binaryBuf,	mongoDoc["binaryBuf"])
@@ -62,6 +63,7 @@ internal class TestConvertLiterals : MorphiaTest {
 		verifySame(entity.minKey,		mongoDoc["minKey"])
 		verifySame(entity.maxKey,		mongoDoc["maxKey"])
 		
+		m:=(Int:T_Entity01_Enum?[:]{ordered=true}).add(3,T_Entity01_Enum.ever)
 		// Fantom literals
 		verifyEq(entity.date, 			Date.today)
 		verifyEq(entity.enumm,			T_Entity01_Enum.wot)
@@ -71,6 +73,7 @@ internal class TestConvertLiterals : MorphiaTest {
 		verifyEq(entity.type,			MorphiaTest#)
 		verifyEq(entity.slot,			MorphiaTest#setup)
 		verifyEq(entity.range,			2..<4)
+		verifyEq(entity.map, 			m)
 	}
 	
 	Void testLiteralsToMongo() {
@@ -105,6 +108,7 @@ internal class TestConvertLiterals : MorphiaTest {
 			type		= MorphiaTest#
 			slot		= MorphiaTest#setup
 			range		= (2..<4)
+			map			= [3:T_Entity01_Enum.ever]
 		}
 		
 		mongoDoc := serialiser.toMongo(entity) as Map
@@ -136,6 +140,7 @@ internal class TestConvertLiterals : MorphiaTest {
 		verifyEq(mongoDoc["type"],			"afMorphia::MorphiaTest")
 		verifyEq(mongoDoc["slot"],			"afMorphia::MorphiaTest.setup")
 		verifyEq(mongoDoc["range"],			"2..<4")
+		verifyEq(mongoDoc["map"],			Str:Obj?["3":"ever"])
 	}
 }
 
@@ -143,8 +148,8 @@ internal class T_Entity01 {
 	// Mongo Literals
 	@Property	Float		float
 	@Property	Str			str
-	@Property	Str:Str?	doc			// FIXME - obj?
-	@Property	Str?[]		list		// FIXME - obj?
+	@Property	Str:Str?	doc
+	@Property	Str?[]		list
 	@Property	Binary		binaryMd5
 	@Property	Binary		binaryOld
 	@Property	Buf			binaryBuf
@@ -161,7 +166,6 @@ internal class T_Entity01 {
 	@Property	MaxKey		maxKey
 	
 	// Fantom literals
-//	@Property	Int:Obj?	map		// FIXME!
 	@Property	Date		date
 	@Property	T_Entity01_Enum	enumm
 	@Property	Uri			uri
@@ -170,6 +174,7 @@ internal class T_Entity01 {
 	@Property	Type		type
 	@Property	Slot		slot
 	@Property	Range		range
+	@Property	Int:T_Entity01_Enum?	map
 	
 	new make(|This|in) { in(this) }
 }
