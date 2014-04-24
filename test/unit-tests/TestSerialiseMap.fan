@@ -34,9 +34,9 @@ internal class TestSerialiseMap : MorphiaTest {
 
 		doc := serialiser.toMongo(ent) as Map
 		
-		map := (Int:Obj?) doc["vals"]
-		verifyEq(map[6], "wot")
-		verifyEq(map[9], "ever")
+		map := (Str:Obj?) doc["vals"]
+		verifyEq(map["6"], "wot")
+		verifyEq(map["9"], "ever")
 	}
 
 	Void testDeserializeMapVals() {

@@ -19,7 +19,7 @@ const class DocumentConverter : Converter {
 
 		// because DocumentConverter is a catch-all converter, we sometimes get sent here by mistake
 		if (!mongoObj.typeof.fits(Map#))
-			throw MorphiaErr(Msgs.document_noConverter(fantomType, mongoObj))
+			throw MorphiaErr(ErrMsgs.documentConv_noConverter(fantomType, mongoObj))
 
 		mongoDoc	:= (Str:Obj?) mongoObj
 		fieldVals	:= [Field:Obj?][:]
@@ -38,14 +38,14 @@ const class DocumentConverter : Converter {
 			if (fieldVal == null && !field.type.isNullable) {
 				// a value *is* required so decide which Err msg to throw 
 				if (mongoDoc.containsKey(propName))
-					throw MorphiaErr(Msgs.document_propertyIsNull(propName, field, logDoc(mongoDoc)))
+					throw MorphiaErr(ErrMsgs.documentConv_propertyIsNull(propName, field, logDoc(mongoDoc)))
 				else 
-					throw MorphiaErr(Msgs.document_propertyNotFound(field, logDoc(mongoDoc)))
+					throw MorphiaErr(ErrMsgs.documentConv_propertyNotFound(field, logDoc(mongoDoc)))
 			}
 	
 			// for .toNonNullable see http://fantom.org/sidewalk/topic/2256
 			if (fieldVal != null && !fieldVal.typeof.toNonNullable.fits(field.type.toNonNullable)) {
-				throw MorphiaErr(Msgs.document_propertyDoesNotFitField(propName, fieldVal.typeof, field, logDoc(mongoDoc)))
+				throw MorphiaErr(ErrMsgs.documentConv_propertyDoesNotFitField(propName, fieldVal.typeof, field, logDoc(mongoDoc)))
 			}
 
 			fieldVals[field] = fieldVal
