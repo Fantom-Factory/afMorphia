@@ -37,7 +37,7 @@ internal class TestListConverter : MorphiaTest {
 		monList	:= Obj?["gold","welsh"]
 		fanList	:= listConverter.toFantom(Str[]#, monList) as Str[]
 		
-		// TODO: we can't test they've not been converted unless we override a dodgy Str converter
+		// todo: we can't test they've not been converted unless we override a dodgy Str converter
 		verifyNotSame(fanList, monList)
 		verifyEq(fanList[0], "gold")
 		verifyEq(fanList[1], "welsh")

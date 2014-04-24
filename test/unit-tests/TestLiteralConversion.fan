@@ -1,7 +1,7 @@
 using afIoc
 using afBson
 
-internal class TestConvertLiterals : MorphiaTest {
+internal class TestLiteralConversion : MorphiaTest {
 	private ObjectId objId 	:= ObjectId()
 	private DateTime now	:= DateTime.now
 

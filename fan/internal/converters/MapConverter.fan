@@ -48,7 +48,7 @@ const class MapConverter : Converter {
 		
 		fanMap		:= makeMap(fanMapType, fanKeyType)
 		mongoMap.each |mVal, mKey| {
-//			fKey := converters.toFantom(fanKeyType, mKey)
+			// Map keys are special and have to be converted <=> Str
 			fKey := typeCoercer.coerce(mKey, fanKeyType)
 			fVal := converters.toFantom(fanValType, mVal)
 			fanMap[fKey] = fVal
@@ -70,7 +70,10 @@ const class MapConverter : Converter {
 		
 		mongoMap	:= Str:Obj?[:] { ordered = true }
 		fanMap.each |fVal, fKey| {
-//			mKey := converters.toMongo(fKey)	// FIXME: to Str!! check we can convert back to Fantom!
+			// Map keys are special and have to be converted <=> Str
+			// As *anything* can be converter toStr(), let's check up front that we can convert it back to Fantom again!
+			if (!typeCoercer.canCoerce(Str#, fKey.typeof))
+				throw MorphiaErr(ErrMsgs.mapConverter_cannotCoerceKey(fKey.typeof))
 			mKey := typeCoercer.coerce(fKey, Str#)
 			mVal := converters.toMongo(fVal)
 			mongoMap[mKey] = mVal
@@ -79,6 +82,7 @@ const class MapConverter : Converter {
 	}
 	
 	private static Map makeMap(Type mapType, Type keyType) {
-		keyType.fits(Str#) ? Map.make(mapType) { caseInsensitive = true } : Map.make(mapType) { ordered = true }
+		// see http://fantom.org/sidewalk/topic/2256
+		keyType.fits(Str#) ? Map.make(mapType.toNonNullable) { caseInsensitive = true } : Map.make(mapType.toNonNullable) { ordered = true }
 	}
 }

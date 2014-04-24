@@ -39,7 +39,7 @@ internal class TestMapConverter : MorphiaTest {
 		verifyEq(fanMap["gold"], 42)
 	}
 	
-	Void testKeySameValConversion() {
+	Void testKeySameValConvert() {
 		mapConverter := (Converter) reg.createProxy(Converter#, MapConverter#, [true])
 
 		monMap	:= Str:Obj["gold":"ever"]
@@ -49,7 +49,7 @@ internal class TestMapConverter : MorphiaTest {
 		verifyEq(fanMap["gold"], T_Entity01_Enum.ever)
 	}
 	
-	Void testKeyValConversion() {
+	Void testKeyConvertValConvert() {
 		mapConverter := (Converter) reg.createProxy(Converter#, MapConverter#, [true])
 		
 		monMap	:= Str:Obj?["wot":"ever", "ever":"wot"]
@@ -58,5 +58,14 @@ internal class TestMapConverter : MorphiaTest {
 		verifyNotSame(fanMap, monMap)
 		verifyEq(fanMap[T_Entity01_Enum.wot], T_Entity01_Enum.ever)
 		verifyEq(fanMap[T_Entity01_Enum.ever], T_Entity01_Enum.wot)		
+	}
+
+	Void testKeyConvertErr() {
+		mapConverter := (Converter) reg.createProxy(Converter#, MapConverter#, [true])
+		
+		fanMap	:= [Err():"wotever"]
+		verifyErrMsg(MorphiaErr#, ErrMsgs.mapConverter_cannotCoerceKey(Err#)) {
+			mapConverter.toMongo(fanMap)
+		}
 	}
 }

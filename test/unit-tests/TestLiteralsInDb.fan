@@ -55,6 +55,7 @@ internal class TestLiteralsInDb : MorphiaTest {
 			type		= MorphiaTest#
 			slot		= MorphiaTest#setup
 			range		= (2..<4)
+			map			= [3:T_Entity01_Enum.ever]			
 		}
 		
 		ds := reg.autobuild(Datastore#,[db, T_Entity01#]) as Datastore
@@ -96,5 +97,6 @@ internal class TestLiteralsInDb : MorphiaTest {
 		verifyEq(entity.type,		MorphiaTest#)
 		verifyEq(entity.slot,		MorphiaTest#setup)
 		verifyEq(entity.range,		2..<4)
+		verifyEq(entity.map[3],		T_Entity01_Enum.ever)
 	}
 }
