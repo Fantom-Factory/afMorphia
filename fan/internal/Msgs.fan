@@ -14,7 +14,7 @@ internal const mixin Msgs {
 	}
 
 	static Str document_noConverter(Type fantomType, Obj mongoObj) {
-		"Could not find a Converter for type ${fantomType.qname} from '${mongoObj.typeof.qname} - ${mongoObj}'"
+		"Could not find a Converter to ${fantomType.qname} from '${mongoObj.typeof.qname} - ${mongoObj}'"
 	}
 
 }

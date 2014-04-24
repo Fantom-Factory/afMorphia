@@ -4,12 +4,15 @@ using afBson
 @NoDoc	// public so people can change the null strategy
 const class MapConverter : Converter {
 
-	@Inject private const Converters 	converters
-			private const Bool 			convertNullToEmptyMap
+	@Inject 
+	private const Converters 	converters
+	private const TypeCoercer	typeCoercer
+	private const Bool 			convertNullToEmptyMap
 	
 	new make(Bool convertNullToEmptyMap, |This|in) {
 		in(this)
 		this.convertNullToEmptyMap = convertNullToEmptyMap
+		this.typeCoercer	= TypeCoercer()
 	}	
 	
 	override Obj? toFantom(Type fanMapType, Obj? mongoObj) {
@@ -45,7 +48,8 @@ const class MapConverter : Converter {
 		
 		fanMap		:= makeMap(fanMapType, fanKeyType)
 		mongoMap.each |mVal, mKey| {
-			fKey := converters.toFantom(fanKeyType, mKey)
+//			fKey := converters.toFantom(fanKeyType, mKey)
+			fKey := typeCoercer.coerce(mKey, fanKeyType)
 			fVal := converters.toFantom(fanValType, mVal)
 			fanMap[fKey] = fVal
 		}
@@ -64,9 +68,10 @@ const class MapConverter : Converter {
 				return fantomObj
 		}
 		
-		mongoMap	:= Obj:Obj?[:]
+		mongoMap	:= Str:Obj?[:] { ordered = true }
 		fanMap.each |fVal, fKey| {
-			mKey := converters.toMongo(fKey)	// FIXME: to Str!! check we can convert back to Fantom!
+//			mKey := converters.toMongo(fKey)	// FIXME: to Str!! check we can convert back to Fantom!
+			mKey := typeCoercer.coerce(fKey, Str#)
 			mVal := converters.toMongo(fVal)
 			mongoMap[mKey] = mVal
 		}		
@@ -74,6 +79,6 @@ const class MapConverter : Converter {
 	}
 	
 	private static Map makeMap(Type mapType, Type keyType) {
-		keyType.fits(Str#) ? Map.make(mapType.toNonNullable) { caseInsensitive = true } : Map.make(mapType.toNonNullable) { ordered = true }
+		keyType.fits(Str#) ? Map.make(mapType) { caseInsensitive = true } : Map.make(mapType) { ordered = true }
 	}
 }
