@@ -1,16 +1,29 @@
 using afIoc
+using afIocConfig
+using afMongo
 
+** (Service) - 
+** The main entry point into 'Morphia'.
 const class Morphia {
 
-//	@Inject private const Converters converters
+	@Config
+	@Inject private const Uri				mongoUrl
+	@Inject private const Registry 			registry
+	@Inject private const ConnectionManager	conMgr
 	
-	internal new make(|This|in) { in(this) }
-	
-//	Obj fromMongoDoc(Type type, Str:Obj? mongoDoc) {
-//		converters.toFantom(type, mongoDoc)
-//	}
-//	
-//	Str:Obj? toMongoDoc(Obj entity) {
-//		converters.toMongo(entity)		
-//	}	
+	@NoDoc
+	new make(|This|in) { in(this) }
+
+	Void onStartup() {
+		// print that logo! Oh, and check the DB version!
+		mc := MongoClient(conMgr)
+	}
+
+	Datastore datastore(Type entityType) {
+		// TODO: type check entity
+		
+		db := Database(conMgr, mongoUrl.path.first)
+		ds := registry.autobuild(Datastore#, [db, entityType])
+		return ds
+	}
 }

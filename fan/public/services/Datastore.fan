@@ -16,9 +16,11 @@ class Datastore {
 		this.type		= type
 	}
 
+	// ---- Cursor Queries ------------------------------------------------------------------------
+	
 	Obj? findById(Obj id, Bool checked := true) {
 		// TODO: check ID is of correct type
-		findOne(["_id":id])
+		fromMongoDoc(collection.get(id, checked))
 	}
 	
 	Obj? findOne(Str:Obj? query, Bool checked := true) {
@@ -26,19 +28,16 @@ class Datastore {
 	}
 
 	** Returns the result of the given 'query' as a list of documents.
-	Obj[] findList(Str:Obj? query := [:], Int skip := 0, Int? limit := null) {
-		collection.findList(query, skip, limit).map { fromMongoDoc(it) }
+	Obj[] findAll(Str:Obj? query := [:], Obj? sort := null, Int skip := 0, Int? limit := null) {
+		collection.findAll(query, sort, skip, limit).map { fromMongoDoc(it) }
 	}
 
 	** Returns the number of documents that would be returned by the given 'query'.
 	Int findCount(Str:Obj? query) {
-		collection.find(query) { it.count }
+		collection.findCount(query)
 	}
 
-	** Returns the number of documents in the collection.
-	Int size() {
-		collection.size
-	}
+	// ---- Write Operations ----------------------------------------------------------------------
 
 	Obj upsert(Obj entity) {
 		// TODO: type check entity
@@ -53,7 +52,16 @@ class Datastore {
 	Obj delete(Obj entity) {
 		// TODO: type check entity
 		return entity		
+	}	
+	
+	// ---- Aggregation Commands ------------------------------------------------------------------
+
+	** Returns the number of documents in the collection.
+	Int size() {
+		collection.size
 	}
+
+	// ---- Conversion Methods --------------------------------------------------------------------
 	
 	Obj fromMongoDoc(Str:Obj? mongoDoc) {
 		converters.toFantom(type, mongoDoc)
