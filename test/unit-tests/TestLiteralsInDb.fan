@@ -1,3 +1,4 @@
+using concurrent
 using afIoc
 using afBson
 using afMongo
@@ -14,7 +15,7 @@ internal class TestLiteralsInDb : MorphiaTest {
 	
 	override Void setup() {
 		super.setup
-		mc = MongoClient()
+		mc = MongoClient(ActorPool())
 		db = mc["afMorphiaTest"].drop
 	}
 
