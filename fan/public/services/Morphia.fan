@@ -19,6 +19,11 @@ const class Morphia {
 		mc := MongoClient(conMgr)
 	}
 
+	@Operator
+	Datastore get(Type entityType) {
+		datastore(entityType)
+	}
+	
 	Datastore datastore(Type entityType) {
 		// TODO: type check entity
 		
