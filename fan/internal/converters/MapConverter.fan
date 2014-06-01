@@ -1,3 +1,4 @@
+using afBeanUtils::TypeCoercer
 using afIoc
 using afBson
 
@@ -12,7 +13,7 @@ const class MapConverter : Converter {
 	new make(Bool convertNullToEmptyMap, |This|in) {
 		in(this)
 		this.convertNullToEmptyMap = convertNullToEmptyMap
-		this.typeCoercer	= TypeCoercer()
+		this.typeCoercer	= CachingTypeCoercer()
 	}	
 	
 	override Obj? toFantom(Type fanMapType, Obj? mongoObj) {

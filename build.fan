@@ -23,6 +23,9 @@ class Build : BuildPod {
 			
 			"afBson 1.0.0+",
 			"afMongo 0.0.2+",
+			
+			"afConcurrent 1.0.4+",
+			"afBeanUtils 0+",
 			"afIoc 1.6.0+",
 			"afIocConfig 1.0.6+"
 		]
