@@ -4,7 +4,7 @@ facet class Document {
 	
 	** The name of the MongoDB collection to store the documents in.
 	** 
-	** Defaults to the class name.
+	** Defaults to the type name.
 	const Str? name
 }
 
@@ -15,4 +15,9 @@ facet class Property {
 	** 
 	** Defaults to the field name.
 	const Str? 	name
+}
+
+facet class Of {
+	
+	const Type type
 }

@@ -12,16 +12,27 @@ using concurrent
 const class MorphiaModule {
 
 	static Void bind(ServiceBinder binder) {
-		binder.bind(Morphia#)
 		binder.bind(Converters#).withoutProxy
 	}
 	
 	@Build
 	static ConnectionManager buildConnectionManager(IocConfigSource iocConfig, ActorPools actorPools) {
-		// TODO: check for mongodb scheme in url
-		mongoUrl  := (Uri) iocConfig.get(MorphiaConfigIds.mongoUrl, Uri#)
+		mongoUri  := (Uri) iocConfig.get(MorphiaConfigIds.mongoUrl, Uri#)
 		actorPool := actorPools.get("afMorphia.connectionManager")
-		return ConnectionManagerPooled(actorPool , IpAddr(mongoUrl.host), mongoUrl.port)
+		return ConnectionManagerPooled(actorPool , mongoUri)
+	}
+	
+	@Build
+	static Database buildDatabase(IocConfigSource iocConfig, ConnectionManager conMgr) {
+		mongoUri	:= (Uri) iocConfig.get(MorphiaConfigIds.mongoUrl, Uri#)
+		dbName		:= mongoUri.path.join("/")	// this gets rid of any leading slashes - not that there *should* be anything to join!
+		return Database(conMgr, dbName)
+	}
+	
+	// TODO: IoC-1.6.2
+	@Contribute { serviceType=DependencyProviderSource# }
+	static Void contributeDependencyProviders(OrderedConfig config) {
+		config.add(config.createProxy(DependencyProvider#, DatastoreDependencyProvider#))
 	}
 	
 	@Contribute { serviceType=ActorPools# }
@@ -70,9 +81,17 @@ const class MorphiaModule {
 	}
 	
 	@Contribute { serviceType=RegistryStartup# }
-	internal static Void contributeRegistryStartup(OrderedConfig config, Registry registry, Morphia morphia) {
-		config.add |->| { 
-			registry.callMethod(Morphia#onStartup, morphia)
+	internal static Void contributeRegistryStartup(OrderedConfig config, ConnectionManager conMgr) {
+		config.add |->| {
+			// print that logo! Oh, and check that DB version while you're at it!
+			mc := MongoClient(conMgr)
+		}
+	}
+
+	@Contribute { serviceType=RegistryShutdownHub# }
+	internal static Void contributeRegistryShutdown(OrderedConfig config, ConnectionManager conMgr) {
+		config.add |->| {
+			conMgr.shutdown
 		}
 	}
 }
