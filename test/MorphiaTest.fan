@@ -6,8 +6,7 @@ abstract internal class MorphiaTest : Test {
 	Registry? reg
 	
 	override Void setup() {
-		reg = RegistryBuilder().addModules([MorphiaModule#, IocConfigModule#]).build.startup
-//		reg = RegistryBuilder().addModulesFromDependencies(MorphiaModule#.pod).build.startup
+		reg = RegistryBuilder().addModules([MorphiaModule#, IocConfigModule#, T_MorphiaTestModule#]).build.startup
 		reg.injectIntoFields(this)
 	}
 	
@@ -29,5 +28,12 @@ abstract internal class MorphiaTest : Test {
 			return
 		}
 		throw Err("$errType not thrown")
+	}
+}
+
+const class T_MorphiaTestModule {
+	@Contribute { serviceType=ApplicationDefaults# }
+	static Void contributeAppDefaults(MappedConfig config) {
+		config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/afMorphiaTest`
 	}
 }

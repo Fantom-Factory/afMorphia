@@ -1,14 +1,16 @@
 
+
+For 0.0.2
+=========
+datastore injection 
+main datastore methods
+
 For 1.0.0
 =========
 // @Property w name, use type coersion & auto DBRef for entities, 
 // map Buf to 
 
 // A mixin with save / delete methods -> Datastore auto @Injected  
-
-// TODO: Indexed
-
-// TODO: Indexes & Index
 
 // TODO: Version -> auto optimistic locking
 

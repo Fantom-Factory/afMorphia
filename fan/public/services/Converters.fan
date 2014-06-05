@@ -17,14 +17,14 @@ const mixin Converters {
 }
 
 internal const class ConvertersImpl : Converters {
-	private const StrategyRegistry 	converterStrategy
+	private const CachingTypeLookup	typeLookup
 	
 	@Inject @Config { id="afMorphia.documentConverter" }
 	private const Converter documentConverter
 	
 	new make(Type:Converter converters, |This|in) {
 		in(this)
-		this.converterStrategy = StrategyRegistry(converters)
+		this.typeLookup = CachingTypeLookup(converters)
 	}
 
 	override Obj? toFantom(Type fantomType, Obj? mongoObj) {
@@ -37,6 +37,6 @@ internal const class ConvertersImpl : Converters {
 	
 	private Converter get(Type type) {
 		// if a converter can't be found then embed a document
-		converterStrategy.findClosestParent(type, false) ?: documentConverter
+		typeLookup.findParent(type, false) ?: documentConverter
 	}	
 }

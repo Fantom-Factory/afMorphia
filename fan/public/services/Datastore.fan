@@ -1,7 +1,6 @@
 using afIoc
 using afMongo
 
-// rename to Entities?
 class Datastore {
 	
 	@Inject private const Converters converters
@@ -9,7 +8,7 @@ class Datastore {
 	private const Type	type
 	private Collection 	collection
 	
-	internal new make(Database database, Type type, |This|in) {
+	internal new make(Type type, Database database, |This|in) {
 		in(this)
 		// TODO: check for Document facet, use the optional name
 		this.collection	= Collection(database, type.name)

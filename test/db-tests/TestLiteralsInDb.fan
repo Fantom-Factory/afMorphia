@@ -3,26 +3,10 @@ using afIoc
 using afBson
 using afMongo
 
-internal class TestLiteralsInDb : MorphiaTest {
+internal class TestLiteralsInDb : MorphiaDbTest {
 	
 	private ObjectId objId 	:= ObjectId()
 	private DateTime now	:= DateTime.now
-
-	@Inject Converters? serialiser
-	
-	MongoClient? mc
-	Database?	 db
-	
-	override Void setup() {
-		super.setup
-		mc = MongoClient(ActorPool())
-		db = mc["afMorphiaTest"].drop
-	}
-
-	override Void teardown() {
-		mc?.shutdown
-		super.teardown
-	}
 	
 	Void testStoringLiterals() {
 		entity := T_Entity01() {
@@ -59,10 +43,8 @@ internal class TestLiteralsInDb : MorphiaTest {
 			map			= [3:T_Entity01_Enum.ever]			
 		}
 		
-		ds := reg.autobuild(Datastore#,[db, T_Entity01#]) as Datastore
 		ds.upsert(entity)
 		entity = ds.findOne([:])
-		
 		
 		// Mongo types
 		verifyEq(entity.float, 		69f)

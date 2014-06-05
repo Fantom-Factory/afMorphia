@@ -6,7 +6,4 @@ const mixin MorphiaConfigIds {
 
 	static const Str mongoUrl			:= "afMorphia.mongoUrl"
 
-	// TODO: writeConcern
-	static const Str writeConcern		:= "afMorphia.writeConcern"
-
 }
