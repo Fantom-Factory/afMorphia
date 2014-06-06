@@ -24,6 +24,12 @@ Example here
 
 ## Usage
 
+Contribute Mongo connection URI
+
+Inject Datastore
+
+## Standard Converters
+
 Anything should be possible with afMongo, but here in Morphia land we enforce good strategies and best practices.
 
 All entities should have an ID
@@ -60,4 +66,6 @@ afBson::Timestamp
    sys::Type
    sys::Uri
 ```
+
+## Custom Converters
 
