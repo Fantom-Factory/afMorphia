@@ -5,6 +5,9 @@ using afMongo
 
 internal class TestLiteralsInDb : MorphiaDbTest {
 	
+	@TypeOf { type=T_Entity01# } 
+	@Inject Datastore?	ds
+
 	private ObjectId objId 	:= ObjectId()
 	private DateTime now	:= DateTime.now
 	
@@ -43,7 +46,7 @@ internal class TestLiteralsInDb : MorphiaDbTest {
 			map			= [3:T_Entity01_Enum.ever]			
 		}
 		
-		ds.upsert(entity)
+		ds.insert(entity)
 		entity = ds.findOne([:])
 		
 		// Mongo types

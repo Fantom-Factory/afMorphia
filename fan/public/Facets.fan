@@ -17,7 +17,7 @@ facet class Property {
 	const Str? 	name
 }
 
-facet class Of {
+facet class TypeOf {
 	
 	const Type type
 }

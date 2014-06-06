@@ -31,7 +31,7 @@ abstract internal class MorphiaTest : Test {
 	}
 }
 
-const class T_MorphiaTestModule {
+internal const class T_MorphiaTestModule {
 	@Contribute { serviceType=ApplicationDefaults# }
 	static Void contributeAppDefaults(MappedConfig config) {
 		config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/afMorphiaTest`

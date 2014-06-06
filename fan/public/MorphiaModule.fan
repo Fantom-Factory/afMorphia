@@ -29,8 +29,7 @@ const class MorphiaModule {
 		return Database(conMgr, dbName)
 	}
 	
-	// TODO: IoC-1.6.2
-	@Contribute { serviceType=DependencyProviderSource# }
+	@Contribute { serviceType=DependencyProviders# }
 	static Void contributeDependencyProviders(OrderedConfig config) {
 		config.add(config.createProxy(DependencyProvider#, DatastoreDependencyProvider#))
 	}
@@ -88,7 +87,7 @@ const class MorphiaModule {
 		}
 	}
 
-	@Contribute { serviceType=RegistryShutdownHub# }
+	@Contribute { serviceType=RegistryShutdown# }
 	internal static Void contributeRegistryShutdown(OrderedConfig config, ConnectionManager conMgr) {
 		config.add |->| {
 			conMgr.shutdown
