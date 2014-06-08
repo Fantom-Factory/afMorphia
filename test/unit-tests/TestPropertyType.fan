@@ -4,33 +4,28 @@ internal class TestPropertyType : MorphiaTest {
 	
 	@Inject Converters? serialiser
 	
-	Void testDeserializeMongoLiterals() {
-		mongoDoc := [
-			"judge"		: "dude"
-		]
+	Void testDeserialize() {
+		mongoDoc := ["_id":-1, "inty" : 42]
 		
-		entity := (T_Entity08) serialiser.toFantom(T_Entity08#, mongoDoc)
+		entity := (T_Entity16) serialiser.toFantom(T_Entity16#, mongoDoc)
 		
-		verifyEq(entity.wotever, 	"dude")
+		verifyEq(entity.inty, 42)
+		verifyEq(entity.inty.typeof, Int#)
 	}
 	
-	Void testSerializeMongoLiterals() {
-		entity := T_Entity08() {
-			wotever		= "dude"
-		}
+	Void testSerialize() {
+		entity := T_Entity16() { inty = 42 }
 		
 		mongoDoc := serialiser.toMongo(entity) as Map
 		
-		verifyEq(mongoDoc["judge"],		"dude")
+		verifyEq(mongoDoc["inty"],	42)
+		verifyEq(mongoDoc["inty"].typeof, Int#)
 	}
 }
 
-internal class T_Entity15 {
-	@Property { type=Int# }	Str	wotever
-	new make(|This|in) { in(this) }
-}
-
+@Entity
 internal class T_Entity16 {
-	@Property { type=Int# }	Num	wotever
+	@Property Int _id
+	@Property { type=Int# }	Num	inty
 	new make(|This|in) { in(this) }
 }

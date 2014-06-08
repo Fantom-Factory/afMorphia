@@ -27,8 +27,8 @@ const class Datastore {
 				?: throw ArgErr(ErrMsgs.datastore_entityFacetNotFound(type))
 
 		in(this)
-		
-		this.type		= type
+
+		this.type		= verifyEntityType(type)
 		this.collection	= Collection(database, entity.name ?: type.name)
 		this.qname		= collection.qname
 		this.name		= collection.name
@@ -163,7 +163,22 @@ const class Datastore {
 
 	// ---- Helper Methods ------------------------------------------------------------------------
 	
-	private Str[] propertyNames(Type type) {
+	internal static Type verifyEntityType(Type type) {
+		names := Str:Field[:]
+		type.fields.findAll { it.hasFacet(Property#) }.each |field| {
+			property := (Property) Slot#.method("facet").callOn(field, [Property#])
+			pName := property.name ?: field.name
+			pType := property.type ?: field.type
+			if (!ReflectUtils.fits(pType, field.type))
+				throw MorphiaErr(ErrMsgs.datastore_facetTypeDoesNotFitField(pType, field))
+			if (names.containsKey(pName))
+				throw MorphiaErr(ErrMsgs.datastore_duplicatePropertyName(pName, names[pName], field))
+			names[pName] = field 
+		}
+		return type
+	}
+	
+	private static Str[] propertyNames(Type type) {
 		type.fields.findAll { it.hasFacet(Property#) }.map |field->Str| {
 			property := (Property) Slot#.method("facet").callOn(field, [Property#])
 			return property.name ?: field.name			

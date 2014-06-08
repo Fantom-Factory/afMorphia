@@ -1,8 +1,8 @@
-## Overview
+## Overview 
 
 A Fantom to MongoDB mapping library.
 
-## Install
+## Install 
 
 Install `Morphia` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc/docFanr/Tool.html#install) ):
 
@@ -12,23 +12,23 @@ To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan
 
     depends = ["sys 1.0", ..., "afMorphia 0.0+"]
 
-## Documentation
+## Documentation 
 
 Full API & fandocs are available on the [Status302 repository](http://repo.status302.com/doc/afMorphia/).
 
-## Quick Start
+## Quick Start 
 
 ```
 Example here
 ```
 
-## Usage
+## Usage 
 
 Contribute Mongo connection URI
 
 Inject Datastore
 
-## Standard Converters
+## Standard Converters 
 
 Anything should be possible with afMongo, but here in Morphia land we enforce good strategies and best practices.
 
@@ -67,5 +67,5 @@ afBson::Timestamp
    sys::Uri
 ```
 
-## Custom Converters
+## Custom Converters 
 

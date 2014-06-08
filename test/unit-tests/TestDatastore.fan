@@ -48,6 +48,19 @@ internal class TestDatastore : MorphiaTest {
 			ds.update("2")
 		}
 	}
+	
+	Void testPropertyMustFit() {
+		verifyErrMsg(MorphiaErr#, ErrMsgs.datastore_facetTypeDoesNotFitField(Int#, T_Entity15#inty)) {
+			Datastore.verifyEntityType(T_Entity15#)
+		}
+	}
+
+	Void testDuplicatePropertyNames() {
+		verifyErrMsg(MorphiaErr#, ErrMsgs.datastore_duplicatePropertyName("_id", T_Entity17#_id, T_Entity17#anotherId)) {
+			Datastore.verifyEntityType(T_Entity17#)
+		}
+	}
+
 }
 
 internal class T_Entity09 { }
@@ -63,3 +76,16 @@ internal class T_Entity12 { @Property Int id }
 
 @Entity 
 internal class T_Entity13 { @Property { name="_id" } Int id }
+
+@Entity
+internal class T_Entity15 {
+	@Property Int _id
+	@Property { type=Int# }	Str	inty
+	new make(|This|in) { in(this) }
+}
+
+@Entity
+internal class T_Entity17 {
+	@Property Int? _id
+	@Property { name="_id" } Int? anotherId
+}
