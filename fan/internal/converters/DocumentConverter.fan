@@ -30,8 +30,8 @@ const class DocumentConverter : Converter {
 				return
 			
 			propName := property.name ?: field.name
+			implType := property.type ?: field.type
 			propVal  := mongoDoc.get(propName, null)
-			implType := field.type	// TODO: @Property property.type ?: field.type
 			
 			fieldVal := converters.toFantom(implType, propVal)
 			

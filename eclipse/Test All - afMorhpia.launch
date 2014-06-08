@@ -18,5 +18,5 @@
 <stringAttribute key="org.eclipse.dltk.testing.engineId" value="com.xored.fanide.testing.fantest.testingEngine"/>
 <stringAttribute key="process_factory_id" value="org.eclipse.dltk.launching.scriptProcessFactory"/>
 <stringAttribute key="project" value="Morphia"/>
-<stringAttribute key="workingDir" value="${workspace_loc:Dekxa Domain}"/>
+<stringAttribute key="workingDir" value="${workspace_loc:Morphia}"/>
 </launchConfiguration>

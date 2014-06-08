@@ -9,6 +9,8 @@ internal class TestLiteralConversion : MorphiaTest {
 	
 	Void testLiteralsToFantom() {
 		mongoDoc := [
+			"_id"			: -1,
+			
 			// Mongo literals
 			"float"			: 69f,
 			"str"			: "string",
@@ -146,6 +148,8 @@ internal class TestLiteralConversion : MorphiaTest {
 
 @Entity
 internal class T_Entity01 {
+	@Property	Int			_id
+	
 	// Mongo Literals
 	@Property	Float		float
 	@Property	Str			str

@@ -41,6 +41,14 @@ internal const mixin ErrMsgs {
 		stripSys("Given Entity of type ${entityType.qname} does not fit Datastore type ${dsType.qname}")
 	}
 
+	static Str datastore_facetTypeDoesNotFitField(Type facetType, Field field) {
+		stripSys("Property Facet type '${facetType.signature}' does not fit field type '${field.qname} ${field.signature}'")
+	}
+
+	static Str datastore_duplicatePropertyName(Str name, Field field1, Field field2) {
+		stripSys("Property name '${name}' is defined twice at '$field1.qname' and '${field2.qname}'")
+	}
+
 	static Str stripSys(Str str) {
 		str.replace("sys::", "")
 	}
