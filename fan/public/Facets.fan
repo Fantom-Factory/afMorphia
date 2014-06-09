@@ -1,6 +1,6 @@
 
 ** Marks a class to be mapped as a top level document in a MongoDB collection.
-facet class Document {
+facet class Entity {
 	
 	** The name of the MongoDB collection to store the documents in.
 	** 
@@ -15,6 +15,11 @@ facet class Property {
 	** 
 	** Defaults to the field name.
 	const Str? 	name
+
+	** The actual type to be instantiated.
+	** 
+	** Defaults to the field type.
+	const Type? type
 }
 
 facet class TypeOf {

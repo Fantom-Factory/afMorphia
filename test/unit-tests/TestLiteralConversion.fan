@@ -144,6 +144,7 @@ internal class TestLiteralConversion : MorphiaTest {
 	}
 }
 
+@Entity
 internal class T_Entity01 {
 	// Mongo Literals
 	@Property	Float		float

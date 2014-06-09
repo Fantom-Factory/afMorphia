@@ -3,24 +3,18 @@
 For 0.0.2
 =========
 datastore injection 
-main datastore methods
-
 real datastore smoke tests
-@Id facet / look for _id field
+fandoc
 
 
 For 1.0.0
 =========
-// @Property w name, use type coersion & auto DBRef for entities, 
-// map Buf to 
 
-// A mixin with save / delete methods -> Datastore auto @Injected  
+use afBeanUtils::BeanFactory to create embedded entity objs with const fields
 
-// TODO: Version -> auto optimistic locking
+_version -> auto optimistic locking
 
-// TODO: NotSaved & AlsoLoad -> data migration
-
-// TODO: PrePersist & PostPersist, PreLoad & PostLoad (better names?), configure via a Facet Interceptor -> tie in with Entity mixin?
+PrePersist & PostPersist, PreLoad & PostLoad (better names?), configure via a Facet Interceptor -> tie in with Entity mixin?
 
 
 
