@@ -2,6 +2,9 @@ using afIoc
 using afBson
 using afMongo
 
+** The main converter for MongoDB documents. 
+** 
+** @see [Storing null vs not storing the key at all in MongoDB]`http://stackoverflow.com/questions/12403240/storing-null-vs-not-storing-the-key-at-all-in-mongodb` 
 @NoDoc	// public so people can change the null strategy
 const class DocumentConverter : Converter {
 
@@ -9,11 +12,15 @@ const class DocumentConverter : Converter {
 	@Inject private const Converters	converters
 			private const Bool			storeNullFields
 	
+	** Creates a new 'DocumentConverter' with the given 'null' strategy.
+	** 
+	** If 'storeNullFields' is 'false' then properties with 'null' values are not stored in the database.
 	new make(Bool storeNullFields, |This|in) {
 		this.storeNullFields = storeNullFields
 		in(this) 
 	}
 	
+	@NoDoc
 	override Obj? toFantom(Type fantomType, Obj? mongoObj) {
 		if (mongoObj == null) return null
 
@@ -54,6 +61,7 @@ const class DocumentConverter : Converter {
 		return registry.autobuild(fantomType, Obj#.emptyList, fieldVals)
 	}
 	
+	@NoDoc
 	override Obj? toMongo(Obj fantomObj) {
 		mongoDoc := Str:Obj?[:]
 		
@@ -79,7 +87,7 @@ const class DocumentConverter : Converter {
 	}
 
 	
-	private static const Type[] literals	:= [Bool#, Buf#, Date#, DateTime#, Float#, Int#, ObjectId#, Regex#, Str#]
+	private static const Type[] literals	:= [Bool#, Buf#, Date#, DateTime#, Decimal#, Duration#, Enum#, Float#, Int#, ObjectId#, Regex#, Range#, Slot#, Str#, Type#]
 
 	private Str:Str logDoc(Str:Obj? document) {
 		document.map |val->Str| {

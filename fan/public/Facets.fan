@@ -1,5 +1,5 @@
 
-** Marks a class to be mapped as a top level document in a MongoDB collection.
+** Marks a type to be mapped as a top level document in a MongoDB collection.
 facet class Entity {
 	
 	** The name of the MongoDB collection to store the documents in.
@@ -22,7 +22,10 @@ facet class Property {
 	const Type? type
 }
 
-facet class TypeOf {
+** Use in conjunction with '@Inject' to specify which 'Datastore' to inject.
+facet class DatastoreType {
 	
+	** The entity type
 	const Type type
+	
 }

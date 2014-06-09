@@ -20,15 +20,17 @@ const class Morphia {
 		this.database = database
 	}
 
-	** Convenience / shorthand notation for 'datastore(entityType)'
+	** Convenience / shorthand notation for 'datastore(entityType, database)'
 	@Operator
-	Datastore get(Type entityType) {
-		datastore(entityType)
+	Datastore get(Type entityType, Database? database := null) {
+		datastore(entityType, database)
 	}
 	
 	** Returns a 'Datastore' instance for the given entity type.
-	Datastore datastore(Type entityType) {
-		registry.autobuild(Datastore#, [entityType, database])
+	** 
+	** If 'database' is null, the default database from the Mongo connection url is used.
+	Datastore datastore(Type entityType, Database? database := null) {
+		registry.autobuild(Datastore#, [entityType, database ?: this.database])
 	}
 	
 	** Converts the given Mongo document to a Fantom entity instance.
