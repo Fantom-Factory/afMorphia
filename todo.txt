@@ -1,9 +1,7 @@
 
-
 For 0.0.2
 =========
 datastore injection 
-real datastore smoke tests
 fandoc
 
 
