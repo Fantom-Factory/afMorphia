@@ -12,6 +12,7 @@ using concurrent
 const class MorphiaModule {
 
 	static Void bind(ServiceBinder binder) {
+		binder.bind(Morphia#).withoutProxy
 		binder.bind(Converters#).withoutProxy
 	}
 	
@@ -81,7 +82,7 @@ const class MorphiaModule {
 	
 	@Contribute { serviceType=RegistryStartup# }
 	internal static Void contributeRegistryStartup(OrderedConfig config, ConnectionManager conMgr) {
-		config.add |->| {
+		config.addOrdered("MorphiaStartup") |->| {
 			// print that logo! Oh, and check that DB version while you're at it!
 			mc := MongoClient(conMgr)
 		}
@@ -89,7 +90,7 @@ const class MorphiaModule {
 
 	@Contribute { serviceType=RegistryShutdown# }
 	internal static Void contributeRegistryShutdown(OrderedConfig config, ConnectionManager conMgr) {
-		config.add |->| {
+		config.addOrdered("MorphiaShutdown") |->| {
 			conMgr.shutdown
 		}
 	}

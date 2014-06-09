@@ -1,6 +1,5 @@
 
-@NoDoc	// so far, so boring!
-const mixin MorphiaConfigIds {
+const class MorphiaConfigIds {
 	
 	static const Str documentConverter	:= "afMorphia.documentConverter"
 

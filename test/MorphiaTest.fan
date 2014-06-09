@@ -36,4 +36,9 @@ internal const class T_MorphiaTestModule {
 	static Void contributeAppDefaults(MappedConfig config) {
 		config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/afMorphiaTest`
 	}
+	
+	@Contribute { serviceType=RegistryStartup# }
+	internal static Void contributeRegistryStartup(OrderedConfig config) {
+		config.remove("MorphiaStartup")
+	}
 }

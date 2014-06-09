@@ -21,8 +21,24 @@ internal const mixin ErrMsgs {
 		stripSys("Unsupported Map key type '${keyType.qname}', cannot coerce from Str#. See 'afIoc::TypeCoercer' for details.")
 	}
 
-	static Str datastore_IdNotFound(Type entityType, Obj id) {
+	static Str datastore_entityFacetNotFound(Type entityType) {
+		stripSys("Entity type ${entityType.qname} does NOT have the @${Entity#.name} facet.")
+	}
+
+	static Str datastore_entityNotFound(Type entityType, Obj id) {
 		stripSys("Could not find entity ${entityType.qname} with Id: ${id}")
+	}
+
+	static Str datastore_idFieldNotFound(Type entityType) {
+		stripSys("Could not find property named '_id' on ${entityType.qname}.")
+	}
+
+	static Str datastore_idDoesNotFit(Obj id, Field idField) {
+		stripSys("Given ID does not fit ${idField.qname} ${idField.type.signature}# - ${id.typeof.signature} ${id}")
+	}
+
+	static Str datastore_entityWrongType(Type entityType, Type dsType) {
+		stripSys("Given Entity of type ${entityType.qname} does not fit Datastore type ${dsType.qname}")
 	}
 
 	static Str stripSys(Str str) {
