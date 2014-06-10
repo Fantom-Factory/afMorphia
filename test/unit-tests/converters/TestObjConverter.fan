@@ -3,14 +3,14 @@ using afIoc
 internal class TestDocumentConverter : MorphiaTest {
 	
 	Void testNullStrategy_nullProperty() {
-		docConverter := (Converter) reg.createProxy(Converter#, DocumentConverter#, [true])
+		docConverter := (Converter) reg.createProxy(Converter#, ObjConverter#, [true])
 		mongoObj := (Str:Obj?) docConverter.toMongo(T_Entity05())
 		verify(mongoObj.containsKey("empty"))
 		verifyNull(mongoObj.getOrThrow("empty"))
 	}
 
 	Void testNullStrategy_noProperty() {
-		docConverter := (Converter) reg.createProxy(Converter#, DocumentConverter#, [false])
+		docConverter := (Converter) reg.createProxy(Converter#, ObjConverter#, [false])
 		mongoObj := (Str:Obj?) docConverter.toMongo(T_Entity05())
 		verifyFalse(mongoObj.containsKey("empty"))
 	}

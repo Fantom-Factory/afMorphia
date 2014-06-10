@@ -6,7 +6,7 @@ using afMongo
 ** 
 ** @see [Storing null vs not storing the key at all in MongoDB]`http://stackoverflow.com/questions/12403240/storing-null-vs-not-storing-the-key-at-all-in-mongodb` 
 @NoDoc	// public so people can change the null strategy
-const class DocumentConverter : Converter {
+const class ObjConverter : Converter {
 
 	@Inject private const Registry		registry
 	@Inject private const Converters	converters
@@ -63,7 +63,7 @@ const class DocumentConverter : Converter {
 	
 	@NoDoc
 	override Obj? toMongo(Obj fantomObj) {
-		mongoDoc := Str:Obj?[:]
+		mongoDoc := emptyDoc
 		
 		fantomObj.typeof.fields.each |field| {
 			property := (Property?) Field#.method("facet").callOn(field, [Property#, false])
@@ -73,6 +73,7 @@ const class DocumentConverter : Converter {
 			fieldVal := field.get(fantomObj)
 			propName := property.name ?: field.name			
 			
+			// TODO: recursively convert...? 
 			propVal	 := converters.toMongo(fieldVal)			
 			
 			if (propVal == null && !storeNullFields)
@@ -86,6 +87,10 @@ const class DocumentConverter : Converter {
 		return mongoDoc
 	}
 
+	** Creates an empty *ordered* Mongo document. Override if you want different defaults.
+	protected virtual Str:Obj? emptyDoc() {
+		Str:Obj?[:] { ordered = true }
+	}
 	
 	private static const Type[] literals	:= [Bool#, Buf#, Date#, DateTime#, Decimal#, Duration#, Enum#, Float#, Int#, ObjectId#, Regex#, Range#, Slot#, Str#, Type#]
 

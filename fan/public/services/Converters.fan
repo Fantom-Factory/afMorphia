@@ -9,9 +9,6 @@ using afBson::ObjectId
 const class Converters {
 	private const CachingTypeLookup	typeLookup
 	
-	@Inject @Config { id="afMorphia.documentConverter" }
-	private const Converter documentConverter
-	
 	new make(Type:Converter converters, |This|in) {
 		in(this)
 		this.typeLookup = CachingTypeLookup(converters)
@@ -28,7 +25,7 @@ const class Converters {
 	}
 	
 	private Converter get(Type type) {
-		// if a converter can't be found then embed a document
-		typeLookup.findParent(type, false) ?: documentConverter
+		// if a specific converter can't be found then embed a document
+		typeLookup.findParent(type)
 	}	
 }

@@ -1,8 +1,16 @@
-## Overview 
+## Overview
 
-A Fantom to MongoDB mapping library.
+`Morphia` is a Fantom to MongoDB object mapping library.
 
-## Install 
+`Morphia` is an extension to the [Mongo](http://repo.status302.com/doc/pod/afMongo.html) library that maps Fantom objects and their fields to and from Mongo collections and documents.
+
+`Morphia` features:
+
+- All Fantom literals and [BSON](http://repo.status302.com/doc/pod/afBson.html) types supported by default
+- Maps embedded Fantom objects (Fantom objects nested inside other Fantom objects)
+- Extensible - add your own custom mapping [Converters](http://repo.status302.com/doc/afMorphia/Converters.html)
+
+## Install
 
 Install `Morphia` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc/docFanr/Tool.html#install) ):
 
@@ -12,33 +20,167 @@ To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan
 
     depends = ["sys 1.0", ..., "afMorphia 0.0+"]
 
-## Documentation 
+## Documentation
 
 Full API & fandocs are available on the [Status302 repository](http://repo.status302.com/doc/afMorphia/).
 
-## Quick Start 
+## Quick Start
+
+1). Start up an instance of MongoDB:
 
 ```
-Example here
+C:\> mongod
+
+MongoDB starting
+db version v2.6.0
+waiting for connections on port 27017
 ```
 
-## Usage 
+2). Create a text file called `Example.fan`:
 
-Contribute Mongo connection URI
+```
+using afMorphia
+using afBson
+using afIoc
+using afIocConfig
 
-Inject Datastore
+@Entity
+class User {
+    @Property ObjectId _id
+    @Property Str      name
+    @Property Int      age
 
-## Standard Converters 
+    new make(|This|in) { in(this) }
+}
 
-Anything should be possible with afMongo, but here in Morphia land we enforce good strategies and best practices.
+class Example {
+    @DatastoreType { type=User# }
+    @Inject Datastore? datastore
 
-All entities should have an ID
+    Void main() {
+        reg := RegistryBuilder().addModulesFromPod(Pod.find("afMorphia")).addModule(ExampleModule#).build.startup
+        reg.injectIntoFields(this)
 
-Null Strategies
+        micky := User {
+            it._id  = ObjectId()
+            it.name = "Micky Mouse"
+            it.age  = 42
+        }
 
-- Document Converter (to Mongo)
-- List Converter (to Fantom) - 0 capacity
-- Map Converter (to Fantom)
+        // ---- Create ------
+        datastore.insert(micky)
+
+        // ---- Read --------
+        mouse := (User) datastore.findOne(["age": 42])
+        echo(mouse.name)  // --> Micky Mouse
+
+        // ---- Update -----
+        mouse.name = "Minny"
+        datastore.update(mouse)
+
+        // ---- Delete ------
+        datastore.delete(micky)
+
+        reg.shutdown
+    }
+}
+
+class ExampleModule {
+    @Contribute { serviceType=ApplicationDefaults# }
+    static Void contributeAppDefaults(MappedConfig config) {
+        config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
+    }
+}
+```
+
+3). Run `Example.fan` as a Fantom script from the command line:
+
+```
+[afIoc] Adding module definitions from pod 'afMorphia'
+[afIoc] Adding module definition for afMorphia::MorphiaModule
+[afIoc] Adding module definition for afIocConfig::IocConfigModule
+[afIoc] Adding module definition for afMorphia::ExampleModule
+[afMongo]
+
+     Alien-Factory
+ _____ ___ ___ ___ ___
+|     | . |   | . | . |
+|_|_|_|___|_|_|_  |___|
+              |___|0.0.2
+
+Connected to MongoDB v2.6.1 (at mongodb://localhost:27017)
+
+[afIoc]
+   ___    __                 _____        _
+  / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
+ / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
+/_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
+                            Alien-Factory IoC v1.6.2 /___/
+
+IoC Registry built in 1,310ms and started up in 247ms
+
+Micky Mouse
+[afIoc] IoC shutdown in 12ms
+[afIoc] "Goodbye!" from afIoc!
+```
+
+## Usage
+
+### Mongo Connection URL
+
+A [Mongo Connection URL](http://docs.mongodb.org/manual/reference/connection-string/) should be contributed as an application default. This supplies the default database to connect to, along with any default user credentials. Example, in your `AppModule`:
+
+```
+@Contribute { serviceType=ApplicationDefaults# }
+static Void contributeAppDefaults(MappedConfig config) {
+    config[MorphiaConfigIds.mongoUrl] = `mongodb://username:password@localhost:27017/exampledb`
+}
+```
+
+### Entities
+
+An entity is a top level domain object that is persisted in a Mongo collection.
+
+Entity objects must be annotated with the [@Entity](http://repo.status302.com/doc/afMorphia/Entity.html) facet. By default, the MongoFB collection name is the same as the entity Type (unqualified) name. Example, if your entity type is `acmeExample::User` then it maps to a collection named `User`.
+
+Entity fields are mapped to properties in a MongoDB document. Use the `@Property` facet to annotate an Entity field as one to be mapped to / from a Mongo property. Again, the default is to take the property name and type from the field, but it may be overridden by facet values.
+
+As all MongoDB documents define a unique property named `_id`, all entities must also define a unique property named `_id`. Example:
+
+    @Entity
+    class MyEntity {
+        @Property
+        ObjectId _id
+        ...
+    }
+
+or
+
+    @Entity
+    class MyEntity {
+        @Property { name="_id" }
+        ObjectId wotever
+        ...
+    }
+
+Note that a Mongo Id *does not* need to be an `ObjectId`. Any object may be used, it just needs to be unique.
+
+### Datastore
+
+A [Datastore](http://repo.status302.com/doc/afMorphia/Datastore.html) wraps a [Mongo Collection](http://repo.status302.com/doc/afMongo/Collection.html) and is your gateway to reading and saving Fantom objects to Mongo.
+
+Each `Datastore` instance is specific to an Entity type, so to Inject a `Datastore` you need to say which Entity it is associated with. Use the `@DatastoreType` facet to do this. Example:
+
+    @DatastoreType { type=User# }
+    @Inject Datastore datastore
+
+## Mapping
+
+At the core of `Morphia` is a suite of [Converters](http://repo.status302.com/doc/afMorphia/Converter.html) that map Fantom objects to Mongo documents.
+
+### Standard Converters
+
+By default, `Morphia` provides converters for the following Fantom types:
 
 ```
 afBson::Binary
@@ -67,5 +209,48 @@ afBson::Timestamp
    sys::Uri
 ```
 
-## Custom Converters 
+### Embedded Objects
+
+Morphia is also able to convert embedded, or nested, Fantom objects. Extending the example in [Quick Start](http://repo.status302.com/doc/afMorphia/#quickStart.html), here we substitute the `Str` name for an embedded object:
+
+```
+class Name {
+    @Property Str  firstName
+    @Property Str  lastName
+    new make(|This|in) { in(this) }
+}
+
+@Entity
+class User {
+    @Property ObjectId _id
+    @Property Name     name
+    @Property Int      age
+    new make(|This|in) { in(this) }
+}
+
+...
+
+micky := User {
+    _id  = ObjectId()
+    age  = 42
+    name = name {
+      firstName = "Micky"
+      lastName  = "Mouse"
+    }
+}
+
+mongoDoc := datastore.toMongoDoc(micky)
+echo(mongoDoc) //TODO
+
+```
+
+Note that embedded Fantom types should *not* be annotated with `@Entity`.
+
+## Custom Converters
+
+### Null Strategies
+
+- Document Converter (to Mongo)
+- List Converter (to Fantom) - 0 capacity
+- Map Converter (to Fantom)
 
