@@ -60,9 +60,10 @@ const class MorphiaModule {
 		config[Timestamp#]	= mongoLiteral
 		
 		// Containers
-		config[List#]		= config.createProxy(Converter#, ListConverter#, [true])
+		config[Obj#]		= config.createProxy(Converter#, ObjConverter#, [true])
 		config[Map#]		= config.createProxy(Converter#, MapConverter#, [true])
-
+		config[List#]		= config.createProxy(Converter#, ListConverter#, [true])
+		
 		// Fantom Literals
 		config[Date#]		= DateConverter()
 		config[Decimal#]	= DecimalConverter()
@@ -76,8 +77,7 @@ const class MorphiaModule {
 	
 	@Contribute { serviceType=FactoryDefaults# }
 	static Void contributeFactoryDefaults(MappedConfig config) {
-		config[MorphiaConfigIds.documentConverter]	= config.createProxy(Converter#, DocumentConverter#, [false])
-		config[MorphiaConfigIds.mongoUrl]			= `mongodb://localhost:27017`
+		config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017`
 	}
 	
 	@Contribute { serviceType=RegistryStartup# }

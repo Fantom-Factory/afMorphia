@@ -69,7 +69,7 @@ const class MapConverter : Converter {
 				return fantomObj
 		}
 		
-		mongoMap	:= Str:Obj?[:] { ordered = true }
+		mongoMap	:= emptyDoc
 		fanMap.each |fVal, fKey| {
 			// Map keys are special and have to be converted <=> Str
 			// As *anything* can be converter toStr(), let's check up front that we can convert it back to Fantom again!
@@ -82,6 +82,11 @@ const class MapConverter : Converter {
 		return mongoMap
 	}
 	
+	** Creates an empty *ordered* Mongo document. Override if you want different defaults.
+	protected virtual Str:Obj? emptyDoc() {
+		Str:Obj?[:] { ordered = true }
+	}
+
 	private static Map makeMap(Type mapType, Type keyType) {
 		// see http://fantom.org/sidewalk/topic/2256
 		keyType.fits(Str#) ? Map.make(mapType.toNonNullable) { caseInsensitive = true } : Map.make(mapType.toNonNullable) { ordered = true }
