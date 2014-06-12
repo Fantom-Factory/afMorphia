@@ -2,22 +2,6 @@
 For 0.0.4
 =========
 
-When to store null in mongo?
-
-Replace null value strategy with default value strategy.
-
-Fantom value types
-
-Int -> 0
-Bool -> false 
-Map
-List
-Str -> defVal (!)
-
-If type is null, use null.
-
-If not null, use defVal.
-
 
 For 1.0.0
 =========
