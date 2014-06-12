@@ -1,16 +1,16 @@
-## Overview
+## Overview 
 
 `Morphia` is a Fantom to MongoDB object mapping library.
 
-`Morphia` is an extension to the [Mongo](http://repo.status302.com/doc/pod/afMongo.html) library that maps Fantom objects and their fields to and from Mongo collections and documents.
+`Morphia` is an extension to the [Mongo](http://repo.status302.com/doc/pod/afMongo.html) library that maps Fantom objects and their fields to and from MongoDB collections and documents.
 
-`Morphia` features:
+`Morphia` features include:
 
-- All Fantom literals and [BSON](http://repo.status302.com/doc/pod/afBson.html) types supported by default
-- Maps embedded Fantom objects (Fantom objects nested inside other Fantom objects)
-- Extensible - add your own custom mapping [Converters](http://repo.status302.com/doc/afMorphia/Converters.html)
+- All Fantom literals and [BSON](http://repo.status302.com/doc/pod/afBson.html) types supported by default,
+- Support for embedded / nested Fantom objects,
+- Extensible mapping - add your own custom [Converters](http://repo.status302.com/doc/afMorphia/Converters.html).
 
-## Install
+## Install 
 
 Install `Morphia` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc/docFanr/Tool.html#install) ):
 
@@ -20,11 +20,11 @@ To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan
 
     depends = ["sys 1.0", ..., "afMorphia 0.0+"]
 
-## Documentation
+## Documentation 
 
 Full API & fandocs are available on the [Status302 repository](http://repo.status302.com/doc/afMorphia/).
 
-## Quick Start
+## Quick Start 
 
 1). Start up an instance of MongoDB:
 
@@ -106,7 +106,7 @@ class ExampleModule {
  _____ ___ ___ ___ ___
 |     | . |   | . | . |
 |_|_|_|___|_|_|_  |___|
-              |___|0.0.2
+              |___|0.0.4
 
 Connected to MongoDB v2.6.1 (at mongodb://localhost:27017)
 
@@ -124,9 +124,9 @@ Micky Mouse
 [afIoc] "Goodbye!" from afIoc!
 ```
 
-## Usage
+## Usage 
 
-### Mongo Connection URL
+### Mongo Connection URL 
 
 A [Mongo Connection URL](http://docs.mongodb.org/manual/reference/connection-string/) should be contributed as an application default. This supplies the default database to connect to, along with any default user credentials. Example, in your `AppModule`:
 
@@ -137,13 +137,13 @@ static Void contributeAppDefaults(MappedConfig config) {
 }
 ```
 
-### Entities
+### Entities 
 
-An entity is a top level domain object that is persisted in a Mongo collection.
+An entity is a top level domain object that is persisted in a MongoDB collection.
 
-Entity objects must be annotated with the [@Entity](http://repo.status302.com/doc/afMorphia/Entity.html) facet. By default, the MongoFB collection name is the same as the entity Type (unqualified) name. Example, if your entity type is `acmeExample::User` then it maps to a collection named `User`.
+Entity objects must be annotated with the [@Entity](http://repo.status302.com/doc/afMorphia/Entity.html) facet. By default, the MongoDB collection name is the same as the (unqualified) entity Type name. Example, if your entity type is `acmeExample::User` then it maps to a collection named `User`.
 
-Entity fields are mapped to properties in a MongoDB document. Use the `@Property` facet to annotate an Entity field as one to be mapped to / from a Mongo property. Again, the default is to take the property name and type from the field, but it may be overridden by facet values.
+Entity fields are mapped to properties in a MongoDB document. Use the `@Property` facet to mark fields that should be mapped to / from a Mongo property. Again, the default is to take the property name and type from the field, but it may be overridden by facet values.
 
 As all MongoDB documents define a unique property named `_id`, all entities must also define a unique property named `_id`. Example:
 
@@ -165,20 +165,20 @@ or
 
 Note that a Mongo Id *does not* need to be an `ObjectId`. Any object may be used, it just needs to be unique.
 
-### Datastore
+### Datastore 
 
-A [Datastore](http://repo.status302.com/doc/afMorphia/Datastore.html) wraps a [Mongo Collection](http://repo.status302.com/doc/afMongo/Collection.html) and is your gateway to reading and saving Fantom objects to Mongo.
+A [Datastore](http://repo.status302.com/doc/afMorphia/Datastore.html) wraps a [Mongo Collection](http://repo.status302.com/doc/afMongo/Collection.html) and is your gateway to reading and saving Fantom objects to the MongoDB.
 
-Each `Datastore` instance is specific to an Entity type, so to Inject a `Datastore` you need to say which Entity it is associated with. Use the `@DatastoreType` facet to do this. Example:
+Each `Datastore` instance is specific to an Entity type, so to Inject a `Datastore` you need to specify which Entity it is associated with. Use the `@DatastoreType` facet to do this. Example:
 
     @DatastoreType { type=User# }
     @Inject Datastore datastore
 
-## Mapping
+## Mapping 
 
 At the core of `Morphia` is a suite of [Converters](http://repo.status302.com/doc/afMorphia/Converter.html) that map Fantom objects to Mongo documents.
 
-### Standard Converters
+### Standard Converters 
 
 By default, `Morphia` provides converters for the following Fantom types:
 
@@ -209,22 +209,22 @@ afBson::Timestamp
    sys::Uri
 ```
 
-### Embedded Objects
+### Embedded Objects 
 
-Morphia is also able to convert embedded, or nested, Fantom objects. Extending the example in [Quick Start](http://repo.status302.com/doc/afMorphia/#quickStart.html), here we substitute the `Str` name for an embedded object:
+Morphia is also able to convert embedded, or nested, Fantom objects. Extending the example in [Quick Start](http://repo.status302.com/doc/afMorphia/#quickStart.html), here we substitute the `Str` name for an embedded `Name` object:
 
 ```
-class Name {
-    @Property Str  firstName
-    @Property Str  lastName
-    new make(|This|in) { in(this) }
-}
-
 @Entity
 class User {
     @Property ObjectId _id
     @Property Name     name
     @Property Int      age
+    new make(|This|in) { in(this) }
+}
+
+class Name {
+    @Property Str  firstName
+    @Property Str  lastName
     new make(|This|in) { in(this) }
 }
 
@@ -238,19 +238,78 @@ micky := User {
       lastName  = "Mouse"
     }
 }
-
 mongoDoc := datastore.toMongoDoc(micky)
-echo(mongoDoc) //TODO
 
+echo(mongoDoc) // --> [_id:xxxx, age:42, name:[lastName:Mouse, firstName:Micky]]
 ```
 
 Note that embedded Fantom types should *not* be annotated with `@Entity`.
 
-## Custom Converters
+### Custom Converters 
 
-### Null Strategies
+If you want more control over how objects are mapped to and from Mongo, then contribute a custom converter. Do this by implementing `Converter` and contributing an instance to the `Converters` service.
 
-- Document Converter (to Mongo)
-- List Converter (to Fantom) - 0 capacity
-- Map Converter (to Fantom)
+Example, to store the `Name` object as a simple hyphenated string:
+
+```
+const class NameConverter : Converter {
+
+    override Obj? toFantom(Type fantomType, Obj? mongoObj) {
+        // decide how you want to handle null values
+        if (mongoObj == null) return null
+
+        mong := ((Str) mongoObj).split('-')
+        return Name { it.firstName = mong[0]; it.lastName = mong[1] }
+    }
+
+    override Obj? toMongo(Obj fantomObj) {
+        name := (Name) fantomObj
+        return "${name.firstName}-${name.lastName}"
+    }
+}
+```
+
+Then contribute it in your AppModule:
+
+```
+@Contribute { serviceType=Converters# }
+static Void contributeConverters(MappedConfig config) {
+    config[Name#] = NameConverter()
+}
+```
+
+To see it in action:
+
+```
+micky := User {
+    it._id  = ObjectId()
+    it.age  = 42
+    it.name = Name {
+      it.firstName = "Micky"
+      it.lastName  = "Mouse"
+    }
+}
+mongoDoc := datastore.toMongoDoc(micky)
+
+echo(mongoDoc) // --> [_id:xxxx, age:42, name:Micky-Mouse]
+```
+
+### Storing Nulls in Mongo 
+
+When converting Fantom objects *to* Mongo, the [ObjConverter](http://repo.status302.com/doc/afMorphia/ObjConverter.html) decides what to do if a Fantom field has the value `null`. Should it store a key in the MongoDb with a `null` value, or should it not store the key at all?
+
+To conserve storage space in MongoDB, by default `ObjConverter` does not store the keys.
+
+If you want to store `null` values, then create a new `ObjConverter` passing `false` into the ctor, and contribute it in your AppModule: Example:
+
+```
+@Contribute { serviceType=Converters# }
+static Void contributeConverters(MappedConfig config) {
+    config.setOverride(Obj#,  config.createProxy(Converter#, ObjConverter#,  [false]), "MyObjConverter" )
+}
+```
+
+(A proxy is required due to the circular nature of Converters.)
+
+See [Storing null vs not storing the key at all in MongoDB](http://stackoverflow.com/questions/12403240/storing-null-vs-not-storing-the-key-at-all-in-mongodb) for more details.
 

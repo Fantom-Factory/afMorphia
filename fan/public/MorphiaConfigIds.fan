@@ -1,5 +1,5 @@
 
-** `IocConfig` values as provided by Morphia. To change their value, override them in your AppModule. Example:
+** 'IoC Config' values as provided by Morphia. To change their value, override them in your AppModule. Example:
 ** 
 ** pre>
 ** @Contribute { serviceType=ApplicationDefaults# }
