@@ -2,6 +2,8 @@
 For 0.0.4
 =========
 
+When to store null in mongo?
+
 Replace null value strategy with default value strategy.
 
 Fantom value types
@@ -20,7 +22,7 @@ If not null, use defVal.
 For 1.0.0
 =========
 
-use afBeanUtils::BeanFactory to create embedded entity objs with const fields
+
 
 _version -> auto optimistic locking
 
@@ -30,4 +32,16 @@ PrePersist & PostPersist, PreLoad & PostLoad (better names?), configure via a Fa
 
 For Future
 ==========
+Config option:
+Optimise MongoDB Storage by inspecting literal values and NOT storing default values (if the type is not-nullable).
+e.g. Bool -> false
+	 Int  -> 0
+	 List -> [,]
+	 Map  -> [:]
+Turn off by default -> It is too finicky, and unexpected behaviour. (But I'm sure I saved that total of 0!!!)
+Needs to be handled both *to* and *from* Mongo.
 
+
+
+Just Plain Bad Ideas:
+=====================

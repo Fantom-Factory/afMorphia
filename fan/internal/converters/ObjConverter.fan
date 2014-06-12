@@ -1,3 +1,4 @@
+using afBeanUtils::ReflectUtils
 using afIoc
 using afBson
 using afMongo
@@ -25,7 +26,7 @@ const class ObjConverter : Converter {
 		if (mongoObj == null) return null
 
 		// because DocumentConverter is a catch-all converter, we sometimes get sent here by mistake
-		if (!mongoObj.typeof.fits(Map#))
+		if (mongoObj.typeof.name != "Map")
 			throw MorphiaErr(ErrMsgs.documentConv_noConverter(fantomType, mongoObj))
 
 		mongoDoc	:= (Str:Obj?) mongoObj
@@ -50,10 +51,9 @@ const class ObjConverter : Converter {
 					throw MorphiaErr(ErrMsgs.documentConv_propertyNotFound(field, logDoc(mongoDoc)))
 			}
 	
-			// for .toNonNullable see http://fantom.org/sidewalk/topic/2256
-			if (fieldVal != null && !fieldVal.typeof.toNonNullable.fits(field.type.toNonNullable)) {
+			// sanity check we're about to set the correct instance 
+			if (fieldVal != null && !ReflectUtils.fits(fieldVal.typeof, field.type))
 				throw MorphiaErr(ErrMsgs.documentConv_propertyDoesNotFitField(propName, fieldVal.typeof, field, logDoc(mongoDoc)))
-			}
 
 			fieldVals[field] = fieldVal
 		}
@@ -73,7 +73,7 @@ const class ObjConverter : Converter {
 			fieldVal := field.get(fantomObj)
 			propName := property.name ?: field.name			
 			
-			// TODO: recursively convert...? 
+			// should we recursively convert...? 
 			propVal	 := converters.toMongo(fieldVal)			
 			
 			if (propVal == null && !storeNullFields)
@@ -88,7 +88,7 @@ const class ObjConverter : Converter {
 	}
 
 	** Creates an empty *ordered* Mongo document. Override if you want different defaults.
-	protected virtual Str:Obj? emptyDoc() {
+	virtual Str:Obj? emptyDoc() {
 		Str:Obj?[:] { ordered = true }
 	}
 	

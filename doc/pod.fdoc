@@ -316,56 +316,26 @@ echo(mongoDoc) // --> [_id:xxxx, age:42, name:Micky-Mouse]
 
 
 
-Null Strategies [#nullStrategies]
-=================================
-When converting objects to and from Fantom, it raises the question of how to handle nulls.
-`ObjConverter`, `MapConverter` and `ListConverter` all have null strategies that can be set in the ctor.
-
-
-
-Obj Converter [#objConverter]
------------------------------
+Storing Nulls in Mongo [#nullInMongo]
+====================================+
 When converting Fantom objects *to* Mongo, the `ObjConverter` decides what to do if a Fantom field has the value 'null'.
 Should it store a key in the MongoDb with a 'null' value, or should it not store the key at all?
 
-By default, 'ObjConverter' does not store the keys.
+To conserve storage space in MongoDB, by default 'ObjConverter' does not store the keys.
 
-See [Storing null vs not storing the key at all in MongoDB]`http://stackoverflow.com/questions/12403240/storing-null-vs-not-storing-the-key-at-all-in-mongodb`.
-
-
-
-Map Converter [#mapConverter]
------------------------------
-When converting a map from Mongo to Fantom, should 'null' be left as 'null' or be converted to an empty map?
-
-By default, 'MapConverter' will convert 'null' values to an empty map.
-
-
-
-List Converter [#listConverter]
--------------------------------
-When converting a list from Mongo to Fantom, should 'null' values be left as 'null' or replaced with an empty list?
-
-By default, 'ListConverter' will convert 'null' values to an empty list with a capacity of zero.
-Entities, when read from a database, are usually read and not often updates.
-The zero capacity means memory isn't allocated until it is needed.
-
-
-
-Strategy Override [#strategyOverride]
-------------------------------------
-To change a default null stategy, contribute a new 'Converter' in your AppModule. Example:
+If you want to store 'null' values, then create a new 'ObjConverter' passing 'false' into the ctor, and contribute it in your AppModule:
+Example:
 
 pre>
 @Contribute { serviceType=Converters# }
 static Void contributeConverters(MappedConfig config) {
     config.setOverride(Obj#,  config.createProxy(Converter#, ObjConverter#,  [false]), "MyObjConverter" )
-    config.setOverride(Map#,  config.createProxy(Converter#, MapConverter#,  [false]), "MyMapConverter" )
-    config.setOverride(List#, config.createProxy(Converter#, ListConverter#, [false]), "MyListConverter")
 }
 <pre
 
-Proxies are required due to the circular nature of Converters.
+(A proxy is required due to the circular nature of Converters.)
+
+See [Storing null vs not storing the key at all in MongoDB]`http://stackoverflow.com/questions/12403240/storing-null-vs-not-storing-the-key-at-all-in-mongodb` for more details.
 
 
 

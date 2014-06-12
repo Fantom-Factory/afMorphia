@@ -61,8 +61,8 @@ const class MorphiaModule {
 		
 		// Containers
 		config[Obj#]		= config.createProxy(Converter#, ObjConverter#, [true])
-		config[Map#]		= config.createProxy(Converter#, MapConverter#, [true])
-		config[List#]		= config.createProxy(Converter#, ListConverter#, [true])
+		config[Map#]		= config.createProxy(Converter#, MapConverter#)
+		config[List#]		= config.createProxy(Converter#, ListConverter#)
 		
 		// Fantom Literals
 		config[Date#]		= DateConverter()

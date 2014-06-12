@@ -1,4 +1,5 @@
 using afBeanUtils::TypeCoercer
+using afBeanUtils::BeanFactory
 using afIoc
 using afBson
 
@@ -8,20 +9,17 @@ const class MapConverter : Converter {
 	@Inject 
 	private const Converters 	converters
 	private const TypeCoercer	typeCoercer
-	private const Bool 			convertNullToEmptyMap
 	
-	new make(Bool convertNullToEmptyMap, |This|in) {
+	new make(|This|in) {
 		in(this)
-		this.convertNullToEmptyMap = convertNullToEmptyMap
-		this.typeCoercer	= CachingTypeCoercer()
+		this.typeCoercer = CachingTypeCoercer()
 	}	
 	
 	override Obj? toFantom(Type fanMapType, Obj? mongoObj) {
+		if (mongoObj == null) return null
+
 		fanKeyType 	:= fanMapType.params["K"]
 		fanValType 	:= fanMapType.params["V"]
-
-		if (mongoObj == null) 
-			return convertNullToEmptyMap ? makeMap(fanMapType, fanKeyType) : null
 
 		mongoMap	:= (Map) mongoObj
 		monMapType	:= mongoMap.typeof
@@ -33,7 +31,7 @@ const class MapConverter : Converter {
 			if (monValType.fits(fanValType))
 				return mongoMap
 
-			fanMap := makeMap(fanMapType, fanKeyType)
+			fanMap := makeMap(fanMapType)
 			if (BsonType.isBsonLiteral(fanValType)) {
 				// if the Fantom val type is BSON, just copy the vals over 'cos they wouldn't have changed
 				fanMap.addAll(mongoMap)
@@ -47,7 +45,7 @@ const class MapConverter : Converter {
 			return fanMap
 		}
 		
-		fanMap		:= makeMap(fanMapType, fanKeyType)
+		fanMap		:= makeMap(fanMapType)
 		mongoMap.each |mVal, mKey| {
 			// Map keys are special and have to be converted <=> Str
 			fKey := typeCoercer.coerce(mKey, fanKeyType)
@@ -65,7 +63,7 @@ const class MapConverter : Converter {
 		if (!mapType.isGeneric) {
 			keyType 	:= mapType.params["K"]
 			valType 	:= mapType.params["V"]
-			if (BsonType.isBsonLiteral(keyType) && BsonType.isBsonLiteral(valType))
+			if (keyType == Str# && BsonType.isBsonLiteral(valType))
 				return fantomObj
 		}
 		
@@ -82,13 +80,22 @@ const class MapConverter : Converter {
 		return mongoMap
 	}
 	
-	** Creates an empty *ordered* Mongo document. Override if you want different defaults.
-	protected virtual Str:Obj? emptyDoc() {
+	** Creates an empty *ordered* Mongo document. 
+	** 
+	** Override for different behaviour. 
+	virtual Str:Obj? emptyDoc() {
 		Str:Obj?[:] { ordered = true }
 	}
 
-	private static Map makeMap(Type mapType, Type keyType) {
-		// see http://fantom.org/sidewalk/topic/2256
-		keyType.fits(Str#) ? Map.make(mapType.toNonNullable) { caseInsensitive = true } : Map.make(mapType.toNonNullable) { ordered = true }
+	** Creates an empty map for Fantom. If the key type is Str#, the map is case-insensitive. Otherwise it's ordered.
+	** 
+	** Override for different behaviour. 
+	virtual Obj:Obj? makeMap(Type mapType) {
+		((Map) BeanFactory.defaultValue(mapType, true)) {
+			if (mapType.params["K"] == Str#) 
+				it.caseInsensitive = true
+			else
+				it.ordered = true
+		}
 	}
 }

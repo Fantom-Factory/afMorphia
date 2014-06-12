@@ -3,25 +3,25 @@ using afIoc
 internal class TestListConverter : MorphiaTest {
 	
 	Void testNullStrategy_null() {
-		listConverter := (Converter) reg.createProxy(Converter#, ListConverter#, [false])
-		fanObj := listConverter.toFantom(Int?[]#, null)
+		listConverter := (Converter) reg.createProxy(Converter#, ListConverter#)
+		fanObj := listConverter.toFantom(Int?[]?#, null)
 		verifyNull(fanObj)
 	}
 
-	Void testNullStrategy_emptyList() {
-		listConverter := (Converter) reg.createProxy(Converter#, ListConverter#, [true])
-		fanObj := listConverter.toFantom(Int?[]#, null)
-		
-		verifyNotNull(fanObj)
-		verifyType(fanObj, Int?[]#)
-		
-		// ensure we don't waste resources allocating space for a list we're (very) unlikely to add anything to
-		fanList := (Int?[]) fanObj
-		verifyEq(fanList.capacity, 0)
-	}
+//	Void testNullStrategy_emptyList() {
+//		listConverter := (Converter) reg.createProxy(Converter#, ListConverter#)
+//		fanObj := listConverter.toFantom(Int?[]#, null)
+//		
+//		verifyNotNull(fanObj)
+//		verifyType(fanObj, Int?[]#)
+//		
+//		// ensure we don't waste resources allocating space for a list we're (very) unlikely to add anything to
+//		fanList := (Int?[]) fanObj
+//		verifyEq(fanList.capacity, 0)
+//	}
 	
 	Void testValSame() {
-		listConverter := (Converter) reg.createProxy(Converter#, ListConverter#, [true])
+		listConverter := (Converter) reg.createProxy(Converter#, ListConverter#)
 
 		monList	:= Obj?["gold","welsh"]
 		fanList	:= listConverter.toFantom(Obj?[]#, monList) as Obj?[]
@@ -32,7 +32,7 @@ internal class TestListConverter : MorphiaTest {
 	}
 	
 	Void testValCopy() {
-		listConverter := (Converter) reg.createProxy(Converter#, ListConverter#, [true])
+		listConverter := (Converter) reg.createProxy(Converter#, ListConverter#)
 
 		monList	:= Obj?["gold","welsh"]
 		fanList	:= listConverter.toFantom(Str[]#, monList) as Str[]
@@ -44,7 +44,7 @@ internal class TestListConverter : MorphiaTest {
 	}
 	
 	Void testValConversion() {
-		listConverter := (Converter) reg.createProxy(Converter#, ListConverter#, [true])
+		listConverter := (Converter) reg.createProxy(Converter#, ListConverter#)
 
 		monList	:= Obj?["wot","ever"]
 		fanList	:= listConverter.toFantom(T_Entity01_Enum[]#, monList) as T_Entity01_Enum[]

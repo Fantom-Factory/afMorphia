@@ -5,20 +5,15 @@ using afBson
 const class ListConverter : Converter {
 
 	@Inject private const Converters 	converters
-			private const Bool 			convertNullToEmptyList
 	
-	new make(Bool convertNullToEmptyList, |This|in) {
+	new make(|This|in) {
 		in(this)
-		this.convertNullToEmptyList = convertNullToEmptyList
 	}
 	
 	override Obj? toFantom(Type fanListType, Obj? mongoObj) {
+		if (mongoObj == null) return null
+
 		fanValType := fanListType.params["V"]
-
-		if (mongoObj == null)
-			// as most entities are const, don't allocate any capacity to the list
-			return convertNullToEmptyList ? List(fanValType, 0) : null
-
 		mongoList	:= (List) mongoObj
 		monListType	:= mongoList.typeof
 		monValType	:= monListType.params["V"]
