@@ -52,7 +52,7 @@ const class Datastore {
 	** 
 	** @see `afMongo::Collection.drop`
 	This drop(Bool checked := true) {
-		collection.drop
+		collection.drop(checked)
 		return this
 	}
 

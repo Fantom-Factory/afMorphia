@@ -32,7 +32,7 @@ const class MorphiaModule {
 	
 	@Contribute { serviceType=DependencyProviders# }
 	static Void contributeDependencyProviders(OrderedConfig config) {
-		config.add(config.createProxy(DependencyProvider#, DatastoreDependencyProvider#))
+		config.add(config.autobuild(DatastoreDependencyProvider#))
 	}
 	
 	@Contribute { serviceType=ActorPools# }
