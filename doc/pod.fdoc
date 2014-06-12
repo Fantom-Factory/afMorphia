@@ -7,7 +7,7 @@ Overview [#overview]
 'Morphia' features include:
  - All Fantom literals and [BSON]`pod:afBson` types supported by default,
  - Support for embedded / nested Fantom objects,
- - Extensible mapping - add your own custom `Converters`.
+ - Extensible mapping - add your own custom [Converters]`afMorphia::Converters`.
 
 
 
