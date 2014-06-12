@@ -2,7 +2,7 @@ Overview [#overview]
 ********************
 'Morphia' is a Fantom to MongoDB object mapping library.
 
-'Morphia' is an extension to the [Mongo]`pod::afMongo` library that maps Fantom objects and their fields to and from MongoDB collections and documents.
+'Morphia' is an extension to the [Mongo]`pod:afMongo` library that maps Fantom objects and their fields to and from MongoDB collections and documents.
 
 'Morphia' features include:
  - All Fantom literals and [BSON]`pod::afBson` types supported by default,
