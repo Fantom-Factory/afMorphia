@@ -37,7 +37,7 @@ const class MorphiaModule {
 	
 	@Contribute { serviceType=ActorPools# }
 	static Void contributeActorPools(MappedConfig config) {
-		config["afMorphia.connectionManager"] = ActorPool() { it.maxThreads = 1 }
+		config["afMorphia.connectionManager"] = ActorPool() { it.name = "afMorphia.connectionManager"; it.maxThreads = 1 }
 	}
 
 	@Contribute { serviceType=Converters# }

@@ -65,7 +65,8 @@ const class Datastore {
 	**  
 	** @see `afMongo::Collection.findOne`
 	Obj? findOne(Str:Obj? query, Bool checked := true) {
-		fromMongoDoc(collection.findOne(query, checked))
+		entity := collection.findOne(query, checked)
+		return (entity == null) ? null : fromMongoDoc(entity)
 	}
 
 	** Returns the result of the given 'query' as a list of documents.
@@ -94,7 +95,8 @@ const class Datastore {
 	Obj? get(Obj id, Bool checked := true) {
 		if (!ReflectUtils.fits(id.typeof, idField.type))
 			throw ArgErr(ErrMsgs.datastore_idDoesNotFit(id, idField))
-		return fromMongoDoc(collection.get(id, checked))
+		entity := collection.get(id, checked)
+		return (entity == null) ? null : fromMongoDoc(entity)
 	}
 
 	// ---- Write Operations ----------------------------------------------------------------------

@@ -317,7 +317,7 @@ echo(mongoDoc) // --> [_id:xxxx, age:42, name:Micky-Mouse]
 
 
 Storing Nulls in Mongo [#nullInMongo]
-====================================+
+=====================================
 When converting Fantom objects *to* Mongo, the `ObjConverter` decides what to do if a Fantom field has the value 'null'.
 Should it store a key in the MongoDb with a 'null' value, or should it not store the key at all?
 
@@ -341,6 +341,10 @@ See [Storing null vs not storing the key at all in MongoDB]`http://stackoverflow
 
 Release Notes [#releaseNotes]
 *****************************
+
+v0.0.4 [#v0.0.4]
+----------------
+ - Bug: 'Datastore.findOne()' and 'Datastore.get()' could throw a 'NullErr' if checked was false.
 
 v0.0.2 [#v0.0.2]
 ----------------
