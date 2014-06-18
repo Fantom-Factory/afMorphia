@@ -62,7 +62,14 @@ internal class TestDatastoreDb : MorphiaDbTest {
 		
 		ds.drop
 	}
+	
+	Void testDatastoreCheckedMethodsReturnNull() {
+		minny := ds.findOne(["_id":69], false)
+		verifyNull(minny)
 
+		minny = ds.get(69, false)
+		verifyNull(minny)
+	}
 }
 
 @Entity 
