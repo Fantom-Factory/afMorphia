@@ -6,8 +6,6 @@ For 0.0.4
 For 1.0.0
 =========
 
-
-
 _version -> auto optimistic locking
 
 PrePersist & PostPersist, PreLoad & PostLoad (better names?), configure via a Facet Interceptor -> tie in with Entity mixin?

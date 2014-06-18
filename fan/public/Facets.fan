@@ -1,5 +1,6 @@
 
 ** Marks a type to be mapped as a top level document in a MongoDB collection.
+@FacetMeta { inherited = true }
 facet class Entity {
 	
 	** The name of the MongoDB collection to store the documents in.
