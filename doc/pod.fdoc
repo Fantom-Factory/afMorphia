@@ -344,6 +344,7 @@ Release Notes [#releaseNotes]
 
 v0.0.4 [#v0.0.4]
 ----------------
+ - Chg: '@Entity' facet is now inherited.
  - Bug: 'Datastore.findOne()' and 'Datastore.get()' could throw a 'NullErr' if checked was false.
 
 v0.0.2 [#v0.0.2]

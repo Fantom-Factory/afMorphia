@@ -20,7 +20,7 @@ abstract internal class MorphiaTest : Test {
 
 	protected Void verifyErrMsg(Type errType, Str errMsg, |Obj| func) {
 		try {
-			func(4)
+			func("wotever")
 		} catch (Err e) {
 			if (!e.typeof.fits(errType)) 
 				throw Err("Expected $errType got $e.typeof", e)
