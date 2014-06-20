@@ -1,4 +1,4 @@
-## Overview
+## Overview 
 
 `Morphia` is a Fantom to MongoDB object mapping library.
 
@@ -10,7 +10,7 @@
 - Support for embedded / nested Fantom objects,
 - Extensible mapping - add your own custom [Converters](http://repo.status302.com/doc/afMorphia/Converters.html).
 
-## Install
+## Install 
 
 Install `Morphia` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc/docFanr/Tool.html#install) ):
 
@@ -20,11 +20,11 @@ To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan
 
     depends = ["sys 1.0", ..., "afMorphia 0.0+"]
 
-## Documentation
+## Documentation 
 
 Full API & fandocs are available on the [Status302 repository](http://repo.status302.com/doc/afMorphia/).
 
-## Quick Start
+## Quick Start 
 
 1). Start up an instance of MongoDB:
 
@@ -124,9 +124,9 @@ Micky Mouse
 [afIoc] "Goodbye!" from afIoc!
 ```
 
-## Usage
+## Usage 
 
-### Mongo Connection URL
+### Mongo Connection URL 
 
 A [Mongo Connection URL](http://docs.mongodb.org/manual/reference/connection-string/) should be contributed as an application default. This supplies the default database to connect to, along with any default user credentials. Example, in your `AppModule`:
 
@@ -137,7 +137,7 @@ static Void contributeAppDefaults(MappedConfig config) {
 }
 ```
 
-### Entities
+### Entities 
 
 An entity is a top level domain object that is persisted in a MongoDB collection.
 
@@ -165,7 +165,7 @@ or
 
 Note that a Mongo Id *does not* need to be an `ObjectId`. Any object may be used, it just needs to be unique.
 
-### Datastore
+### Datastore 
 
 A [Datastore](http://repo.status302.com/doc/afMorphia/Datastore.html) wraps a [Mongo Collection](http://repo.status302.com/doc/afMongo/Collection.html) and is your gateway to reading and saving Fantom objects to the MongoDB.
 
@@ -174,11 +174,11 @@ Each `Datastore` instance is specific to an Entity type, so to Inject a `Datasto
     @DatastoreType { type=User# }
     @Inject Datastore datastore
 
-## Mapping
+## Mapping 
 
 At the core of `Morphia` is a suite of [Converters](http://repo.status302.com/doc/afMorphia/Converter.html) that map Fantom objects to Mongo documents.
 
-### Standard Converters
+### Standard Converters 
 
 By default, `Morphia` provides converters for the following Fantom types:
 
@@ -209,7 +209,7 @@ afBson::Timestamp
    sys::Uri
 ```
 
-### Embedded Objects
+### Embedded Objects 
 
 Morphia is also able to convert embedded, or nested, Fantom objects. Extending the example in [Quick Start](http://repo.status302.com/doc/afMorphia/#quickStart.html), here we substitute the `Str` name for an embedded `Name` object:
 
@@ -245,7 +245,7 @@ echo(mongoDoc) // --> [_id:xxxx, age:42, name:[lastName:Mouse, firstName:Micky]]
 
 Note that embedded Fantom types should *not* be annotated with `@Entity`.
 
-### Custom Converters
+### Custom Converters 
 
 If you want more control over how objects are mapped to and from Mongo, then contribute a custom converter. Do this by implementing `Converter` and contributing an instance to the `Converters` service.
 
@@ -294,7 +294,7 @@ mongoDoc := datastore.toMongoDoc(micky)
 echo(mongoDoc) // --> [_id:xxxx, age:42, name:Micky-Mouse]
 ```
 
-### Storing Nulls in Mongo
+### Storing Nulls in Mongo 
 
 When converting Fantom objects *to* Mongo, the [ObjConverter](http://repo.status302.com/doc/afMorphia/ObjConverter.html) decides what to do if a Fantom field has the value `null`. Should it store a key in the MongoDb with a `null` value, or should it not store the key at all?
 
