@@ -5,6 +5,11 @@ using afMongo
 
 ** (Service) -
 ** Wraps a MongoDB [Collection]`afMongo::Collection`, converting Fantom entities to / from Mongo documents.
+** 
+** When injecting as a service, use the '@DatastoreType' facet to state which Entity type it is for: 
+** 
+**   @Inject @DatastoreType { type=MyEntity# }
+**   private const Datastore myEntityDatastore
 const class Datastore {
 	
 	** The underlying MongoDB collection this Datastore wraps.
