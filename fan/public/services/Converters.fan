@@ -4,7 +4,7 @@ using afBson::ObjectId
 
 ** (Service) - Contribute your 'Converter' classes to this.
 ** 
-** @uses a MappedConfig of 'Type:Converter' where 'Type' is what the 'Converter', um, converts to and from Mongo!
+** @uses a Configuration of 'Type:Converter' where 'Type' is what the 'Converter', um, converts to and from Mongo!
 @NoDoc	// don't overwhelm the masses!
 const class Converters {
 	private const CachingTypeLookup	typeLookup

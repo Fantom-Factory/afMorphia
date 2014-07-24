@@ -3,7 +3,7 @@
 ** 
 ** pre>
 ** @Contribute { serviceType=ApplicationDefaults# }
-** static Void contributeAppDefaults(MappedConfig config) {
+** static Void contributeAppDefaults(Configuration config) {
 **     config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
 ** }
 ** <pre
@@ -13,7 +13,7 @@ const class MorphiaConfigIds {
 	** 
 	** pre>
 	** @Contribute { serviceType=ApplicationDefaults# }
-	** static Void contributeAppDefaults(MappedConfig config) {
+	** static Void contributeAppDefaults(Configuration config) {
 	**     config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
 	** }
 	** <pre

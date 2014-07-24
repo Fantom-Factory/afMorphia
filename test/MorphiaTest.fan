@@ -33,12 +33,12 @@ abstract internal class MorphiaTest : Test {
 
 internal const class T_MorphiaTestModule {
 	@Contribute { serviceType=ApplicationDefaults# }
-	static Void contributeAppDefaults(MappedConfig config) {
+	static Void contributeAppDefaults(Configuration config) {
 		config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/afMorphiaTest`
 	}
 	
 	@Contribute { serviceType=RegistryStartup# }
-	internal static Void contributeRegistryStartup(OrderedConfig config) {
-		config.remove("MorphiaStartup")
+	internal static Void contributeRegistryStartup(Configuration config) {
+		config.remove("afMorphia.testConnection")
 	}
 }

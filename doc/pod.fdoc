@@ -90,7 +90,7 @@ class Example {
 
 class ExampleModule {
     @Contribute { serviceType=ApplicationDefaults# }
-    static Void contributeAppDefaults(MappedConfig config) {
+    static Void contributeAppDefaults(Configuration config) {
         config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
     }
 }
@@ -135,7 +135,7 @@ This supplies the default database to connect to, along with any default user cr
 
 pre>
 @Contribute { serviceType=ApplicationDefaults# }
-static Void contributeAppDefaults(MappedConfig config) {
+static Void contributeAppDefaults(Configuration config) {
     config[MorphiaConfigIds.mongoUrl] = `mongodb://username:password@localhost:27017/exampledb`
 }
 <pre
@@ -293,7 +293,7 @@ Then contribute it in your AppModule:
 
 pre>
 @Contribute { serviceType=Converters# }
-static Void contributeConverters(MappedConfig config) {
+static Void contributeConverters(Configuration config) {
     config[Name#] = NameConverter()
 }
 <pre
@@ -328,8 +328,8 @@ Example:
 
 pre>
 @Contribute { serviceType=Converters# }
-static Void contributeConverters(MappedConfig config) {
-    config.setOverride(Obj#,  config.createProxy(Converter#, ObjConverter#,  [false]), "MyObjConverter" )
+static Void contributeConverters(Configuration config) {
+    config.overrideValue(Obj#,  config.registry.createProxy(Converter#, ObjConverter#,  [false]), null, "MyObjConverter")
 }
 <pre
 
@@ -341,6 +341,9 @@ See [Storing null vs not storing the key at all in MongoDB]`http://stackoverflow
 
 Release Notes [#releaseNotes]
 *****************************
+v0.0.6 [#v0.0.6]
+----------------
+ - Chg: Updated to use [IoC 1.7.0]`pod:afIoc`.
 
 v0.0.4 [#v0.0.4]
 ----------------
