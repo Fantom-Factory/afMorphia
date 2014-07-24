@@ -31,17 +31,17 @@ const class MorphiaModule {
 	}
 	
 	@Contribute { serviceType=DependencyProviders# }
-	static Void contributeDependencyProviders(OrderedConfig config) {
-		config.add(config.autobuild(DatastoreDependencyProvider#))
+	static Void contributeDependencyProviders(Configuration config) {
+		config["afMorphia.datastoreProvider"] = config.autobuild(DatastoreDependencyProvider#)
 	}
 	
 	@Contribute { serviceType=ActorPools# }
-	static Void contributeActorPools(MappedConfig config) {
+	static Void contributeActorPools(Configuration config) {
 		config["afMorphia.connectionManager"] = ActorPool() { it.name = "afMorphia.connectionManager"; it.maxThreads = 1 }
 	}
 
 	@Contribute { serviceType=Converters# }
-	static Void contributeConverters(MappedConfig config) {		
+	static Void contributeConverters(Configuration config) {		
 		mongoLiteral		:= config.autobuild(LiteralConverter#)
 		
 		// Mongo Literals
@@ -60,9 +60,9 @@ const class MorphiaModule {
 		config[Timestamp#]	= mongoLiteral
 		
 		// Containers
-		config[Obj#]		= config.createProxy(Converter#, ObjConverter#, [true])
-		config[Map#]		= config.createProxy(Converter#, MapConverter#)
-		config[List#]		= config.createProxy(Converter#, ListConverter#)
+		config[Obj#]		= config.registry.createProxy(Converter#, ObjConverter#, [true])
+		config[Map#]		= config.registry.createProxy(Converter#, MapConverter#)
+		config[List#]		= config.registry.createProxy(Converter#, ListConverter#)
 		
 		// Fantom Literals
 		config[Date#]		= DateConverter()
@@ -76,21 +76,21 @@ const class MorphiaModule {
 	}
 	
 	@Contribute { serviceType=FactoryDefaults# }
-	static Void contributeFactoryDefaults(MappedConfig config) {
+	static Void contributeFactoryDefaults(Configuration config) {
 		config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017`
 	}
 	
 	@Contribute { serviceType=RegistryStartup# }
-	internal static Void contributeRegistryStartup(OrderedConfig config, ConnectionManager conMgr) {
-		config.addOrdered("MorphiaStartup") |->| {
+	internal static Void contributeRegistryStartup(Configuration config, ConnectionManager conMgr) {
+		config["afMorphia.testConnection"] = |->| {
 			// print that logo! Oh, and check that DB version while you're at it!
 			mc := MongoClient(conMgr)
 		}
 	}
 
 	@Contribute { serviceType=RegistryShutdown# }
-	internal static Void contributeRegistryShutdown(OrderedConfig config, ConnectionManager conMgr) {
-		config.addOrdered("MorphiaShutdown") |->| {
+	internal static Void contributeRegistryShutdown(Configuration config, ConnectionManager conMgr) {
+		config["afMorphia.closeConnections"] = |->| {
 			conMgr.shutdown
 		}
 	}

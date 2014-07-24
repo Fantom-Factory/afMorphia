@@ -61,12 +61,12 @@ class Example {
 internal 
 class ExampleModule {
 	@Contribute { serviceType=ApplicationDefaults# }
-	static Void contributeAppDefaults(MappedConfig config) {
+	static Void contributeAppDefaults(Configuration config) {
 		config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
 	}
 
 	@Contribute { serviceType=Converters# }
-	static Void contributeConverters(MappedConfig config) {
+	static Void contributeConverters(Configuration config) {
 		config[Name#] = NameConverter()
 	}
 }
