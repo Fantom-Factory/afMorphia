@@ -87,7 +87,7 @@ class Example {
 
 class ExampleModule {
     @Contribute { serviceType=ApplicationDefaults# }
-    static Void contributeAppDefaults(MappedConfig config) {
+    static Void contributeAppDefaults(Configuration config) {
         config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
     }
 }
@@ -132,7 +132,7 @@ A [Mongo Connection URL](http://docs.mongodb.org/manual/reference/connection-str
 
 ```
 @Contribute { serviceType=ApplicationDefaults# }
-static Void contributeAppDefaults(MappedConfig config) {
+static Void contributeAppDefaults(Configuration config) {
     config[MorphiaConfigIds.mongoUrl] = `mongodb://username:password@localhost:27017/exampledb`
 }
 ```
@@ -273,7 +273,7 @@ Then contribute it in your AppModule:
 
 ```
 @Contribute { serviceType=Converters# }
-static Void contributeConverters(MappedConfig config) {
+static Void contributeConverters(Configuration config) {
     config[Name#] = NameConverter()
 }
 ```
@@ -304,8 +304,8 @@ If you want to store `null` values, then create a new `ObjConverter` passing `fa
 
 ```
 @Contribute { serviceType=Converters# }
-static Void contributeConverters(MappedConfig config) {
-    config.setOverride(Obj#,  config.createProxy(Converter#, ObjConverter#,  [false]), "MyObjConverter" )
+static Void contributeConverters(Configuration config) {
+    config.overrideValue(Obj#,  config.registry.createProxy(Converter#, ObjConverter#,  [false]), null, "MyObjConverter")
 }
 ```
 

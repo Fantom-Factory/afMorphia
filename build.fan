@@ -5,13 +5,13 @@ class Build : BuildPod {
 	new make() {
 		podName = "afMorphia"
 		summary = "A Fantom to MongoDB object mapping library"
-		version = Version("0.0.6")
+		version = Version("0.0.7")
 
 		meta = [
 			"proj.name"		: "Morphia",
 			"afIoc.module"	: "afMorphia::MorphiaModule",
 			"tags"			: "database",
-			"repo.private"	: "false"
+			"repo.private"	: "true"
 		]
 
 		index	= [	"afIoc.module"	: "afMorphia::MorphiaModule" ]
