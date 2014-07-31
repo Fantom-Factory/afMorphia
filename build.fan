@@ -26,7 +26,7 @@ class Build : BuildPod {
 			
 			"afConcurrent 1.0.6+",
 			"afBeanUtils 1.0.2+",
-			"afIoc 1.7.0+",
+			"afIoc 1.7.4+",
 			"afIocConfig 1.0.10+"
 		]
 		
