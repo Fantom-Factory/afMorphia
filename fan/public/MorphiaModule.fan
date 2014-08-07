@@ -17,15 +17,15 @@ const class MorphiaModule {
 	}
 	
 	@Build
-	static ConnectionManager buildConnectionManager(IocConfigSource iocConfig, ActorPools actorPools) {
-		mongoUri  := (Uri) iocConfig.get(MorphiaConfigIds.mongoUrl, Uri#)
+	static ConnectionManager buildConnectionManager(ConfigSource configSrc, ActorPools actorPools) {
+		mongoUri  := (Uri) configSrc.get(MorphiaConfigIds.mongoUrl, Uri#)
 		actorPool := actorPools.get("afMorphia.connectionManager")
 		return ConnectionManagerPooled(actorPool , mongoUri)
 	}
 	
 	@Build
-	static Database buildDatabase(IocConfigSource iocConfig, ConnectionManager conMgr) {
-		mongoUri	:= (Uri) iocConfig.get(MorphiaConfigIds.mongoUrl, Uri#)
+	static Database buildDatabase(ConfigSource configSrc, ConnectionManager conMgr) {
+		mongoUri	:= (Uri) configSrc.get(MorphiaConfigIds.mongoUrl, Uri#)
 		dbName		:= mongoUri.path.join("/")	// this gets rid of any leading slashes - not that there *should* be anything to join!
 		return Database(conMgr, dbName)
 	}
