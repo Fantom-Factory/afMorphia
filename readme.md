@@ -106,7 +106,7 @@ class ExampleModule {
  _____ ___ ___ ___ ___
 |     | . |   | . | . |
 |_|_|_|___|_|_|_  |___|
-              |___|0.0.4
+              |___|0.0.6
 
 Connected to MongoDB v2.6.1 (at mongodb://localhost:27017)
 
@@ -115,7 +115,7 @@ Connected to MongoDB v2.6.1 (at mongodb://localhost:27017)
   / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
  / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
 /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
-                            Alien-Factory IoC v1.6.2 /___/
+                            Alien-Factory IoC v1.7.6 /___/
 
 IoC Registry built in 1,310ms and started up in 247ms
 
