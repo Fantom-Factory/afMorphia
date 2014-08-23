@@ -128,8 +128,8 @@ Micky Mouse
 
 Usage [#usage]
 **************
-Mongo Connection URL [#mongoConnectionUrl]
-==========================================
+MongoDB Connections [#mongoDbConnections]
+=========================================
 A [Mongo Connection URL]`http://docs.mongodb.org/manual/reference/connection-string/` should be contributed as an application default.
 This supplies the default database to connect to, along with any default user credentials. Example, in your 'AppModule':
 
@@ -140,6 +140,15 @@ static Void contributeAppDefaults(Configuration config) {
 }
 <pre
 
+'Morphia' uses the connection URL to create a pooled [ConnectionManager]`afMongo::ConnectionManagerPooled`.
+The 'ConnectionManager', and all of its connections, are gracefully closed when IoC / BedSheet is shutdown.
+
+Some connection URL options are supported:
+  - 'mongodb://username:password@example1.com/database?maxPoolSize=50'
+  - 'mongodb://example2.com?minPoolSize=10&maxPoolSize=25'
+
+See [ConnectionManagerPooled]`afMongo::ConnectionManagerPooled` for more details.
+
 
 
 Entities [#entity]
@@ -147,8 +156,9 @@ Entities [#entity]
 An entity is a top level domain object that is persisted in a MongoDB collection.
 
 Entity objects must be annotated with the [@Entity]`Entity` facet.
-By default, the MongoDB collection name is the same as the (unqualified) entity Type name.
+By default the MongoDB collection name is the same as the (unqualified) entity Type name.
 Example, if your entity type is 'acmeExample::User' then it maps to a collection named 'User'.
+This may be overriden by providing a value for the '@Entity.name' attribute.
 
 Entity fields are mapped to properties in a MongoDB document.
 Use the '@Property' facet to mark fields that should be mapped to / from a Mongo property.
@@ -166,7 +176,7 @@ Example:
 
 or
 
-  @Entity
+  @Entity { name="AnotherEntity" }
   class MyEntity {
       @Property { name="_id" }
       ObjectId wotever
