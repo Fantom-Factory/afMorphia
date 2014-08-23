@@ -16,14 +16,14 @@ const class MorphiaModule {
 		binder.bind(Converters#).withoutProxy
 	}
 	
-	@Build
+	@Build { serviceId="afMongo::ConnectionManager" }
 	static ConnectionManager buildConnectionManager(ConfigSource configSrc, ActorPools actorPools) {
 		mongoUri  := (Uri) configSrc.get(MorphiaConfigIds.mongoUrl, Uri#)
 		actorPool := actorPools.get("afMorphia.connectionManager")
 		return ConnectionManagerPooled(actorPool , mongoUri)
 	}
-	
-	@Build
+
+	@Build { serviceId="afMongo::Database" }
 	static Database buildDatabase(ConfigSource configSrc, ConnectionManager conMgr) {
 		mongoUri	:= (Uri) configSrc.get(MorphiaConfigIds.mongoUrl, Uri#)
 		dbName		:= mongoUri.path.join("/")	// this gets rid of any leading slashes - not that there *should* be anything to join!
