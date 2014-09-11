@@ -1,6 +1,6 @@
 using afIoc
 
-internal const class DatastoreDependencyProvider : DependencyProvider {
+internal const class DatastoreProvider : DependencyProvider {
 	
 	@Inject private const Registry registry
 	

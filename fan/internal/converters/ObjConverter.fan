@@ -58,7 +58,8 @@ const class ObjConverter : Converter {
 			fieldVals[field] = fieldVal
 		}
 		
-		return registry.autobuild(fantomType, Obj#.emptyList, fieldVals)
+		a:= registry.autobuild(fantomType, null, fieldVals)
+		return a
 	}
 	
 	@NoDoc
