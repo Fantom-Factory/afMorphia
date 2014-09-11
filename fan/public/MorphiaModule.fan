@@ -11,9 +11,9 @@ using concurrent
 @NoDoc
 const class MorphiaModule {
 
-	static Void bind(ServiceBinder binder) {
-		binder.bind(Morphia#).withoutProxy
-		binder.bind(Converters#).withoutProxy
+	static Void defineServices(ServiceDefinitions defs) {
+		defs.add(Morphia#)
+		defs.add(Converters#)
 	}
 	
 	@Build { serviceId="afMongo::ConnectionManager" }
@@ -32,7 +32,7 @@ const class MorphiaModule {
 	
 	@Contribute { serviceType=DependencyProviders# }
 	static Void contributeDependencyProviders(Configuration config) {
-		config["afMorphia.datastoreProvider"] = config.autobuild(DatastoreDependencyProvider#)
+		config.set("afMorphia.datastoreProvider", config.autobuild(DatastoreProvider#)).before("afIoc.serviceProvider")
 	}
 	
 	@Contribute { serviceType=ActorPools# }
@@ -60,9 +60,9 @@ const class MorphiaModule {
 		config[Timestamp#]	= mongoLiteral
 		
 		// Containers
-		config[Obj#]		= config.registry.createProxy(Converter#, ObjConverter#, [true])
-		config[Map#]		= config.registry.createProxy(Converter#, MapConverter#)
-		config[List#]		= config.registry.createProxy(Converter#, ListConverter#)
+		config[Obj#]		= config.createProxy(Converter#, ObjConverter#, [true])
+		config[Map#]		= config.createProxy(Converter#, MapConverter#)
+		config[List#]		= config.createProxy(Converter#, ListConverter#)
 		
 		// Fantom Literals
 		config[Date#]		= DateConverter()

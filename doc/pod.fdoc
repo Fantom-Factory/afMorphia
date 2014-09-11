@@ -117,7 +117,7 @@ Connected to MongoDB v2.6.1 (at mongodb://localhost:27017)
   / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
  / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
 /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
-                            Alien-Factory IoC v1.7.6 /___/
+                            Alien-Factory IoC v2.0.0 /___/
 
 IoC Registry built in 1,310ms and started up in 247ms
 
@@ -339,7 +339,7 @@ Example:
 pre>
 @Contribute { serviceType=Converters# }
 static Void contributeConverters(Configuration config) {
-    config.overrideValue(Obj#,  config.registry.createProxy(Converter#, ObjConverter#,  [false]), null, "MyObjConverter")
+    config.overrideValue(Obj#, config.registry.createProxy(Converter#, ObjConverter#,  [false]), "MyObjConverter")
 }
 <pre
 
@@ -351,6 +351,10 @@ See [Storing null vs not storing the key at all in MongoDB]`http://stackoverflow
 
 Release Notes [#releaseNotes]
 *****************************
+v0.0.10 [#v0.0.10]
+------------------
+ - Chg: Updated to use [IoC 2.0.0]`pod:afIoc` and [IoC Config 1.0.16]`pod:afIocConfig`
+
 v0.0.8 [#v0.0.8]
 ----------------
  - Chg: Updated to use [IoC 1.7.6]`pod:afIoc` and [IoC Config 1.0.14]`pod:afIocConfig`

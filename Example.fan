@@ -1,10 +1,9 @@
 using afBson
-//using afMorphia
+using afMorphia
 using afIoc
 using afIocConfig
 
 @Entity
-internal 
 class User {
 	@Property ObjectId	_id
 	@Property Name		name
@@ -13,14 +12,12 @@ class User {
 	new make(|This|in) { in(this) }
 }
 
-internal 
 class Name {
     @Property Str  firstName
     @Property Str  lastName
     new make(|This|in) { in(this) }
 }
 
-internal 
 class Example {
 
 	@DatastoreType { type=User# } 
@@ -58,7 +55,6 @@ class Example {
 	}
 }
 
-internal 
 class ExampleModule {
 	@Contribute { serviceType=ApplicationDefaults# }
 	static Void contributeAppDefaults(Configuration config) {
@@ -71,7 +67,6 @@ class ExampleModule {
 	}
 }
 
-internal 
 const class NameConverter : Converter {
 
 	override Obj? toFantom(Type fantomType, Obj? mongoObj) {

@@ -2,14 +2,14 @@ using afIoc
 
 internal class TestSerialiseList : MorphiaTest {
 	
-	@Inject Converters? serialiser
+	@Inject Converters? converters
 
 	Void testSerializeListVals() {
 		ent := T_Entity07() {
 			list = [T_Entity06_Enum.wot, T_Entity06_Enum.ever]
 		}
 
-		doc := serialiser.toMongo(ent) as Map
+		doc := converters.toMongo(ent) as Map
 		map := (Obj[]) doc["list"]
 		verifyEq(map[0], "wot")
 		verifyEq(map[1], "ever")
@@ -18,7 +18,7 @@ internal class TestSerialiseList : MorphiaTest {
 	Void testDeserializeListVals() {
 		doc := ["list":["wot", "ever"]]
 
-		ent := (T_Entity07) serialiser.toFantom(T_Entity07#, doc)
+		ent := (T_Entity07) converters.toFantom(T_Entity07#, doc)
 		
 		verifyEq(ent.list[0], T_Entity06_Enum.wot )
 		verifyEq(ent.list[1], T_Entity06_Enum.ever)

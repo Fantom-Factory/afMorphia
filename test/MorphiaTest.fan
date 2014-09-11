@@ -6,7 +6,7 @@ abstract internal class MorphiaTest : Test {
 	Registry? reg
 	
 	override Void setup() {
-		reg = RegistryBuilder().addModules([MorphiaModule#, IocConfigModule#, T_MorphiaTestModule#]).build.startup
+		reg = RegistryBuilder().addModules([MorphiaModule#, ConfigModule#, T_MorphiaTestModule#]).build.startup
 		reg.injectIntoFields(this)
 	}
 	
