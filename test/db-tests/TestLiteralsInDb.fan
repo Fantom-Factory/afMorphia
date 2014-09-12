@@ -5,8 +5,8 @@ using afMongo
 
 internal class TestLiteralsInDb : MorphiaDbTest {
 	
-	@DatastoreType { type=T_Entity01# } 
-	@Inject Datastore?	ds
+	@Inject { type=T_Entity01# } 
+	Datastore?	ds
 
 	private ObjectId objId 	:= ObjectId()
 	private DateTime now	:= DateTime.now

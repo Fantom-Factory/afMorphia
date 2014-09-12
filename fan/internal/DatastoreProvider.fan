@@ -7,11 +7,11 @@ internal const class DatastoreProvider : DependencyProvider {
 	new make(|This| in) { in(this) }
 	
 	override Bool canProvide(InjectionCtx injectionCtx) {
-		injectionCtx.dependencyType.fits(Datastore#) && !injectionCtx.fieldFacets.findType(DatastoreType#).isEmpty
+		injectionCtx.dependencyType.fits(Datastore#) && !injectionCtx.fieldFacets.findType(Inject#).isEmpty
 	}
 
 	override Obj? provide(InjectionCtx injectionCtx) {
-		type := ((DatastoreType) injectionCtx.fieldFacets.findType(DatastoreType#).first).type
+		type := ((Inject) injectionCtx.fieldFacets.findType(Inject#).first).type
 		return registry.autobuild(Datastore#, [type])
 	}
 

@@ -57,8 +57,8 @@ class User {
 }
 
 class Example {
-    @DatastoreType { type=User# }
-    @Inject Datastore? datastore
+    @Inject { type=User# }
+    Datastore? datastore
 
     Void main() {
         reg := RegistryBuilder().addModulesFromPod(Pod.find("afMorphia")).addModule(ExampleModule#).build.startup
@@ -192,10 +192,10 @@ Datastore [#datastore]
 A `Datastore` wraps a [Mongo Collection]`afMongo::Collection` and is your gateway to reading and saving Fantom objects to the MongoDB.
 
 Each 'Datastore' instance is specific to an Entity type, so to Inject a 'Datastore' you need to specify which Entity it is associated with.
-Use the '@DatastoreType' facet to do this. Example:
+Use the '@Inject' facet to do this. Example:
 
-  @DatastoreType { type=User# }
-  @Inject Datastore datastore
+  @Inject { type=User# }
+  Datastore datastore
 
 
 
