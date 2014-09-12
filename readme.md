@@ -54,8 +54,8 @@ class User {
 }
 
 class Example {
-    @DatastoreType { type=User# }
-    @Inject Datastore? datastore
+    @Inject { type=User# }
+    Datastore? datastore
 
     Void main() {
         reg := RegistryBuilder().addModulesFromPod(Pod.find("afMorphia")).addModule(ExampleModule#).build.startup
@@ -115,7 +115,7 @@ Connected to MongoDB v2.6.1 (at mongodb://localhost:27017)
   / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
  / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
 /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
-                            Alien-Factory IoC v1.7.6 /___/
+                            Alien-Factory IoC v2.0.0 /___/
 
 IoC Registry built in 1,310ms and started up in 247ms
 
@@ -126,7 +126,7 @@ Micky Mouse
 
 ## Usage 
 
-### Mongo Connection URL 
+### MongoDB Connections 
 
 A [Mongo Connection URL](http://docs.mongodb.org/manual/reference/connection-string/) should be contributed as an application default. This supplies the default database to connect to, along with any default user credentials. Example, in your `AppModule`:
 
@@ -137,11 +137,20 @@ static Void contributeAppDefaults(Configuration config) {
 }
 ```
 
+`Morphia` uses the connection URL to create a pooled [ConnectionManager](http://repo.status302.com/doc/afMongo/ConnectionManagerPooled.html). The `ConnectionManager`, and all of its connections, are gracefully closed when IoC / BedSheet is shutdown.
+
+Some connection URL options are supported:
+
+- `mongodb://username:password@example1.com/database?maxPoolSize=50`
+- `mongodb://example2.com?minPoolSize=10&maxPoolSize=25`
+
+See [ConnectionManagerPooled](http://repo.status302.com/doc/afMongo/ConnectionManagerPooled.html) for more details.
+
 ### Entities 
 
 An entity is a top level domain object that is persisted in a MongoDB collection.
 
-Entity objects must be annotated with the [@Entity](http://repo.status302.com/doc/afMorphia/Entity.html) facet. By default, the MongoDB collection name is the same as the (unqualified) entity Type name. Example, if your entity type is `acmeExample::User` then it maps to a collection named `User`.
+Entity objects must be annotated with the [@Entity](http://repo.status302.com/doc/afMorphia/Entity.html) facet. By default the MongoDB collection name is the same as the (unqualified) entity Type name. Example, if your entity type is `acmeExample::User` then it maps to a collection named `User`. This may be overriden by providing a value for the `@Entity.name` attribute.
 
 Entity fields are mapped to properties in a MongoDB document. Use the `@Property` facet to mark fields that should be mapped to / from a Mongo property. Again, the default is to take the property name and type from the field, but it may be overridden by facet values.
 
@@ -156,7 +165,7 @@ As all MongoDB documents define a unique property named `_id`, all entities must
 
 or
 
-    @Entity
+    @Entity { name="AnotherEntity" }
     class MyEntity {
         @Property { name="_id" }
         ObjectId wotever
@@ -169,10 +178,10 @@ Note that a Mongo Id *does not* need to be an `ObjectId`. Any object may be used
 
 A [Datastore](http://repo.status302.com/doc/afMorphia/Datastore.html) wraps a [Mongo Collection](http://repo.status302.com/doc/afMongo/Collection.html) and is your gateway to reading and saving Fantom objects to the MongoDB.
 
-Each `Datastore` instance is specific to an Entity type, so to Inject a `Datastore` you need to specify which Entity it is associated with. Use the `@DatastoreType` facet to do this. Example:
+Each `Datastore` instance is specific to an Entity type, so to Inject a `Datastore` you need to specify which Entity it is associated with. Use the `@Inject` facet to do this. Example:
 
-    @DatastoreType { type=User# }
-    @Inject Datastore datastore
+    @Inject { type=User# }
+    Datastore datastore
 
 ## Mapping 
 
@@ -305,7 +314,7 @@ If you want to store `null` values, then create a new `ObjConverter` passing `fa
 ```
 @Contribute { serviceType=Converters# }
 static Void contributeConverters(Configuration config) {
-    config.overrideValue(Obj#,  config.registry.createProxy(Converter#, ObjConverter#,  [false]), null, "MyObjConverter")
+    config.overrideValue(Obj#, config.registry.createProxy(Converter#, ObjConverter#,  [false]), "MyObjConverter")
 }
 ```
 

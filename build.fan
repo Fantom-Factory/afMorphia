@@ -11,7 +11,7 @@ class Build : BuildPod {
 			"proj.name"		: "Morphia",
 			"afIoc.module"	: "afMorphia::MorphiaModule",
 			"tags"			: "database",
-			"repo.private"	: "true"
+			"repo.private"	: "false"
 		]
 
 		index	= [	"afIoc.module"	: "afMorphia::MorphiaModule" ]

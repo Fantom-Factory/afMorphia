@@ -22,11 +22,3 @@ facet class Property {
 	** Defaults to the field type.
 	const Type? type
 }
-
-** Use in conjunction with '@Inject' to specify which 'Datastore' to inject.
-facet class DatastoreType {
-	
-	** The entity type
-	const Type type
-	
-}

@@ -25,8 +25,8 @@ const class MorphiaModule {
 
 	@Build { serviceId="afMongo::Database" }
 	static Database buildDatabase(ConfigSource configSrc, ConnectionManager conMgr) {
-		mongoUri	:= (Uri) configSrc.get(MorphiaConfigIds.mongoUrl, Uri#)
-		dbName		:= mongoUri.path.join("/")	// this gets rid of any leading slashes - not that there *should* be anything to join!
+		mongoUrl	:= (Uri) configSrc.get(MorphiaConfigIds.mongoUrl, Uri#)
+		dbName		:= mongoUrl.path.join("/")	// this gets rid of any leading slashes - not that there *should* be anything to join!
 		return Database(conMgr, dbName)
 	}
 	

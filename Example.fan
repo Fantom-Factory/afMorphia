@@ -20,8 +20,8 @@ class Name {
 
 class Example {
 
-	@DatastoreType { type=User# } 
-	@Inject Datastore? datastore
+	@Inject { type=User# } 
+	Datastore? datastore
 
 	Void main() {
 		reg := RegistryBuilder().addModulesFromPod(Pod.find("afMorphia")).addModule(ExampleModule#).build.startup

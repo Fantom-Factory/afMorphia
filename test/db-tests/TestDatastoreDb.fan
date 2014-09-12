@@ -2,8 +2,8 @@ using afIoc
 
 internal class TestDatastoreDb : MorphiaDbTest {
 	
-	@DatastoreType { type=T_Entity14# } 
-	@Inject Datastore?	ds
+	@Inject { type=T_Entity14# } 
+	Datastore?	ds
 
 	Void testBasicDatastore() {		
 		micky := T_Entity14 { 
