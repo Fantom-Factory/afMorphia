@@ -6,10 +6,14 @@ using afMongo
 ** (Service) -
 ** Wraps a MongoDB [Collection]`afMongo::Collection`, converting Fantom entities to / from Mongo documents.
 ** 
-** When injecting as a service, use the '@DatastoreType' facet to state which Entity type it is for: 
+** When injecting as a service, use the '@Inject.type' attribute to state which Entity type it is for: 
 ** 
-**   @Inject @DatastoreType { type=MyEntity# }
+**   @Inject { type=MyEntity# }
 **   private const Datastore myEntityDatastore
+** 
+** You can also autobuild a Datastore instance by passing in the entity type as a ctor param:
+** 
+**   registry.autobuild(Datastore#, [MyEntity#])
 const class Datastore {
 	
 	** The underlying MongoDB collection this Datastore wraps.
@@ -24,8 +28,9 @@ const class Datastore {
 	** The simple name of the MongoDB collection.
 	const Str name
 	
-	@Inject private const Converters	converters
-			private const Field 		idField
+	@Inject
+	private const Converters	converters
+	private const Field 		idField
 	
 	internal new make(Type type, Database database, |This|in) {
 		entity  := (Entity?) Type#.method("facet").callOn(type, [Entity#, false])
@@ -65,7 +70,9 @@ const class Datastore {
 	
 	** Returns one document that matches the given 'query'.
 	** 
-	** Throws 'MongoErr' if no documents are found and 'checked' is true, returns 'null' otherwise.
+	** Note: This method requires you to be familiar with Mongo query notation. If not, use the `Query` builder instead.
+	** 
+	** Throws 'MongoErr' if no documents are found and 'checked' is 'true', returns 'null' otherwise.
 	** Always throws 'MongoErr' if the query returns more than one document.
 	**  
 	** @see `afMongo::Collection.findOne`
@@ -75,7 +82,11 @@ const class Datastore {
 	}
 
 	** Returns the result of the given 'query' as a list of documents.
-	** If 'sort' is a Str it should the name of an index to use as a hint. 
+	** 
+	** Note: This method requires you to be familiar with Mongo query notation. If not, use the `Query` builder instead.
+	** 
+	** If 'sort' is a Str it should the name of an index to use as a hint.
+	**  
 	** If 'sort' is a '[Str:Obj?]' map, it should be a sort document with field names as keys. 
 	** Values may either be the standard Mongo '1' and '-1' for ascending / descending or the 
 	** strings 'ASC' / 'DESC'.
@@ -88,6 +99,8 @@ const class Datastore {
 	}
 
 	** Returns the number of documents that would be returned by the given 'query'.
+	** 
+	** Note: This method requires you to be familiar with Mongo query notation. If not, use the `Query` builder instead.
 	** 
 	** @see `afMongo::Collection.findCount`
 	Int findCount(Str:Obj? query) {
@@ -168,6 +181,18 @@ const class Datastore {
 		converters.toMongo(entity)		
 	}	
 
+	// ---- Query Methods -------------------------------------------------------------------------
+	
+	** Returns a `Query` object used to build Mongo queries.
+	Query query() {
+		Query(this, converters)
+	}
+
+	** Convenience for 'query.field(fieldName)'
+	QueryProjection queryBy(Str fieldName) {
+		Query(this, converters).field(fieldName)
+	}
+	
 	// ---- Helper Methods ------------------------------------------------------------------------
 	
 	internal static Type verifyEntityType(Type type) {
