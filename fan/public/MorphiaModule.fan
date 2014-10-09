@@ -60,7 +60,7 @@ const class MorphiaModule {
 		config[Timestamp#]	= mongoLiteral
 		
 		// Containers
-		config[Obj#]		= config.createProxy(Converter#, ObjConverter#, [true])
+		config[Obj#]		= config.createProxy(Converter#, ObjConverter#, [false])
 		config[Map#]		= config.createProxy(Converter#, MapConverter#)
 		config[List#]		= config.createProxy(Converter#, ListConverter#)
 		

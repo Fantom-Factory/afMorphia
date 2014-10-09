@@ -68,7 +68,7 @@ const class Datastore {
 
 	// ---- Cursor Queries ------------------------------------------------------------------------
 	
-	** Returns one document that matches the given 'query'.
+	** An (optomised) method to return one document from the given 'query'.
 	** 
 	** Note: This method requires you to be familiar with Mongo query notation. If not, use the `Query` builder instead.
 	** 
@@ -81,7 +81,7 @@ const class Datastore {
 		return (entity == null) ? null : fromMongoDoc(entity)
 	}
 
-	** Returns the result of the given 'query' as a list of documents.
+	** Returns a list of entities that match the given 'query'.
 	** 
 	** Note: This method requires you to be familiar with Mongo query notation. If not, use the `Query` builder instead.
 	** 
@@ -172,25 +172,34 @@ const class Datastore {
 	// ---- Conversion Methods --------------------------------------------------------------------
 	
 	** Converts the Mongo document to an entity instance.
+	** 
+	** The returned object is not guaranteed to be of any particular object, 
+	** for this is just a convenience for calling 'Converters.toFantom(...)'.
 	Obj fromMongoDoc(Str:Obj? mongoDoc) {
 		converters.toFantom(type, mongoDoc)
 	}
 	
 	** Converts the entity instance to a Mongo document.
+	** 
+	** Actually, 'entity' maybe any Fantom object and not just an entity,
+	** for this is just a convenience for calling 'Converters.toMongo(...)'.
 	Str:Obj? toMongoDoc(Obj entity) {
+		converters.toMongo(entity)		
+	}	
+
+	** Converts the value to a Mongo object.
+	** 
+	** Convenience for calling 'Converters.toMongo(...)'.
+	Obj? toMongo(Obj? entity) {
 		converters.toMongo(entity)		
 	}	
 
 	// ---- Query Methods -------------------------------------------------------------------------
 	
 	** Returns a `Query` object used to build Mongo queries.
-	Query query() {
-		Query(this, converters)
-	}
-
-	** Convenience for 'query.field(fieldName)'
-	QueryProjection queryBy(Str fieldName) {
-		Query(this, converters).field(fieldName)
+	QueryExecutor query(Query? query := null) {
+		// nullable query so we can do: ds.query.findAll
+		QueryExecutor(this, query ?: Query())
 	}
 	
 	// ---- Helper Methods ------------------------------------------------------------------------
