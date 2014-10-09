@@ -3,7 +3,7 @@
 class QueryExecutor {
 	private Datastore	_datastore
 	private [Str:Obj]	_query
-	private [Str:Obj]?	_sortBy
+	private Obj?		_sortBy
 
 	** Starts the query results at a particular zero-based offset.
 	** 
@@ -22,12 +22,31 @@ class QueryExecutor {
 		this._query 	 = query.toMongo(datastore)
 	}
 	
-	** TODO: Use '-' for desc
-	** TODO: allow multiple sortBy() calls
+	** Specifies a field to use for sorting. 
+	** 
+	** Sorting is ascending by default. Prefix the name with '-' to specify a descending sort.
+	** 
+	** Multiple calls to 'sortBy()' may be made to indicate sub-sorts.
+	** Example:
+	** 
+	**   QueryExecutor(...).sortBy("name").sortBy("-value").findAll
 	This sortBy(Str fieldName) {
-		// TODO: check field exists
-		// TODO: take an Obj, rename to just field() and check for Str or Field
-		_sortBy = map[fieldName] = "ASC"
+		if (_sortBy is Str)
+			throw ArgErr(ErrMsgs.query_canNotMixSorts(_sortBy, fieldName))
+		if (_sortBy == null)
+			_sortBy = map
+		if (fieldName.startsWith("-"))		
+			((Str:Obj?) _sortBy)[fieldName[1..-1]] = "DESC"
+		else
+			((Str:Obj?) _sortBy)[fieldName] = "ASC"
+		return this
+	}
+
+	** Specifies an index to use for sorting.
+	This sortByIndex(Str indexName) {
+		if (_sortBy isnot Str)
+			throw ArgErr(ErrMsgs.query_canNotMixSorts(indexName, _sortBy))
+		_sortBy = indexName
 		return this
 	}
 
