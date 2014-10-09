@@ -1,8 +1,6 @@
 using afIoc
 using afBson
 
-// Texy search
-// http://docs.mongodb.org/manual/reference/operator/query/text/#op._S_text
 internal class TestQuery : MorphiaDbTest {
 	
 	@Inject { type=T_Entity18# } 
@@ -207,6 +205,20 @@ internal class TestQuery : MorphiaDbTest {
 		verifyEq(res.first.name, "Dredd")
 	}
 
+	// ---- Sort Tests ----------------------------------------------------------------------------
+	
+	Void testSort() {
+		ds.insert(T_Entity18("Dredd", 22))
+		res := (T_Entity18[]) ds.query.sortBy("name").sortBy("-value").findAll
+		verifyEq(res.size, 4)
+		verifyEq(res[0].name,  "Dredd")
+		verifyEq(res[0].value, 22)
+		verifyEq(res[1].name, "Dredd")
+		verifyEq(res[1].value, 19)
+		verifyEq(res[2].name, "Judge")
+		verifyEq(res[3].name, "Wotever")
+	}
+	
 	// ---- Private Methods -----------------------------------------------------------------------
 	
 	// squirrel this away
