@@ -1,51 +1,90 @@
+using afBson
 
-// TODO: move to morphia - so it converts value objs 
-// copy FieldEnd, Query
+** A means to build Mongo queries with sane objects and methods. (And not some incomprehensible mess of nested maps and lists!)
 class Query {
 	
-	private Datastore	_datastore
-	internal Converters	_converters
-	private [Str:Obj]?	_orderBy
-	private [Str:Obj]	_query	:= map
+	private |Datastore, Str:Obj|[] _toMongoFuncs	:= [,]
 	
-	@NoDoc
-	new make(Datastore datastore, Converters converters) {
-		this._datastore = datastore
-		this._converters = converters
-	}
-	
-	QueryProjection field(Str fieldName) {
-		// TODO: check field exists
-		// TODO: take an Obj, rename to just field() and check for Str or Field
-		return QueryProjection(this, fieldName)
+	** Creates a match for the given field name.
+	QueryCriterion field(Str fieldName) {
+		// TODO: validate field exists
+		// Note, this cannot take a field for we can't verify nested objects
+		return QueryCriterion(this, fieldName)
 	}
 
-	** TODO: Use '-' for desc
-	This orderBy(Str fieldName) {
-		// TODO: check field exists
-		// TODO: take an Obj, rename to just field() and check for Str or Field
-		_orderBy = map[fieldName] = "ASC"
+	** Selects documents based on the return value of a javascript function. Example:
+	** 
+	**   Query().where(Code("this.name == 'Judge Dredd'"))
+	** 
+	** As only 1 *where* function is allowed per query, only the last *where* function is used.
+	** 
+	** @see `http://docs.mongodb.org/manual/reference/operator/query/where/`
+	Query where(Code where) {
+		_addFunc |Datastore datastore, Str:Obj mongoQuery| {
+			mongoQuery["\$where"] = where
+		}
+	}
+
+	** Selects documents that pass all the query expressions in the given list.
+	** Example:
+	** 
+	**   Query().and([
+	**     Query().field("quantity").lessThan(20),
+	**     Query().field("price").eq(10)
+	**   ])
+	** 
+	** Note the above could also be written implicitly with:
+	** 
+	**   Query().field("quantity").lessThan(20).field("price").eq(10)
+	** 
+	** @see `http://docs.mongodb.org/manual/reference/operator/query/and/`
+	Query and(Query[] criteria) {
+		_addFunc |Datastore datastore, Str:Obj mongoQuery| {
+			mongoQuery.add("\$and", criteria.map { it.toMongo(datastore) })
+		}
+	}	
+
+	** Selects documents that pass any of the query expressions in the given list.
+	** Example:
+	** 
+	**   Query().or([
+	**     Query().field("quantity").lessThan(20),
+	**     Query().field("price").eq(10)
+	**   ])
+	** 
+	** @see `http://docs.mongodb.org/manual/reference/operator/query/or/`
+	Query or(Query[] criteria) {
+		_addFunc |Datastore datastore, Str:Obj mongoQuery| {
+			mongoQuery.add("\$or", criteria.map { it.toMongo(datastore) })
+		}
+	}	
+
+	** Selects documents that fail **all** the query expressions in the given list.
+	** Example:
+	** 
+	**   Query().or([
+	**     Query().field("quantity").lessThan(20),
+	**     Query().field("price").eq(10)
+	**   ])
+	** 
+	** @see `http://docs.mongodb.org/manual/reference/operator/query/nor/`
+	Query nor(Query[] criteria) {
+		_addFunc |Datastore datastore, Str:Obj mongoQuery| {
+			mongoQuery.add("\$nor", criteria.map { it.toMongo(datastore) })
+		}
+	}
+	
+	** Returns a Mongo document representing the query. 
+	** May be used by `DataStore` and [Collection]`afMongo::Collection` methods such as 'findAndUpdate(...)'.  
+	[Str:Obj] toMongo(Datastore datastore) {
+		mongoQuery := map
+		_toMongoFuncs.each { it.call(datastore, mongoQuery) }
+		return mongoQuery
+	}
+	
+	internal This _addFunc(|Datastore, Str:Obj| func) {
+		_toMongoFuncs.add(func)
 		return this
-	}
-
-	Obj? findOne(Bool checked := true) {
-		_datastore.findOne(_query, checked)
-	}
-
-	Obj[] findAll() {
-		_datastore.findAll(_query, _orderBy)
-	}
-
-	Str:Obj toMap() {
-		_query
-	}
-	
-	@Operator
-	private Obj? get(Str key) { null }
-	
-	@Operator @NoDoc
-	Void set(Str key, Obj? val) {
-		_query[key] = val
 	}
 	
 	private static Str:Obj map() {

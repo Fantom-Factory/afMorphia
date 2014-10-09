@@ -333,13 +333,13 @@ Should it store a key in the MongoDb with a 'null' value, or should it not store
 
 To conserve storage space in MongoDB, by default 'ObjConverter' does not store the keys.
 
-If you want to store 'null' values, then create a new 'ObjConverter' passing 'false' into the ctor, and contribute it in your AppModule:
+If you want to store 'null' values, then create a new 'ObjConverter' passing 'true' into the ctor, and contribute it in your AppModule:
 Example:
 
 pre>
 @Contribute { serviceType=Converters# }
 static Void contributeConverters(Configuration config) {
-    config.overrideValue(Obj#, config.registry.createProxy(Converter#, ObjConverter#,  [false]), "MyObjConverter")
+    config.overrideValue(Obj#, config.registry.createProxy(Converter#, ObjConverter#,  [true]), "MyObjConverter")
 }
 <pre
 
@@ -351,6 +351,10 @@ See [Storing null vs not storing the key at all in MongoDB]`http://stackoverflow
 
 Release Notes [#releaseNotes]
 *****************************
+v0.0.12 [#v0.0.12]
+------------------
+ -
+
 v0.0.10 [#v0.0.10]
 ------------------
  - Chg: Deleted '@DatastoreType', use '@Inject' instead.

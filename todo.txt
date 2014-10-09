@@ -8,7 +8,6 @@ For 1.0.0
 
 _version -> auto optimistic locking
 
-PrePersist & PostPersist, PreLoad & PostLoad (better names?), configure via a Facet Interceptor -> tie in with Entity mixin?
 
 
 
@@ -23,7 +22,8 @@ e.g. Bool -> false
 Turn off by default -> It is too finicky, and unexpected behaviour. (But I'm sure I saved that total of 0!!!)
 Needs to be handled both *to* and *from* Mongo.
 
-
+PrePersist & PostPersist, PreLoad & PostLoad (better names?), configure via a Facet Interceptor -> tie in with Entity mixin?
+ - Naa, this can be handled by application DAO objects
 
 Just Plain Bad Ideas:
 =====================
