@@ -1,5 +1,12 @@
 
-** Executes a query built from `Query` objects. 
+** Executes `Query` objects against a 'Datastore'. Example:
+** 
+**   QueryExecutor(datastore, query).skip(10).limit(50).sortBy("name").findAll
+** 
+** Or you can use the instance returned by 'Datastore.query(...)':
+** 
+**   datastore.query(query).skip(10).limit(50).sortBy("name").findAll
+** 
 class QueryExecutor {
 	private Datastore	_datastore
 	private [Str:Obj]	_query

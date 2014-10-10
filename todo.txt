@@ -1,19 +1,17 @@
 
-For 0.0.4
-=========
+For 0.0.14
+==========
+
 
 
 For 1.0.0
 =========
-
 _version -> auto optimistic locking
 
 Text search
  - http://docs.mongodb.org/manual/reference/operator/query/text/
  - check indexing and sorting and returning meta
 
-Add this handy page to the docs
- - http://docs.mongodb.org/manual/reference/method/db.collection.find/
 
 
 For Future
@@ -27,10 +25,14 @@ e.g. Bool -> false
 Turn off by default -> It is too finicky, and unexpected behaviour. (But I'm sure I saved that total of 0!!!)
 Needs to be handled both *to* and *from* Mongo.
 
+
+
 Naa - Can't be arsed!
 =====================
 PrePersist & PostPersist, PreLoad & PostLoad (better names?), configure via a Facet Interceptor -> tie in with Entity mixin?
  - Naa, this can be handled by application DAO objects
+
+
 
 Just Plain Bad Ideas:
 =====================
