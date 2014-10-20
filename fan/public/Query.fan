@@ -7,9 +7,12 @@ class Query {
 	
 	private |Datastore, Str:Obj|[] _toMongoFuncs	:= [,]
 	
-	** Creates a match for the given field name.
+	** Creates a match for the given field name. It may reference nested objects using dot notation. Example, 'user.name'
+	** 
+	** Note this is actually the MongoDB property name and *not* the field name. 
+	** Though, the two are usually the same unless you use the '@Property.name' attribute. 
 	QueryCriterion field(Str fieldName) {
-		// TODO: validate field exists
+		// todo: validate field exists
 		// Note, this cannot take a field for we can't verify nested objects
 		return QueryCriterion(this, fieldName)
 	}
@@ -79,7 +82,7 @@ class Query {
 	** Returns a Mongo document representing the query. 
 	** May be used by `DataStore` and [Collection]`afMongo::Collection` methods such as 'findAndUpdate(...)'.  
 	[Str:Obj] toMongo(Datastore datastore) {
-		mongoQuery := map
+		mongoQuery := Str:Obj[:] { ordered = true }
 		_toMongoFuncs.each { it.call(datastore, mongoQuery) }
 		return mongoQuery
 	}
@@ -87,9 +90,5 @@ class Query {
 	internal This _addFunc(|Datastore, Str:Obj| func) {
 		_toMongoFuncs.add(func)
 		return this
-	}
-	
-	private static Str:Obj map() {
-		Str:Obj[:] { ordered = true }
-	}
+	}	
 }

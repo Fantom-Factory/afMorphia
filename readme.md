@@ -8,7 +8,8 @@
 
 - All Fantom literals and [BSON](http://www.fantomfactory.org/pods/afBson) types supported by default,
 - Support for embedded / nested Fantom objects,
-- Extensible mapping - add your own custom [Converters](http://repo.status302.com/doc/afMorphia/Converters.html).
+- Extensible mapping - add your own custom [Converters](http://repo.status302.com/doc/afMorphia/Converters.html),
+- Query Builder API.
 
 ## Install 
 
@@ -71,7 +72,7 @@ class Example {
         datastore.insert(micky)
 
         // ---- Read --------
-        mouse := (User) datastore.findOne(["age": 42])
+        mouse := (User) datastore.query.field("age").eq(42).findOne
         echo(mouse.name)  // --> Micky Mouse
 
         // ---- Update -----
@@ -150,7 +151,7 @@ See [ConnectionManagerPooled](http://repo.status302.com/doc/afMongo/ConnectionMa
 
 An entity is a top level domain object that is persisted in a MongoDB collection.
 
-Entity objects must be annotated with the [@Entity](http://repo.status302.com/doc/afMorphia/Entity.html) facet. By default the MongoDB collection name is the same as the (unqualified) entity Type name. Example, if your entity type is `acmeExample::User` then it maps to a collection named `User`. This may be overriden by providing a value for the `@Entity.name` attribute.
+Entity objects must be annotated with the [@Entity](http://repo.status302.com/doc/afMorphia/Entity.html) facet. By default the MongoDB collection name is the same as the (unqualified) entity type name. Example, if your entity type is `acmeExample::User` then it maps to a Mongo collection named `User`. This may be overriden by providing a value for the `@Entity.name` attribute.
 
 Entity fields are mapped to properties in a MongoDB document. Use the `@Property` facet to mark fields that should be mapped to / from a Mongo property. Again, the default is to take the property name and type from the field, but it may be overridden by facet values.
 
@@ -176,9 +177,9 @@ Note that a Mongo Id *does not* need to be an `ObjectId`. Any object may be used
 
 ### Datastore 
 
-A [Datastore](http://repo.status302.com/doc/afMorphia/Datastore.html) wraps a [Mongo Collection](http://repo.status302.com/doc/afMongo/Collection.html) and is your gateway to reading and saving Fantom objects to the MongoDB.
+A [Datastore](http://repo.status302.com/doc/afMorphia/Datastore.html) wraps a [Mongo Collection](http://repo.status302.com/doc/afMongo/Collection.html) and is your gateway to saving and reading Fantom objects to / from the MongoDB.
 
-Each `Datastore` instance is specific to an Entity type, so to Inject a `Datastore` you need to specify which Entity it is associated with. Use the `@Inject` facet to do this. Example:
+Each `Datastore` instance is specific to an Entity type, so to inject a `Datastore` you need to specify which Entity it is associated with. Use the `@Inject.type` attribute to do this. Example:
 
     @Inject { type=User# }
     Datastore datastore
@@ -189,7 +190,7 @@ At the core of `Morphia` is a suite of [Converters](http://repo.status302.com/do
 
 ### Standard Converters 
 
-By default, `Morphia` provides converters for the following Fantom types:
+By default, `Morphia` provides support and converters for the following Fantom types:
 
 ```
 afBson::Binary
@@ -309,16 +310,56 @@ When converting Fantom objects *to* Mongo, the [ObjConverter](http://repo.status
 
 To conserve storage space in MongoDB, by default `ObjConverter` does not store the keys.
 
-If you want to store `null` values, then create a new `ObjConverter` passing `false` into the ctor, and contribute it in your AppModule: Example:
+If you want to store `null` values, then create a new `ObjConverter` passing `true` into the ctor, and contribute it in your AppModule: Example:
 
 ```
 @Contribute { serviceType=Converters# }
 static Void contributeConverters(Configuration config) {
-    config.overrideValue(Obj#, config.registry.createProxy(Converter#, ObjConverter#,  [false]), "MyObjConverter")
+    config.overrideValue(Obj#, config.registry.createProxy(Converter#, ObjConverter#,  [true]), "MyObjConverter")
 }
 ```
 
 (A proxy is required due to the circular nature of Converters.)
 
 See [Storing null vs not storing the key at all in MongoDB](http://stackoverflow.com/questions/12403240/storing-null-vs-not-storing-the-key-at-all-in-mongodb) for more details.
+
+## Query API
+
+Querying a MongoDB for documents requires knowledge of their [Query Operators](http://docs.mongodb.org/manual/reference/operator/query/). While simple for simple queries:
+
+    query :=  ["age": 42]
+
+It can quickly grow unmanagable for larger queries. Example, this is an official example for the [$and operator](http://docs.mongodb.org/manual/reference/operator/query/and/):
+
+```
+query := [
+    "\$and" : [
+        ["\$or": [["price": 0.99f], ["price": 1.99f]]],
+        ["\$or": [["sale" : true ], ["qty"  : ["\$lt": 20]]]]
+    ]
+]
+```
+
+For that reason Morphia provides a means to build and execute [Query](http://repo.status302.com/doc/afMorphia/Query.html) objects that rely on more meaningful method names. The simple example may be re-written as:
+
+    query := Query().field("age").eq(42)
+
+Use a [QueryExecutor](http://repo.status302.com/doc/afMorphia/QueryExecutor.html) as returned from the `Datastore.query(...)` method to run the query.
+
+    datastore.query(query).findAll
+
+Because you often create `Query` objects to match fields, it can be helpful to squirrel away this little bit of code in its own method:
+
+    QueryCriterion field(Str fieldName) {
+        Query().field(fieldName)
+    }
+
+The more complicated `$and` example then becomes:
+
+    query := Query().and([
+        Query().or([ field("price").eq(0.99f), field("price").eq(1.99f)  ]),
+        Query().or([ field("sale ").eq(true),  field("qty").lessThan(20) ])
+    ])
+
+Which, even though slightly more verbose, should be much easier to construct and debug. And the autocomplete nature of IDEs such as [F4](http://www.xored.com/products/f4/) means you don't have to constantly consult the [Mongo documentation](http://docs.mongodb.org/manual/reference/method/db.collection.find/).
 

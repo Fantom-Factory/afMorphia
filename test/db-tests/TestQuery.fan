@@ -209,7 +209,7 @@ internal class TestQuery : MorphiaDbTest {
 	
 	Void testSort() {
 		ds.insert(T_Entity18("Dredd", 22))
-		res := (T_Entity18[]) ds.query.sortBy("name").sortBy("-value").findAll
+		res := (T_Entity18[]) ds.query.orderBy("name").orderBy("-value").findAll
 		verifyEq(res.size, 4)
 		verifyEq(res[0].name,  "Dredd")
 		verifyEq(res[0].value, 22)
