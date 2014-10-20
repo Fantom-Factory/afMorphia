@@ -10,18 +10,9 @@
 class QueryExecutor {
 	private Datastore	_datastore
 	private [Str:Obj]	_query
-	private Obj?		_sortBy
-
-	** Starts the query results at a particular zero-based offset.
-	** 
-	** Only used by 'findAll()'. 
-	Int skip	:= 0
-
-	** Limits the fetched result set to a certain number of values. 
-	** A value of 'null' or '0' indicates no limit.
-	** 
-	** Only used by 'findAll()'. 
-	Int? limit	:= null
+	private Obj?		_orderBy
+	private Int 		_skip	:= 0
+	private Int? 		_limit	:= null
 	
 	** Creates a 'QueryExecutor' to run the given query against the datastore.
 	new make(Datastore datastore, Query query) {
@@ -29,31 +20,34 @@ class QueryExecutor {
 		this._query 	 = query.toMongo(datastore)
 	}
 	
-	** Specifies a field to use for sorting. 
+	** Specifies a property / field to use for ordering. 
 	** 
-	** Sorting is ascending by default. Prefix the name with '-' to specify a descending sort.
+	** Ordering is ascending by default. Prefix the name with '-' to specify a descending order.
 	** 
-	** Multiple calls to 'sortBy()' may be made to indicate sub-sorts.
+	** Multiple calls to 'orderBy()' may be made to indicate sub-sorts.
 	** Example:
 	** 
-	**   QueryExecutor(...).sortBy("name").sortBy("-value").findAll
-	This sortBy(Str fieldName) {
-		if (_sortBy is Str)
-			throw ArgErr(ErrMsgs.query_canNotMixSorts(_sortBy, fieldName))
-		if (_sortBy == null)
-			_sortBy = map
+	**   QueryExecutor(...).orderBy("name").sortBy("-value").findAll
+	** 
+	** Note this is actually the MongoDB property name and *not* the field name. 
+	** Though, the two are usually the same unless you use the '@Property.name' attribute. 
+	This orderBy(Str fieldName) {
+		if (_orderBy is Str)
+			throw ArgErr(ErrMsgs.query_canNotMixSorts(_orderBy, fieldName))
+		if (_orderBy == null)
+			_orderBy = map
 		if (fieldName.startsWith("-"))		
-			((Str:Obj?) _sortBy)[fieldName[1..-1]] = "DESC"
+			((Str:Obj?) _orderBy)[fieldName[1..-1]] = "DESC"
 		else
-			((Str:Obj?) _sortBy)[fieldName] = "ASC"
+			((Str:Obj?) _orderBy)[fieldName] = "ASC"
 		return this
 	}
 
 	** Specifies an index to use for sorting.
-	This sortByIndex(Str indexName) {
-		if (_sortBy isnot Str)
-			throw ArgErr(ErrMsgs.query_canNotMixSorts(indexName, _sortBy))
-		_sortBy = indexName
+	This orderByIndex(Str indexName) {
+		if (_orderBy isnot Str)
+			throw ArgErr(ErrMsgs.query_canNotMixSorts(indexName, _orderBy))
+		_orderBy = indexName
 		return this
 	}
 
@@ -71,13 +65,30 @@ class QueryExecutor {
 	** 
 	** @see `afMongo::Collection.findAll`
 	Obj[] findAll() {
-		_datastore.findAll(_query, _sortBy, skip, limit)
+		_datastore.findAll(_query, _orderBy, _skip, _limit)
+	}
+	
+	** Starts the query results at a particular zero-based offset.
+	** 
+	** Only used by 'findAll()'. 
+	This skip(Int skip) {
+		this._skip = skip
+		return this
+	}
+
+	** Limits the fetched result set to a certain number of values. 
+	** A value of 'null' or '0' indicates no limit.
+	** 
+	** Only used by 'findAll()'. 
+	This limit(Int limit) {
+		this._limit = limit
+		return this
 	}
 	
 	** Returns the number of documents that would be returned by the query.
 	** 
 	** @see `afMongo::Collection.findCount`
-	Int findCount(Str:Obj? query) {
+	Int findCount() {
 		_datastore.findCount(_query)
 	}
 
