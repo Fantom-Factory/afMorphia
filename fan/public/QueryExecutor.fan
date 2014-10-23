@@ -1,11 +1,11 @@
 
 ** Executes `Query` objects against a 'Datastore'. Example:
 ** 
-**   QueryExecutor(datastore, query).skip(10).limit(50).sortBy("name").findAll
+**   QueryExecutor(datastore, query).skip(10).limit(50).orderBy("name").findAll
 ** 
 ** Or you can use the instance returned by 'Datastore.query(...)':
 ** 
-**   datastore.query(query).skip(10).limit(50).sortBy("name").findAll
+**   datastore.query(query).orderBy("name").findAll
 ** 
 class QueryExecutor {
 	private Datastore	_datastore
@@ -27,7 +27,7 @@ class QueryExecutor {
 	** Multiple calls to 'orderBy()' may be made to indicate sub-sorts.
 	** Example:
 	** 
-	**   QueryExecutor(...).orderBy("name").sortBy("-value").findAll
+	**   QueryExecutor(...).orderBy("name").orderBy("-value").findAll
 	** 
 	** Note this is actually the MongoDB property name and *not* the field name. 
 	** Though, the two are usually the same unless you use the '@Property.name' attribute. 

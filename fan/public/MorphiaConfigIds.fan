@@ -7,7 +7,7 @@
 **     config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
 ** }
 ** <pre
-const class MorphiaConfigIds {
+const mixin MorphiaConfigIds {
 
 	** Use to set the [Mongo Connection URL]`http://docs.mongodb.org/manual/reference/connection-string/`.
 	** 
@@ -18,5 +18,8 @@ const class MorphiaConfigIds {
 	** }
 	** <pre
 	static const Str mongoUrl	:= "afMorphia.mongoUrl"
+
+	** The name of the collection used by `IdSequences` to store last ID information.
+	static const Str intSequencesCollectionName	:= "afMorphia.intSequencesCollectionName"
 
 }

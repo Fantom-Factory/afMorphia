@@ -1,5 +1,6 @@
 
 ** Defines match criterion for a field.
+** Created and returned from 'Query.field()' methods.
 class QueryCriterion {
 	private Str?	_fieldName
 	private Query	_query
