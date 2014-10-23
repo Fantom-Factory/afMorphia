@@ -14,6 +14,7 @@ const class MorphiaModule {
 	static Void defineServices(ServiceDefinitions defs) {
 		defs.add(Morphia#)
 		defs.add(Converters#)
+		defs.add(IntSequences#)
 	}
 	
 	@Build { serviceId="afMongo::ConnectionManager" }
@@ -78,6 +79,7 @@ const class MorphiaModule {
 	@Contribute { serviceType=FactoryDefaults# }
 	static Void contributeFactoryDefaults(Configuration config) {
 		config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017`
+		config[MorphiaConfigIds.intSequencesCollectionName] = "IntSequences"
 	}
 	
 	@Contribute { serviceType=RegistryStartup# }

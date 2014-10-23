@@ -51,13 +51,13 @@ internal class TestDatastore : MorphiaTest {
 	
 	Void testPropertyMustFit() {
 		verifyErrMsg(MorphiaErr#, ErrMsgs.datastore_facetTypeDoesNotFitField(Int#, T_Entity15#inty)) {
-			Datastore.verifyEntityType(T_Entity15#)
+			DatastoreImpl.verifyEntityType(T_Entity15#)
 		}
 	}
 
 	Void testDuplicatePropertyNames() {
 		verifyErrMsg(MorphiaErr#, ErrMsgs.datastore_duplicatePropertyName("_id", T_Entity17#_id, T_Entity17#anotherId)) {
-			Datastore.verifyEntityType(T_Entity17#)
+			DatastoreImpl.verifyEntityType(T_Entity17#)
 		}
 	}
 

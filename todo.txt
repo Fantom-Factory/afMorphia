@@ -1,10 +1,5 @@
 
-For 0.0.14
-==========
-
-ID Seq generrtaor
-
-For 1.0.0
+For 1.1.0
 =========
 _version -> auto optimistic locking
 
@@ -16,6 +11,10 @@ Text search
 
 For Future
 ==========
+Have a builder for update and find&update ops:
+ - http://docs.mongodb.org/manual/reference/operator/update/#id1
+ - https://rawgit.com/wiki/mongodb/morphia/javadoc/0.108/apidocs/org/mongodb/morphia/query/UpdateOperations.html
+
 Config option:
 Optimise MongoDB Storage by inspecting literal values and NOT storing default values (if the type is not-nullable).
 e.g. Bool -> false
