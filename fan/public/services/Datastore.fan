@@ -88,21 +88,22 @@ const mixin Datastore {
 	abstract Void insert(Obj entity)
 
 	** Deletes the given entity from the MongoDB.
-	** Throws 'ArgErr' if 'checked' and nothing was deleted. 
+	** Throws 'MorphiaErr' if 'checked' and nothing was deleted. 
 	** 
 	** @see `afMongo::Collection.delete`
 	abstract Void delete(Obj entity, Bool checked := true)
 
 	** Deletes entity with the given Id.
-	** Throws 'ArgErr' if 'checked' and nothing was deleted. 
+	** Throws 'MorphiaErr' if 'checked' and nothing was deleted. 
 	** 
 	** @see `afMongo::Collection.delete`
 	abstract Void deleteById(Obj id, Bool checked := true)
 
 	** Updates the given entity.
+	** Throws 'MorphiaErr' if 'checked' and nothing was updated. 
 	** 
 	** @see `afMongo::Collection.update`
-	abstract Void update(Obj entity, Bool? upsert := false)
+	abstract Void update(Obj entity, Bool? upsert := false, Bool checked := true)
 
 	// ---- Aggregation Commands ------------------------------------------------------------------
 
@@ -216,14 +217,16 @@ internal const class DatastoreImpl : Datastore {
 			throw ArgErr(ErrMsgs.datastore_idDoesNotFit(id, idField))
 		n := collection.delete(["_id" : id], false)
 		if (checked && n != 1)
-			throw ArgErr(ErrMsgs.datastore_entityNotFound(type, id))
+			throw MorphiaErr(ErrMsgs.datastore_entityNotFound(type, id))
 	}
 
-	override Void update(Obj entity, Bool? upsert := false) {
+	override Void update(Obj entity, Bool? upsert := false, Bool checked := true) {
 		if (!entity.typeof.fits(type))
 			throw ArgErr(ErrMsgs.datastore_entityWrongType(entity.typeof, type))
 		id := idField.get(entity)
-		collection.update(["_id" : id], toMongoDoc(entity), false, upsert)
+		noOfUpdates := collection.update(["_id" : id], toMongoDoc(entity), false, upsert)
+		if (noOfUpdates == 0 && upsert == false && checked)
+			throw MorphiaErr(ErrMsgs.datastore_entityNotFound(type, id))
 	}
 
 	// ---- Aggregation Commands ------------------------------------------------------------------

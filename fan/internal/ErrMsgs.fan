@@ -29,6 +29,10 @@ internal const mixin ErrMsgs {
 		stripSys("Could not find entity ${entityType.qname} with Id: ${id}")
 	}
 
+	static Str datastore_nothingUpdated(Str:Obj? query) {
+		stripSys("Found no documents to match query: ${query}")
+	}
+
 	static Str datastore_idFieldNotFound(Type entityType) {
 		stripSys("Could not find property named '_id' on ${entityType.qname}.")
 	}
