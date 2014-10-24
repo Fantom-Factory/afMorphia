@@ -209,7 +209,7 @@ internal const class DatastoreImpl : Datastore {
 		if (!entity.typeof.fits(type))
 			throw ArgErr(ErrMsgs.datastore_entityWrongType(entity.typeof, type))
 		id := idField.get(entity)
-		deleteById(id, checked)		
+		deleteById(id, checked)
 	}
 
 	override Void deleteById(Obj id, Bool checked := true) {
@@ -225,8 +225,12 @@ internal const class DatastoreImpl : Datastore {
 			throw ArgErr(ErrMsgs.datastore_entityWrongType(entity.typeof, type))
 		id := idField.get(entity)
 		noOfUpdates := collection.update(["_id" : id], toMongoDoc(entity), false, upsert)
-		if (noOfUpdates == 0 && upsert == false && checked)
-			throw MorphiaErr(ErrMsgs.datastore_entityNotFound(type, id))
+		if (noOfUpdates == 0 && upsert == false && checked) {
+			// Mongo reports zero updates if the given document hasn't changed,
+			// as this isn't an error let it slide...
+			if (get(id, false) == null)
+				throw MorphiaErr(ErrMsgs.datastore_entityNotFound(type, id))
+		}
 	}
 
 	// ---- Aggregation Commands ------------------------------------------------------------------
