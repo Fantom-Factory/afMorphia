@@ -357,7 +357,7 @@ While simple for simple queries:
 
   query :=  ["age": 42]
 
-It can quickly grow unmanagable for larger queries. Example, this is an official example for the [$and operator]`http://docs.mongodb.org/manual/reference/operator/query/and/`:
+It can quickly grow unmanagable for larger queries. Example, this tangled mess is from the official documentation for the [$and operator]`http://docs.mongodb.org/manual/reference/operator/query/and/`:
 
 pre>
   query := [
@@ -400,6 +400,7 @@ Release Notes [#releaseNotes]
 v0.0.12 [#v0.0.12]
 ------------------
  - New: Introduced the Query Builder API.
+ - New: Mongo 'Collections' maybe injected in the same manner as 'Datastore' objects, using the '@Inject.type' attribute.
 
 v0.0.10 [#v0.0.10]
 ------------------
