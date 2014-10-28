@@ -33,7 +33,8 @@ const class MorphiaModule {
 	
 	@Contribute { serviceType=DependencyProviders# }
 	static Void contributeDependencyProviders(Configuration config) {
-		config.set("afMorphia.datastoreProvider", config.autobuild(DatastoreProvider#)).before("afIoc.serviceProvider")
+		config.set("afMorphia.datastoreProvider",  config.autobuild( DatastoreProvider#)).before("afIoc.serviceProvider")
+		config.set("afMorphia.collectionProvider", config.autobuild(CollectionProvider#)).before("afIoc.serviceProvider")
 	}
 	
 	@Contribute { serviceType=ActorPools# }
