@@ -353,8 +353,8 @@ See [Storing null vs not storing the key at all in MongoDB]`http://stackoverflow
 
 
 
-Query API
-*********
+Query API [#queryApi]
+*********************
 Querying a MongoDB for documents requires knowledge of their [Query Operators]`http://docs.mongodb.org/manual/reference/operator/query/`.
 While simple for simple queries:
 
