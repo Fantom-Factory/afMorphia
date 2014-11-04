@@ -10,6 +10,8 @@ Overview [#overview]
  - Extensible mapping - add your own custom [Converters]`afMorphia::Converters`,
  - Query Builder API.
 
+Note: 'Morphia' has no association with [Morphia - the Java to MongoDB mapping library]`https://github.com/mongodb/morphia/wiki`. Well, except for the name of course!
+
 
 
 Install [#Install]
@@ -20,7 +22,7 @@ Install '@{project.name}' with the Fantom Repository Manager ( [fanr]`docFanr::T
 
 To use in a [Fantom]`http://fantom.org/` project, add a dependency to 'build.fan':
 
-  depends = ["sys 1.0", ..., "@{pod.name} @{pod.version}+"]
+  depends = ["sys 1.0", ..., "@{pod.name} @{pod.version}"]
 
 
 
@@ -75,7 +77,8 @@ class Example {
         datastore.insert(micky)
 
         // ---- Read --------
-        mouse := (User) datastore.query.field("age").eq(42).findOne
+        q     := Query().field("age").eq(42)
+        mouse := (User) datastore.query(q).findOne
         echo(mouse.name)  // --> Micky Mouse
 
         // ---- Update -----
@@ -109,7 +112,7 @@ pre>
  _____ ___ ___ ___ ___
 |     | . |   | . | . |
 |_|_|_|___|_|_|_  |___|
-              |___|0.0.6
+              |___|1.0.0
 
 Connected to MongoDB v2.6.1 (at mongodb://localhost:27017)
 
@@ -120,7 +123,7 @@ Connected to MongoDB v2.6.1 (at mongodb://localhost:27017)
 /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
                             Alien-Factory IoC v2.0.0 /___/
 
-IoC Registry built in 1,310ms and started up in 247ms
+IoC Registry built in 355ms and started up in 225ms
 
 Micky Mouse
 [afIoc] IoC shutdown in 12ms
@@ -355,7 +358,7 @@ Query API
 Querying a MongoDB for documents requires knowledge of their [Query Operators]`http://docs.mongodb.org/manual/reference/operator/query/`.
 While simple for simple queries:
 
-  query :=  ["age": 42]
+  query := ["age": 42]
 
 It can quickly grow unmanagable for larger queries. Example, this tangled mess is from the official documentation for the [$and operator]`http://docs.mongodb.org/manual/reference/operator/query/and/`:
 
@@ -395,11 +398,18 @@ And the autocomplete nature of IDEs such as [F4]`http://www.xored.com/products/f
 
 
 
+Remarks [#remarks]
+******************
+If you're looking for cross-platform MongoDB GUI client then look no further than [Robomongo]`http://robomongo.org/`!
+
+
+
 Release Notes [#releaseNotes]
 *****************************
-v0.0.12 [#v0.0.12]
-------------------
+v1.0.0 [#v1.0.0]
+----------------
  - New: Introduced the Query Builder API.
+ - New: 'IntSequences' services provides an alternative to unique ObjectIDs.
  - New: Mongo 'Collections' maybe injected in the same manner as 'Datastore' objects, using the '@Inject.type' attribute.
 
 v0.0.10 [#v0.0.10]

@@ -40,7 +40,9 @@ class Example {
 		datastore.insert(micky)
 		
 		// ---- Read --------
-		mouse := (User) datastore.query.field("age").eq(42).findOne
+		q     := Query().field("age").eq(42)
+		mouse := (User) datastore.query(q).findOne
+
 		echo(mouse.name)  // --> Micky Mouse
 		echo(datastore.toMongoDoc(mouse))
 		

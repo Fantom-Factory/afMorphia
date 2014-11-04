@@ -18,7 +18,7 @@ using afMongo
 ** look at! 
 const mixin IntSequences {
 	
-	** The name of MongoDB collection to be used.
+	** The name of MongoDB collection used to store the Int sequence data.
 	abstract Str collectionName()
 	
 	** Returns the next 'Int' for the given sequence name. 
@@ -34,7 +34,7 @@ const mixin IntSequences {
 	abstract Void reset(Str seqName)
 
 	** Resets *all* the last IDs to zero.
-	abstract Void resetAll(Str seqName)
+	abstract Void resetAll()
 
 	** Delete the 'IntSequences' collection.
 	** Safe operation, does not throw Err if the collection does not exist.
@@ -75,7 +75,7 @@ internal const class IntSequencesImpl : IntSequences {
 		intSeqCol.update(["_id":seqName], ["lastId":0])
 	}
 
-	override Void resetAll(Str seqName) {
+	override Void resetAll() {
 		intSeqCol.update([:], ["lastId":0], true)
 	}
 

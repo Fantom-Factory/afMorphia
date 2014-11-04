@@ -11,6 +11,8 @@
 - Extensible mapping - add your own custom [Converters](http://repo.status302.com/doc/afMorphia/Converters.html),
 - Query Builder API.
 
+Note: `Morphia` has no association with [Morphia - the Java to MongoDB mapping library](https://github.com/mongodb/morphia/wiki). Well, except for the name of course!
+
 ## Install 
 
 Install `Morphia` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc/docFanr/Tool.html#install) ):
@@ -19,7 +21,7 @@ Install `Morphia` with the Fantom Repository Manager ( [fanr](http://fantom.org/
 
 To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan`:
 
-    depends = ["sys 1.0", ..., "afMorphia 0.0+"]
+    depends = ["sys 1.0", ..., "afMorphia 1.0"]
 
 ## Documentation 
 
@@ -72,7 +74,8 @@ class Example {
         datastore.insert(micky)
 
         // ---- Read --------
-        mouse := (User) datastore.query.field("age").eq(42).findOne
+        q     := Query().field("age").eq(42)
+        mouse := (User) datastore.query(q).findOne
         echo(mouse.name)  // --> Micky Mouse
 
         // ---- Update -----
@@ -107,7 +110,7 @@ class ExampleModule {
  _____ ___ ___ ___ ___
 |     | . |   | . | . |
 |_|_|_|___|_|_|_  |___|
-              |___|0.0.6
+              |___|1.0.0
 
 Connected to MongoDB v2.6.1 (at mongodb://localhost:27017)
 
@@ -118,7 +121,7 @@ Connected to MongoDB v2.6.1 (at mongodb://localhost:27017)
 /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
                             Alien-Factory IoC v2.0.0 /___/
 
-IoC Registry built in 1,310ms and started up in 247ms
+IoC Registry built in 355ms and started up in 225ms
 
 Micky Mouse
 [afIoc] IoC shutdown in 12ms
@@ -327,9 +330,9 @@ See [Storing null vs not storing the key at all in MongoDB](http://stackoverflow
 
 Querying a MongoDB for documents requires knowledge of their [Query Operators](http://docs.mongodb.org/manual/reference/operator/query/). While simple for simple queries:
 
-    query :=  ["age": 42]
+    query := ["age": 42]
 
-It can quickly grow unmanagable for larger queries. Example, this is an official example for the [$and operator](http://docs.mongodb.org/manual/reference/operator/query/and/):
+It can quickly grow unmanagable for larger queries. Example, this tangled mess is from the official documentation for the [$and operator](http://docs.mongodb.org/manual/reference/operator/query/and/):
 
 ```
 query := [
@@ -362,4 +365,8 @@ The more complicated `$and` example then becomes:
     ])
 
 Which, even though slightly more verbose, should be much easier to construct and debug. And the autocomplete nature of IDEs such as [F4](http://www.xored.com/products/f4/) means you don't have to constantly consult the [Mongo documentation](http://docs.mongodb.org/manual/reference/method/db.collection.find/).
+
+## Remarks 
+
+If you're looking for cross-platform MongoDB GUI client then look no further than [Robomongo](http://robomongo.org/)!
 
