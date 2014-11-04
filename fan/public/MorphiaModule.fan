@@ -21,7 +21,11 @@ const class MorphiaModule {
 	static ConnectionManager buildConnectionManager(ConfigSource configSrc, ActorPools actorPools) {
 		mongoUri  := (Uri) configSrc.get(MorphiaConfigIds.mongoUrl, Uri#)
 		actorPool := actorPools.get("afMorphia.connectionManager")
-		return ConnectionManagerPooled(actorPool , mongoUri)
+		conMgr	  := ConnectionManagerPooled(actorPool , mongoUri)
+		// if we startup here, then is saves everyone pissing about trying to order their registry
+		// startup contributions to be *after* "afMorphia.conMgrStartup" or similar.
+		conMgr.startup
+		return conMgr
 	}
 
 	@Build { serviceId="afMongo::Database" }
