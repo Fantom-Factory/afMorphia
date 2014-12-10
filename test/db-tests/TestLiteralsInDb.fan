@@ -19,6 +19,7 @@ internal class TestLiteralsInDb : MorphiaDbTest {
 			str 		= "string"
 			doc			= ["wot":"ever"]
 			list		= ["wot","ever"]
+			binaryStd	= Binary("dragon".toBuf)
 			binaryMd5	= Binary("dragon".toBuf, Binary.BIN_MD5)
 			binaryOld	= Binary("dragon".toBuf, Binary.BIN_BINARY_OLD)
 			binaryBuf	= "vampire".toBuf
@@ -55,6 +56,8 @@ internal class TestLiteralsInDb : MorphiaDbTest {
 		verifyEq(entity.doc["wot"],	"ever")
 		verifyEq(entity.list[0], 	"wot")
 		verifyEq(entity.list[1], 	"ever")
+		verifyEq(entity.binaryStd.subtype,			Binary.BIN_GENERIC)
+		verifyEq(entity.binaryStd.data.readAllStr,	"dragon")
 		verifyEq(entity.binaryMd5.subtype,			Binary.BIN_MD5)
 		verifyEq(entity.binaryMd5.data.readAllStr,	"dragon")
 		verifyEq(entity.binaryOld.subtype,			Binary.BIN_BINARY_OLD)
