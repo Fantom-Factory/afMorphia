@@ -130,6 +130,8 @@ Micky Mouse
 [afIoc] "Goodbye!" from afIoc!
 <pre
 
+
+
 Usage [#usage]
 **************
 MongoDB Connections [#mongoDbConnections]
@@ -199,7 +201,12 @@ Each 'Datastore' instance is specific to an Entity type, so to inject a 'Datasto
 Use the '@Inject.type' attribute to do this. Example:
 
   @Inject { type=User# }
-  Datastore datastore
+  Datastore userDatastore
+
+You can also inject Mongo 'Collections' in the same manner:
+ 
+  @Inject { type=User# }
+  Collection userCollection
 
 
 
@@ -237,6 +244,7 @@ afBson::Timestamp
    sys::Type
    sys::Uri
 <pre
+
 
 
 Embedded Objects [#embeddedObjects]
@@ -360,7 +368,7 @@ While simple for simple queries:
 
   query := ["age": 42]
 
-It can quickly grow unmanagable for larger queries. Example, this tangled mess is from the official documentation for the [$and operator]`http://docs.mongodb.org/manual/reference/operator/query/and/`:
+It can quickly grow unmanagable and confusing for larger queries. For example, this tangled mess is from the official documentation for the [$and operator]`http://docs.mongodb.org/manual/reference/operator/query/and/`:
 
 pre>
   query := [
@@ -393,7 +401,7 @@ The more complicated '$and' example then becomes:
       Query().or([ field("sale ").eq(true),  field("qty").lessThan(20) ])
   ])
 
-Which, even though slightly more verbose, should be much easier to construct and debug.
+Which, even though slightly more verbose, should be much easier to construct, understand, and debug.
 And the autocomplete nature of IDEs such as [F4]`http://www.xored.com/products/f4/` means you don't have to constantly consult the [Mongo documentation]`http://docs.mongodb.org/manual/reference/method/db.collection.find/`.
 
 
@@ -406,6 +414,10 @@ If you're looking for cross-platform MongoDB GUI client then look no further tha
 
 Release Notes [#releaseNotes]
 *****************************
+v1.0.2 [#v1.0.2]
+----------------
+ - Bug: 'Binary' objects with a generic subtype could not be read from the database as BSON converted them to 'Buf' objects. 
+ 
 v1.0.0 [#v1.0.0]
 ----------------
  - New: Introduced the Query Builder API.

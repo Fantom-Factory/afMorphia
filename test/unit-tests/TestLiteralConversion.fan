@@ -16,6 +16,7 @@ internal class TestLiteralConversion : MorphiaTest {
 			"str"			: "string",
 			"doc"			: Str:Obj?["wot":"ever"],
 			"list"			: Obj?["wot","ever"],
+			"binaryStd"		: Binary("dragon".toBuf),
 			"binaryMd5"		: Binary("dragon".toBuf, Binary.BIN_MD5),
 			"binaryOld"		: Binary("dragon".toBuf, Binary.BIN_BINARY_OLD),
 			"binaryBuf"		: "vampire".toBuf,
@@ -50,6 +51,7 @@ internal class TestLiteralConversion : MorphiaTest {
 		verifySame(entity.str, 			mongoDoc["str"])
 		verifyEq  (entity.doc.size,		mongoDoc["doc"]->size)	// the two maps have diff sigs Str:Obj? vs Str:Str?
 		verifyEq  (entity.list.size,	mongoDoc["list"]->size)	// again Obj? vs Str?
+		verifySame(entity.binaryStd,	mongoDoc["binaryStd"])
 		verifySame(entity.binaryMd5,	mongoDoc["binaryMd5"])
 		verifySame(entity.binaryOld,	mongoDoc["binaryOld"])
 		verifySame(entity.binaryBuf,	mongoDoc["binaryBuf"])
@@ -86,6 +88,7 @@ internal class TestLiteralConversion : MorphiaTest {
 			str 		= "string"
 			doc			= ["wot":"ever"]
 			list		= ["wot","ever"]
+			binaryStd	= Binary("dragon".toBuf)
 			binaryMd5	= Binary("dragon".toBuf, Binary.BIN_MD5)
 			binaryOld	= Binary("dragon".toBuf, Binary.BIN_BINARY_OLD)
 			binaryBuf	= "vampire".toBuf
@@ -119,6 +122,7 @@ internal class TestLiteralConversion : MorphiaTest {
 		verifySame(mongoDoc["str"],			entity.str)
 		verifySame(mongoDoc["doc"],			entity.doc)
 		verifySame(mongoDoc["list"],		entity.list)
+		verifySame(mongoDoc["binaryStd"],	entity.binaryStd)
 		verifySame(mongoDoc["binaryMd5"],	entity.binaryMd5)
 		verifySame(mongoDoc["binaryOld"],	entity.binaryOld)
 		verifySame(mongoDoc["binaryBuf"],	entity.binaryBuf)
@@ -155,6 +159,7 @@ internal class T_Entity01 {
 	@Property	Str			str
 	@Property	Str:Str?	doc
 	@Property	Str?[]		list
+	@Property	Binary		binaryStd
 	@Property	Binary		binaryMd5
 	@Property	Binary		binaryOld
 	@Property	Buf			binaryBuf
