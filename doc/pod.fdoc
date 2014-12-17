@@ -114,14 +114,14 @@ pre>
 |_|_|_|___|_|_|_  |___|
               |___|1.0.0
 
-Connected to MongoDB v2.6.1 (at mongodb://localhost:27017)
+Connected to MongoDB v2.6.5 (at mongodb://localhost:27017)
 
 [afIoc]
    ___    __                 _____        _
   / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
  / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
 /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
-                            Alien-Factory IoC v2.0.0 /___/
+                            Alien-Factory IoC v2.0.2 /___/
 
 IoC Registry built in 355ms and started up in 225ms
 
@@ -351,7 +351,7 @@ Example:
 pre>
 @Contribute { serviceType=Converters# }
 static Void contributeConverters(Configuration config) {
-    config.overrideValue(Obj#, config.registry.createProxy(Converter#, ObjConverter#,  [true]), "MyObjConverter")
+    config.overrideValue(Obj#, config.createProxy(Converter#, ObjConverter#,  [true]), "MyObjConverter")
 }
 <pre
 
