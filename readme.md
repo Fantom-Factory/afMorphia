@@ -119,7 +119,7 @@ Connected to MongoDB v2.6.5 (at mongodb://localhost:27017)
   / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
  / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
 /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
-                            Alien-Factory IoC v2.0.0 /___/
+                            Alien-Factory IoC v2.0.2 /___/
 
 IoC Registry built in 355ms and started up in 225ms
 
