@@ -112,7 +112,7 @@ class ExampleModule {
 |_|_|_|___|_|_|_  |___|
               |___|1.0.0
 
-Connected to MongoDB v2.6.1 (at mongodb://localhost:27017)
+Connected to MongoDB v2.6.5 (at mongodb://localhost:27017)
 
 [afIoc]
    ___    __                 _____        _
@@ -185,7 +185,12 @@ A [Datastore](http://repo.status302.com/doc/afMorphia/Datastore.html) wraps a [M
 Each `Datastore` instance is specific to an Entity type, so to inject a `Datastore` you need to specify which Entity it is associated with. Use the `@Inject.type` attribute to do this. Example:
 
     @Inject { type=User# }
-    Datastore datastore
+    Datastore userDatastore
+
+You can also inject Mongo `Collections` in the same manner:
+
+    @Inject { type=User# }
+    Collection userCollection
 
 ## Mapping 
 
@@ -318,7 +323,7 @@ If you want to store `null` values, then create a new `ObjConverter` passing `tr
 ```
 @Contribute { serviceType=Converters# }
 static Void contributeConverters(Configuration config) {
-    config.overrideValue(Obj#, config.registry.createProxy(Converter#, ObjConverter#,  [true]), "MyObjConverter")
+    config.overrideValue(Obj#, config.createProxy(Converter#, ObjConverter#,  [true]), "MyObjConverter")
 }
 ```
 
@@ -326,13 +331,13 @@ static Void contributeConverters(Configuration config) {
 
 See [Storing null vs not storing the key at all in MongoDB](http://stackoverflow.com/questions/12403240/storing-null-vs-not-storing-the-key-at-all-in-mongodb) for more details.
 
-## Query API
+## Query API 
 
 Querying a MongoDB for documents requires knowledge of their [Query Operators](http://docs.mongodb.org/manual/reference/operator/query/). While simple for simple queries:
 
     query := ["age": 42]
 
-It can quickly grow unmanagable for larger queries. Example, this tangled mess is from the official documentation for the [$and operator](http://docs.mongodb.org/manual/reference/operator/query/and/):
+It can quickly grow unmanagable and confusing for larger queries. For example, this tangled mess is from the official documentation for the [$and operator](http://docs.mongodb.org/manual/reference/operator/query/and/):
 
 ```
 query := [
@@ -364,7 +369,7 @@ The more complicated `$and` example then becomes:
         Query().or([ field("sale ").eq(true),  field("qty").lessThan(20) ])
     ])
 
-Which, even though slightly more verbose, should be much easier to construct and debug. And the autocomplete nature of IDEs such as [F4](http://www.xored.com/products/f4/) means you don't have to constantly consult the [Mongo documentation](http://docs.mongodb.org/manual/reference/method/db.collection.find/).
+Which, even though slightly more verbose, should be much easier to construct, understand, and debug. And the autocomplete nature of IDEs such as [F4](http://www.xored.com/products/f4/) means you don't have to constantly consult the [Mongo documentation](http://docs.mongodb.org/manual/reference/method/db.collection.find/).
 
 ## Remarks 
 
