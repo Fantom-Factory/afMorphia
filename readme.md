@@ -1,4 +1,9 @@
-## Overview 
+#Morphia v1.0.3
+---
+[![Made for: Fantom](http://img.shields.io/badge/made%20for-Fantom-lightgray.svg)](http://fantom.org/)
+![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
+
+## Overview
 
 `Morphia` is a Fantom to MongoDB object mapping library.
 
@@ -13,7 +18,7 @@
 
 Note: `Morphia` has no association with [Morphia - the Java to MongoDB mapping library](https://github.com/mongodb/morphia/wiki). Well, except for the name of course!
 
-## Install 
+## Install
 
 Install `Morphia` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc/docFanr/Tool.html#install) ):
 
@@ -23,11 +28,11 @@ To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan
 
     depends = ["sys 1.0", ..., "afMorphia 1.0"]
 
-## Documentation 
+## Documentation
 
 Full API & fandocs are available on the [Status302 repository](http://repo.status302.com/doc/afMorphia/).
 
-## Quick Start 
+## Quick Start
 
 1). Start up an instance of MongoDB:
 
@@ -61,7 +66,7 @@ class Example {
     Datastore? datastore
 
     Void main() {
-        reg := RegistryBuilder().addModulesFromPod(Pod.find("afMorphia")).addModule(ExampleModule#).build.startup
+        reg := RegistryBuilder().addModule(ExampleModule#).addModulesFromPod("afMorphia").build.startup
         reg.injectIntoFields(this)
 
         micky := User {
@@ -124,13 +129,14 @@ Connected to MongoDB v2.6.5 (at mongodb://localhost:27017)
 IoC Registry built in 355ms and started up in 225ms
 
 Micky Mouse
+
 [afIoc] IoC shutdown in 12ms
 [afIoc] "Goodbye!" from afIoc!
 ```
 
-## Usage 
+## Usage
 
-### MongoDB Connections 
+### MongoDB Connections
 
 A [Mongo Connection URL](http://docs.mongodb.org/manual/reference/connection-string/) should be contributed as an application default. This supplies the default database to connect to, along with any default user credentials. Example, in your `AppModule`:
 
@@ -150,7 +156,7 @@ Some connection URL options are supported:
 
 See [ConnectionManagerPooled](http://repo.status302.com/doc/afMongo/ConnectionManagerPooled.html) for more details.
 
-### Entities 
+### Entities
 
 An entity is a top level domain object that is persisted in a MongoDB collection.
 
@@ -178,7 +184,7 @@ or
 
 Note that a Mongo Id *does not* need to be an `ObjectId`. Any object may be used, it just needs to be unique.
 
-### Datastore 
+### Datastore
 
 A [Datastore](http://repo.status302.com/doc/afMorphia/Datastore.html) wraps a [Mongo Collection](http://repo.status302.com/doc/afMongo/Collection.html) and is your gateway to saving and reading Fantom objects to / from the MongoDB.
 
@@ -192,11 +198,11 @@ You can also inject Mongo `Collections` in the same manner:
     @Inject { type=User# }
     Collection userCollection
 
-## Mapping 
+## Mapping
 
 At the core of `Morphia` is a suite of [Converters](http://repo.status302.com/doc/afMorphia/Converter.html) that map Fantom objects to Mongo documents.
 
-### Standard Converters 
+### Standard Converters
 
 By default, `Morphia` provides support and converters for the following Fantom types:
 
@@ -227,7 +233,7 @@ afBson::Timestamp
    sys::Uri
 ```
 
-### Embedded Objects 
+### Embedded Objects
 
 Morphia is also able to convert embedded, or nested, Fantom objects. Extending the example in [Quick Start](http://repo.status302.com/doc/afMorphia/#quickStart.html), here we substitute the `Str` name for an embedded `Name` object:
 
@@ -263,7 +269,7 @@ echo(mongoDoc) // --> [_id:xxxx, age:42, name:[lastName:Mouse, firstName:Micky]]
 
 Note that embedded Fantom types should *not* be annotated with `@Entity`.
 
-### Custom Converters 
+### Custom Converters
 
 If you want more control over how objects are mapped to and from Mongo, then contribute a custom converter. Do this by implementing `Converter` and contributing an instance to the `Converters` service.
 
@@ -312,7 +318,7 @@ mongoDoc := datastore.toMongoDoc(micky)
 echo(mongoDoc) // --> [_id:xxxx, age:42, name:Micky-Mouse]
 ```
 
-### Storing Nulls in Mongo 
+### Storing Nulls in Mongo
 
 When converting Fantom objects *to* Mongo, the [ObjConverter](http://repo.status302.com/doc/afMorphia/ObjConverter.html) decides what to do if a Fantom field has the value `null`. Should it store a key in the MongoDb with a `null` value, or should it not store the key at all?
 
@@ -331,7 +337,7 @@ static Void contributeConverters(Configuration config) {
 
 See [Storing null vs not storing the key at all in MongoDB](http://stackoverflow.com/questions/12403240/storing-null-vs-not-storing-the-key-at-all-in-mongodb) for more details.
 
-## Query API 
+## Query API
 
 Querying a MongoDB for documents requires knowledge of their [Query Operators](http://docs.mongodb.org/manual/reference/operator/query/). While simple for simple queries:
 
@@ -371,7 +377,95 @@ The more complicated `$and` example then becomes:
 
 Which, even though slightly more verbose, should be much easier to construct, understand, and debug. And the autocomplete nature of IDEs such as [F4](http://www.xored.com/products/f4/) means you don't have to constantly consult the [Mongo documentation](http://docs.mongodb.org/manual/reference/method/db.collection.find/).
 
-## Remarks 
+## Testing
+
+To use Morphia in unit testing, lay out the test class in a similar way to the QuickStart example:
+
+```
+using afMorphia::Datastore
+using afMorphia::MorphiaConfigIds
+using afIoc::Configuration
+using afIoc::Contribute
+using afIoc::Inject
+using afIoc::Registry
+using afIoc::RegistryBuilder
+using afIocConfig::ApplicationDefaults
+
+class TestExample : Test {
+    Registry? reg
+
+    @Inject { type=MyEntity# }
+    Datastore? datastore
+
+    override Void setup() {
+        reg := RegistryBuilder()
+                   .addModule(TestModule#)
+                   .addModulesFromPod("afMorphia")
+                   .addModulesFromPod("afIocConfig")
+                   .build.startup
+        reg.injectIntoFields(this)
+    }
+
+    override Void teardown() {
+        reg.shutdown
+    }
+
+    Void testStuff() {
+        ...
+        datastore.insert(...)
+        ...
+    }
+}
+
+class TestModule {
+    @Contribute { serviceType=ApplicationDefaults# }
+    static Void contributeAppDefaults(Configuration config) {
+        config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
+    }
+}
+```
+
+The `setup()` method builds the IoC Registry, passing in a `TestModule` that defines the mongo connection url.
+
+Note that because the registry is being built from scratch, you need to add modules from all the IoC libraries the test uses. Hence the example above adds modules for `afMorphia` and `afIocConfig`.
+
+Should you fail to add a required module / library, the test will fail with an `IocErr`:
+
+    TEST FAILED
+    afIoc::IocErr: No service matches type XXXX.
+
+Where `XXXX` is a service in the library you forgot to add.
+
+Rather than create a specific `TestModule` for testing, you could just use your application's `AppModule` instead, subject to the BedSheet exception below.
+
+### Testing in a BedSheet Web App
+
+A standard `AppModule` for a BedSheet application **can not** be used in a Morphia unit test. That is because the `AppModule` will configure BedSheet and other web related services that aren't available in the Morphia unit test.
+
+The strategy here is to split the `AppModule` into two, one that configures web services and another that just configures database services. Use IoC's `@SubModule` facet to reference one from the other.
+
+```
+** Configure BedSheet and other web services here
+@SubModule { modules=[DatabaseModule#] }
+class AppModule {
+    ....
+}
+
+** Configure Morphia and other database services here
+class DatabaseModule {
+
+    @Contribute { serviceType=ApplicationDefaults# }
+    static Void contributeAppDefaults(Configuration config) {
+        config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
+    }
+
+    ...
+}
+```
+
+Now you can just use the `DatabaseModule` in your Morphia tests. And when BedSheet loads `AppModule`, the `@SubModule` facet will ensure the `DatabaseModule` gets loaded too.
+
+## Remarks
 
 If you're looking for cross-platform MongoDB GUI client then look no further than [Robomongo](http://robomongo.org/)!
 

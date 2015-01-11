@@ -64,7 +64,7 @@ class Example {
     Datastore? datastore
 
     Void main() {
-        reg := RegistryBuilder().addModulesFromPod(Pod.find("afMorphia")).addModule(ExampleModule#).build.startup
+        reg := RegistryBuilder().addModule(ExampleModule#).addModulesFromPod("afMorphia").build.startup
         reg.injectIntoFields(this)
 
         micky := User {
@@ -126,6 +126,7 @@ Connected to MongoDB v2.6.5 (at mongodb://localhost:27017)
 IoC Registry built in 355ms and started up in 225ms
 
 Micky Mouse
+
 [afIoc] IoC shutdown in 12ms
 [afIoc] "Goodbye!" from afIoc!
 <pre
@@ -204,7 +205,7 @@ Use the '@Inject.type' attribute to do this. Example:
   Datastore userDatastore
 
 You can also inject Mongo 'Collections' in the same manner:
- 
+
   @Inject { type=User# }
   Collection userCollection
 
@@ -406,6 +407,98 @@ And the autocomplete nature of IDEs such as [F4]`http://www.xored.com/products/f
 
 
 
+Testing [#testing]
+******************
+To use Morphia in unit testing, lay out the test class in a similar way to the QuickStart example:
+
+pre>
+using afMorphia::Datastore
+using afMorphia::MorphiaConfigIds
+using afIoc::Configuration
+using afIoc::Contribute
+using afIoc::Inject
+using afIoc::Registry
+using afIoc::RegistryBuilder
+using afIocConfig::ApplicationDefaults
+
+class TestExample : Test {
+    Registry? reg
+
+    @Inject { type=MyEntity# }
+    Datastore? datastore
+
+    override Void setup() {
+        reg := RegistryBuilder()
+                   .addModule(TestModule#)
+                   .addModulesFromPod("afMorphia")
+                   .addModulesFromPod("afIocConfig")
+                   .build.startup
+        reg.injectIntoFields(this)
+    }
+
+    override Void teardown() {
+        reg.shutdown
+    }
+
+    Void testStuff() {
+        ...
+        datastore.insert(...)
+        ...
+    }
+}
+
+class TestModule {
+    @Contribute { serviceType=ApplicationDefaults# }
+    static Void contributeAppDefaults(Configuration config) {
+        config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
+    }
+}
+<pre
+
+The 'setup()' method builds the IoC Registry, passing in a 'TestModule' that defines the mongo connection url.
+
+Note that because the registry is being built from scratch, you need to add modules from all the IoC libraries the test uses. Hence the example above adds modules for 'afMorphia' and 'afIocConfig'.
+
+Should you fail to add a required module / library, the test will fail with an 'IocErr':
+
+  TEST FAILED
+  afIoc::IocErr: No service matches type XXXX.
+
+Where 'XXXX' is a service in the library you forgot to add.
+
+Rather than create a specific 'TestModule' for testing, you could just use your application's 'AppModule' instead, subject to the BedSheet exception below.
+
+
+
+Testing in a BedSheet Web App [#testingWithBedSheet]
+====================================================
+A standard 'AppModule' for a BedSheet application **can not** be used in a Morphia unit test. That is because the 'AppModule' will configure BedSheet and other web related services that aren't available in the Morphia unit test.
+
+The strategy here is to split the 'AppModule' into two, one that configures web services and another that just configures database services. Use IoC's '@SubModule' facet to reference one from the other.
+
+pre>
+** Configure BedSheet and other web services here
+@SubModule { modules=[DatabaseModule#] }
+class AppModule {
+    ....
+}
+
+** Configure Morphia and other database services here
+class DatabaseModule {
+
+    @Contribute { serviceType=ApplicationDefaults# }
+    static Void contributeAppDefaults(Configuration config) {
+        config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
+    }
+
+    ...
+}
+<pre
+
+Now you can just use the 'DatabaseModule' in your Morphia tests. And when BedSheet loads 'AppModule', the '@SubModule' facet will ensure the 'DatabaseModule' gets loaded too.
+
+
+
 Remarks [#remarks]
 ******************
 If you're looking for cross-platform MongoDB GUI client then look no further than [Robomongo]`http://robomongo.org/`!
@@ -416,8 +509,8 @@ Release Notes [#releaseNotes]
 *****************************
 v1.0.2 [#v1.0.2]
 ----------------
- - Bug: 'Binary' objects with a generic subtype could not be read from the database as BSON converted them to 'Buf' objects. 
- 
+ - Bug: 'Binary' objects with a generic subtype could not be read from the database as BSON converted them to 'Buf' objects.
+
 v1.0.0 [#v1.0.0]
 ----------------
  - New: Introduced the Query Builder API.

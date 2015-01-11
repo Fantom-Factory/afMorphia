@@ -1,7 +1,7 @@
 using afIoc
 using afBson
 
-@NoDoc	// public so people can change the null strategy
+@NoDoc
 const class ListConverter : Converter {
 
 	@Inject private const Converters 	converters

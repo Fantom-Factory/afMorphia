@@ -24,7 +24,7 @@ class Example {
 	Datastore? datastore
 
 	Void main() {
-		reg := RegistryBuilder().addModulesFromPod(Pod.find("afMorphia")).addModule(ExampleModule#).build.startup
+		reg := RegistryBuilder().addModule(ExampleModule#).addModulesFromPod("afMorphia").addModulesFromPod("afIocConfig").build.startup
 		reg.injectIntoFields(this)
 		
 		micky := User { 
@@ -58,6 +58,7 @@ class Example {
 }
 
 class ExampleModule {
+
 	@Contribute { serviceType=ApplicationDefaults# }
 	static Void contributeAppDefaults(Configuration config) {
 		config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
