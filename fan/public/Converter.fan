@@ -1,5 +1,5 @@
 
-** Implement to convert Fantom types to / from a MongoDB representation. 
+** Implement to convert custom Fantom types to / from a MongoDB representation. 
 const mixin Converter {
 
 	** Converts a Mongo object to Fantom.

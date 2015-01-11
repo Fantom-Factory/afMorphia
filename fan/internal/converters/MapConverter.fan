@@ -3,7 +3,7 @@ using afBeanUtils::BeanFactory
 using afIoc
 using afBson
 
-@NoDoc	// public so people can change the null strategy
+@NoDoc
 const class MapConverter : Converter {
 
 	@Inject 

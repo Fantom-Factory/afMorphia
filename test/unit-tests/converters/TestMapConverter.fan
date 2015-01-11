@@ -8,6 +8,7 @@ internal class TestMapConverter : MorphiaTest {
 		verifyNull(fanObj)
 	}
 
+	// this test is wrong - if null is stored in Mongo, then null is what we get!
 //	Void testNullStrategy_emptyList() {
 //		mapConverter := (Converter) reg.createProxy(Converter#, MapConverter#)
 //		fanObj := mapConverter.toFantom([Int:Str?]#, null)
