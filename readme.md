@@ -1,6 +1,7 @@
-#Morphia v1.0.3
+#Morphia v1.0.2
 ---
-[![Made for: Fantom](http://img.shields.io/badge/made%20for-Fantom-lightgray.svg)](http://fantom.org/)
+[![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
+[![pod: v1.0.2](http://img.shields.io/badge/pod-v1.0.2-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -399,14 +400,16 @@ class TestExample : Test {
 
     override Void setup() {
         reg = RegistryBuilder()
-                   .addModule(TestModule#)
-                   .addModulesFromPod("afMorphia")
-                   .addModulesFromPod("afIocConfig")
-                   .build.startup
+                  .addModule(TestModule#)
+                  .addModulesFromPod("afMorphia")
+                  .addModulesFromPod("afIocConfig")
+                  .build.startup
         reg.injectIntoFields(this)
     }
 
     override Void teardown() {
+        // use elvis incase 'reg' was never set due to a startup Err
+        // we don't want an NullErr in teardown() to mask the real problem
         reg?.shutdown
     }
 
