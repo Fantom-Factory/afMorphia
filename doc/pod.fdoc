@@ -429,14 +429,16 @@ class TestExample : Test {
 
     override Void setup() {
         reg = RegistryBuilder()
-                   .addModule(TestModule#)
-                   .addModulesFromPod("afMorphia")
-                   .addModulesFromPod("afIocConfig")
-                   .build.startup
+                  .addModule(TestModule#)
+                  .addModulesFromPod("afMorphia")
+                  .addModulesFromPod("afIocConfig")
+                  .build.startup
         reg.injectIntoFields(this)
     }
 
     override Void teardown() {
+        // use elvis incase 'reg' was never set due to a startup Err
+        // we don't want an NullErr in teardown() to mask the real problem
         reg?.shutdown
     }
 
