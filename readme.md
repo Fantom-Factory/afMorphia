@@ -398,7 +398,7 @@ class TestExample : Test {
     Datastore? datastore
 
     override Void setup() {
-        reg := RegistryBuilder()
+        reg = RegistryBuilder()
                    .addModule(TestModule#)
                    .addModulesFromPod("afMorphia")
                    .addModulesFromPod("afIocConfig")
@@ -407,7 +407,7 @@ class TestExample : Test {
     }
 
     override Void teardown() {
-        reg.shutdown
+        reg?.shutdown
     }
 
     Void testStuff() {
