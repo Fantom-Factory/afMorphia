@@ -14,7 +14,7 @@
 
 - All Fantom literals and [BSON](http://www.fantomfactory.org/pods/afBson) types supported by default,
 - Support for embedded / nested Fantom objects,
-- Extensible mapping - add your own custom [Converters](http://repo.status302.com/doc/afMorphia/Converters.html),
+- Extensible mapping - add your own custom [Converters](#customConverters),
 - Query Builder API.
 
 Note: `Morphia` has no association with [Morphia - the Java to MongoDB mapping library](https://github.com/mongodb/morphia/wiki). Well, except for the name of course!
@@ -236,7 +236,7 @@ afBson::Timestamp
 
 ### Embedded Objects
 
-Morphia is also able to convert embedded, or nested, Fantom objects. Extending the example in [Quick Start](http://repo.status302.com/doc/afMorphia/#quickStart.html), here we substitute the `Str` name for an embedded `Name` object:
+Morphia is also able to convert embedded, or nested, Fantom objects. Extending the example in [Quick Start](#quickStart), here we substitute the `Str` name for an embedded `Name` object:
 
 ```
 @Entity

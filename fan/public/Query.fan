@@ -78,9 +78,9 @@ class Query {
 			mongoQuery.add("\$nor", criteria.map { it.toMongo(datastore) })
 		}
 	}
-	
+
 	** Returns a Mongo document representing the query. 
-	** May be used by `DataStore` and [Collection]`afMongo::Collection` methods such as 'findAndUpdate(...)'.  
+	** May be used by `Datastore` and [Collection]`afMongo::Collection` methods such as 'findAndUpdate(...)'.  
 	[Str:Obj] toMongo(Datastore datastore) {
 		mongoQuery := Str:Obj[:] { ordered = true }
 		_toMongoFuncs.each { it.call(datastore, mongoQuery) }

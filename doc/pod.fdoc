@@ -7,7 +7,7 @@ Overview [#overview]
 'Morphia' features include:
  - All Fantom literals and [BSON]`pod:afBson` types supported by default,
  - Support for embedded / nested Fantom objects,
- - Extensible mapping - add your own custom [Converters]`afMorphia::Converters`,
+ - Extensible mapping - add your own custom [Converters]`#customConverters`,
  - Query Builder API.
 
 Note: 'Morphia' has no association with [Morphia - the Java to MongoDB mapping library]`https://github.com/mongodb/morphia/wiki`. Well, except for the name of course!
@@ -510,35 +510,35 @@ If you're looking for cross-platform MongoDB GUI client then look no further tha
 Release Notes [#releaseNotes]
 *****************************
 v1.0.2 [#v1.0.2]
-----------------
+================
  - Bug: 'Binary' objects with a generic subtype could not be read from the database as BSON converted them to 'Buf' objects.
 
 v1.0.0 [#v1.0.0]
-----------------
+================
  - New: Introduced the Query Builder API.
  - New: 'IntSequences' services provides an alternative to unique ObjectIDs.
  - New: Mongo 'Collections' maybe injected in the same manner as 'Datastore' objects, using the '@Inject.type' attribute.
 
 v0.0.10 [#v0.0.10]
-------------------
+==================
  - Chg: Deleted '@DatastoreType', use '@Inject' instead.
  - Chg: Updated to use [IoC 2.0.0]`pod:afIoc` and [IoC Config 1.0.16]`pod:afIocConfig`
 
 v0.0.8 [#v0.0.8]
-----------------
+================
  - Chg: Updated to use [IoC 1.7.6]`pod:afIoc` and [IoC Config 1.0.14]`pod:afIocConfig`
 
 v0.0.6 [#v0.0.6]
-----------------
+================
  - Chg: Updated to use [IoC 1.7.0]`pod:afIoc`.
 
 v0.0.4 [#v0.0.4]
-----------------
+================
  - Chg: '@Entity' facet is now inherited.
  - Bug: 'Datastore.findOne()' and 'Datastore.get()' could throw a 'NullErr' if checked was false.
 
 v0.0.2 [#v0.0.2]
-----------------
+================
  - New: Preview Release
 
 
