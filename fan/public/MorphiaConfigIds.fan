@@ -19,7 +19,7 @@ const mixin MorphiaConfigIds {
 	** <pre
 	static const Str mongoUrl	:= "afMorphia.mongoUrl"
 
-	** The name of the collection used by `IdSequences` to store last ID information.
+	** The name of the collection used by `IntSequences` to store last ID information.
 	static const Str intSequencesCollectionName	:= "afMorphia.intSequencesCollectionName"
 
 }
