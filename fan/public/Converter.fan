@@ -1,5 +1,15 @@
 
 ** Implement to convert custom Fantom types to / from a MongoDB representation. 
+** 
+** For more control over how a specific Fantom type is mapped to / from Mongo documents, create an implementation of 'Converter' for that type. 
+** Then, in the 'AppModule', contribute an instance of the 'Converter' to the 'Converters' service:
+**
+**   @Contribute { serviceType=Converters# }
+**   static Void contributeConverters(Configuration config) {
+**       config[MyType#] = MyTypeConverter()
+**   } 
+**  
+** The contribution key *must* be the type that the converter, converts.
 const mixin Converter {
 
 	** Converts a Mongo object to Fantom.
