@@ -7,7 +7,7 @@ Overview [#overview]
 'Morphia' features include:
  - All Fantom literals and [BSON]`pod:afBson` types supported by default,
  - Support for embedded / nested Fantom objects,
- - Extensible mapping - add your own custom [Converters]`#customConverters`,
+ - Extensible mapping - add custom Fantom <-> Mongo converters,
  - Query Builder API.
 
 Note: 'Morphia' has no association with [Morphia - the Java to MongoDB mapping library]`https://github.com/mongodb/morphia/wiki`. Well, except for the name of course!
