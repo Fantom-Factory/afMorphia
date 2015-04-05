@@ -57,6 +57,14 @@ internal const mixin ErrMsgs {
 		"Can not mix index sorts and field sorts: ${index} vs. ${field}"
 	}
 
+	static Str simpleConverter_typeNotSerialisable(Type type) {
+		stripSys("Type '${type.qname}' is not @Serializable")
+	}
+	
+	static Str simpleConverter_typeNotSimpleSerialisable(Type type) {
+		stripSys("Type '${type.qname}' is not @Serializable { simple=true }")
+	}
+	
 	static Str stripSys(Str str) {
 		str.replace("sys::", "")
 	}

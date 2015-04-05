@@ -186,6 +186,18 @@ internal class T_Entity01 {
 	@Property	Range		range
 	@Property	Int:T_Entity01_Enum?	map
 	
+	// Moar Fantom Classes
+	@Property	Field?		field
+	@Property	Depend?		depend
+	@Property	Locale?		locale
+	@Property	Method?		method
+	@Property	MimeType?	mimeType
+	@Property	Time?		time
+	@Property	TimeZone?	timeZone
+	@Property	Unit?		unit
+	@Property	Uuid?		uuid
+	@Property	Version?	version
+	
 	new make(|This|in) { in(this) }
 }
 

@@ -71,14 +71,22 @@ const class MorphiaModule {
 		config[List#]		= config.createProxy(Converter#, ListConverter#)
 		
 		// Fantom Literals
-		config[Date#]		= DateConverter()
-		config[Decimal#]	= DecimalConverter()
-		config[Duration#]	= DurationConverter()
+		config[Date#]		= SimpleConverter(Date#)
+		config[Depend#]		= SimpleConverter(Depend#)
+		config[Decimal#]	= SimpleConverter(Decimal#)
+		config[Duration#]	= SimpleConverter(Duration#)
 		config[Enum#]		= EnumConverter()
-		config[Range#]		= RangeConverter()
+		config[Locale#]		= SimpleConverter(Locale#)
+		config[MimeType#]	= SimpleConverter(MimeType#)
+		config[Range#]		= SimpleConverter(Range#)
 		config[Slot#]		= SlotConverter()
+		config[Time#]		= SimpleConverter(Time#)
+		config[TimeZone#]	= SimpleConverter(TimeZone#)
 		config[Type#]		= TypeConverter()
-		config[Uri#]		= UriConverter()
+		config[Unit#]		= SimpleConverter(Unit#)
+		config[Uri#]		= SimpleConverter(Uri#)
+		config[Uuid#]		= SimpleConverter(Uuid#)
+		config[Version#]	= SimpleConverter(Version#)
 	}
 	
 	@Contribute { serviceType=FactoryDefaults# }

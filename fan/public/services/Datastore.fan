@@ -82,10 +82,10 @@ const mixin Datastore {
 	// ---- Write Operations ----------------------------------------------------------------------
 
 	** Inserts the given entity.
-	** Returns the number of documents inserted.
+	** Returns the entity.
 	** 
 	** @see `afMongo::Collection.insert`
-	abstract Void insert(Obj entity)
+	abstract Obj insert(Obj entity)
 
 	** Deletes the given entity from the MongoDB.
 	** Throws 'MorphiaErr' if 'checked' and nothing was deleted. 
@@ -201,8 +201,9 @@ internal const class DatastoreImpl : Datastore {
 
 	// ---- Write Operations ----------------------------------------------------------------------
 
-	override Void insert(Obj entity) {
-		collection.insertMulti([toMongoDoc(entity)])
+	override Obj insert(Obj entity) {
+		collection.insert(toMongoDoc(entity))
+		return entity
 	}
 
 	override Void delete(Obj entity, Bool checked := true) {

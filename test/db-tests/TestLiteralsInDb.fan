@@ -44,7 +44,19 @@ internal class TestLiteralsInDb : MorphiaDbTest {
 			type		= MorphiaTest#
 			slot		= MorphiaTest#setup
 			range		= (2..<4)
-			map			= [3:T_Entity01_Enum.ever]			
+			map			= [3:T_Entity01_Enum.ever]
+			
+			// Moar Fantom classes
+			field		= MorphiaTest#reg
+			depend		= Depend("afIoc 2.0.6 - 2.0")
+			locale		= Locale("en-GB")
+			method		= MorphiaTest#setup
+			mimeType	= MimeType("text/plain")
+			time		= Time(2, 22, 22, 22)
+			timeZone	= TimeZone.utc
+			unit		= Unit("pH")
+			uuid		= Uuid("03f0e2bb-8f1a-c800-e1f8-00623f7473c4")
+			version		= Version([6, 9, 6, 9])
 		}
 		
 		ds.insert(entity)
@@ -87,5 +99,18 @@ internal class TestLiteralsInDb : MorphiaDbTest {
 		verifyEq(entity.slot,		MorphiaTest#setup)
 		verifyEq(entity.range,		2..<4)
 		verifyEq(entity.map[3],		T_Entity01_Enum.ever)
+
+		// Moar Fantom classes
+		verifyEq(entity.field,		MorphiaTest#reg)
+		verifyEq(entity.depend,		Depend("afIoc 2.0.6 - 2.0"))
+		verifyEq(entity.locale,		Locale("en-GB"))
+		verifyEq(entity.method,		MorphiaTest#setup)
+		verifyEq(entity.mimeType,	MimeType("text/plain"))
+		verifyEq(entity.time,		Time(2, 22, 22, 22))
+		verifyEq(entity.timeZone,	TimeZone.utc)
+		verifyEq(entity.unit,		Unit("pH"))
+		verifyEq(entity.uuid,		Uuid("03f0e2bb-8f1a-c800-e1f8-00623f7473c4"))
+		verifyEq(entity.version,	Version([6, 9, 6, 9]))
+
 	}
 }

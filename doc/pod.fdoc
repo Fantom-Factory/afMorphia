@@ -227,13 +227,18 @@ afBson::Code
    sys::Date
    sys::DateTime
    sys::Decimal
+   sys::Depend
    sys::Duration
    sys::Enum
+   sys::Field
    sys::Float
    sys::Int
    sys::List
+   sys::Locale
    sys::Map
 afBson::MaxKey
+   sys::Method
+   sys::MimeType
 afBson::MinKey
         null
 afBson::ObjectId
@@ -241,9 +246,14 @@ afBson::ObjectId
    sys::Range
    sys::Slot
    sys::Str
+   sys::Time
+   sys::TimeZone
 afBson::Timestamp
    sys::Type
+   sys::Unit
    sys::Uri
+   sys::Uuid
+   sys::Version
 <pre
 
 
@@ -509,6 +519,12 @@ If you're looking for cross-platform MongoDB GUI client then look no further tha
 
 Release Notes [#releaseNotes]
 *****************************
+v1.0.4 [#v1.0.4]
+================
+ - New: 'SimpleConverter' utility class for converting simple serializable types to and from 'Str'.
+ - New: Converters for 'Depend', 'Locale', 'MimeType', 'Time', 'TimeZone', 'Unit', 'Uuid', 'Version'.
+ - Chg: 'Datastore.insert()' now returns the given entity.
+
 v1.0.2 [#v1.0.2]
 ================
  - Bug: 'Binary' objects with a generic subtype could not be read from the database as BSON converted them to 'Buf' objects.
