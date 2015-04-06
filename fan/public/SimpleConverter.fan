@@ -19,7 +19,12 @@ const class SimpleConverter : Converter {
 	override Obj? toFantom(Type type, Obj? mongoObj) {
 		if (mongoObj == null) return null
 		// use 'type' not 'this.type' incase we're passed a subclass
-		return type.method("fromStr").call(mongoObj, true)
+		fromStr := type.method("fromStr", true)
+		try {
+			return fromStr.call(mongoObj, true)
+		} catch (Err err) {
+			throw MorphiaErr("Could not call ${fromStr.qname} ${fromStr.signature} with ${mongoObj.typeof.qname}", err)
+		}
 	}
 
 	@NoDoc
