@@ -71,7 +71,7 @@ const class MorphiaModule {
 		config[List#]		= config.createProxy(Converter#, ListConverter#)
 		
 		// Fantom Literals
-		config[Date#]		= SimpleConverter(Date#)
+		config[Date#]		= DateConverter()
 		config[Depend#]		= SimpleConverter(Depend#)
 		config[Decimal#]	= SimpleConverter(Decimal#)
 		config[Duration#]	= SimpleConverter(Duration#)
