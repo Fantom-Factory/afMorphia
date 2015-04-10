@@ -1,5 +1,5 @@
 
-** Executes `Query` objects against a 'Datastore'. Example:
+** Executes `Query` objects against a `Datastore`. Example:
 ** 
 **   QueryExecutor(datastore, query).skip(10).limit(50).orderBy("name").findAll
 ** 

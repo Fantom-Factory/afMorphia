@@ -1,7 +1,7 @@
-#Morphia v1.0.2.2
+#Morphia v1.0.2
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.0.2.2](http://img.shields.io/badge/pod-v1.0.2.2-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
+[![pod: v1.0.2](http://img.shields.io/badge/pod-v1.0.2-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -14,7 +14,7 @@
 
 - All Fantom literals and [BSON](http://www.fantomfactory.org/pods/afBson) types supported by default,
 - Support for embedded / nested Fantom objects,
-- Extensible mapping - add your own custom [Converters](#customConverters),
+- Extensible mapping - add custom Fantom <-> Mongo converters,
 - Query Builder API.
 
 Note: `Morphia` has no association with [Morphia - the Java to MongoDB mapping library](https://github.com/mongodb/morphia/wiki). Well, except for the name of course!
@@ -215,13 +215,18 @@ afBson::Code
    sys::Date
    sys::DateTime
    sys::Decimal
+   sys::Depend
    sys::Duration
    sys::Enum
+   sys::Field
    sys::Float
    sys::Int
    sys::List
+   sys::Locale
    sys::Map
 afBson::MaxKey
+   sys::Method
+   sys::MimeType
 afBson::MinKey
         null
 afBson::ObjectId
@@ -229,9 +234,14 @@ afBson::ObjectId
    sys::Range
    sys::Slot
    sys::Str
+   sys::Time
+   sys::TimeZone
 afBson::Timestamp
    sys::Type
+   sys::Unit
    sys::Uri
+   sys::Uuid
+   sys::Version
 ```
 
 ### Embedded Objects

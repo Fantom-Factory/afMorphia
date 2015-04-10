@@ -3,7 +3,7 @@ using afIocConfig
 using afMongo
 
 ** (Service) - 
-** The main entry point into 'Morphia'.
+** The main entry point into Morphia.
 const mixin Morphia {
 
 	** The MongoDB database this 'Morphia' instance wraps. 
@@ -20,9 +20,13 @@ const mixin Morphia {
 	abstract Datastore datastore(Type entityType, Database? database := null)
 	
 	** Converts the given Mongo document to a Fantom entity instance.
+	** 
+	** Convenience for 'Converters.toFantom(...)'
 	abstract Obj fromMongoDoc(Type entityType, Str:Obj? mongoDoc)
 	
 	** Converts the given entity instance to a Mongo document.
+	** 
+	** Convenience for '(Str:Obj?) Converters.toMongo(...)' - note the cast.
 	abstract Str:Obj? toMongoDoc(Obj entity)
 }
 
