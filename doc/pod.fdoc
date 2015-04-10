@@ -523,6 +523,7 @@ v1.0.4 [#v1.0.4]
 ================
  - New: 'SimpleConverter' utility class for converting simple serializable types to and from 'Str'.
  - New: Converters for 'Depend', 'Locale', 'MimeType', 'Time', 'TimeZone', 'Unit', 'Uuid', 'Version'.
+ - Chg: Documented and made public the 'Converters' service.
  - Chg: 'Datastore.insert()' now returns the given entity.
 
 v1.0.2 [#v1.0.2]
