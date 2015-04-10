@@ -3,8 +3,7 @@ using afIocConfig
 using afMongo
 
 ** (Service) - 
-** A small utility class that creates sequential sequences of 'Ints' as an alternative to using 
-** BSON 'ObjectIds'.
+** Creates sequential sequences of 'Ints' as an alternative to using BSON 'ObjectIds'.
 ** 
 ** It works by creating MongoDB collection (called 'IntSequences' by default) where it stores the 
 ** last ID for an entity to be used. When a new ID is requested an atomic *findAndUpdate* operation
