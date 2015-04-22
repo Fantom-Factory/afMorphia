@@ -112,7 +112,7 @@ pre>
  _____ ___ ___ ___ ___
 |     | . |   | . | . |
 |_|_|_|___|_|_|_  |___|
-              |___|1.0.0
+              |___|1.0.2
 
 Connected to MongoDB v2.6.5 (at mongodb://localhost:27017)
 
@@ -519,6 +519,10 @@ If you're looking for cross-platform MongoDB GUI client then look no further tha
 
 Release Notes [#releaseNotes]
 *****************************
+v1.0.4.2 [#v1.0.4.2]
+====================
+ - Chg: 'MapConverter.makeMap()' now always creates an ordered map.
+
 v1.0.4 [#v1.0.4]
 ================
  - New: 'SimpleConverter' utility class for converting simple serializable types to and from 'Str'.

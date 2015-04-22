@@ -87,15 +87,12 @@ const class MapConverter : Converter {
 		Str:Obj?[:] { ordered = true }
 	}
 
-	** Creates an empty map for Fantom. If the key type is Str#, the map is case-insensitive. Otherwise it's ordered.
+	** Creates an empty map for Fantom. Always creates an ordered map.
 	** 
 	** Override for different behaviour. 
 	virtual Obj:Obj? makeMap(Type mapType) {
 		((Map) BeanFactory.defaultValue(mapType, true)) {
-			if (mapType.params["K"] == Str#) 
-				it.caseInsensitive = true
-			else
-				it.ordered = true
+			it.ordered = true
 		}
 	}
 }
