@@ -121,7 +121,7 @@ Connected to MongoDB v2.6.5 (at mongodb://localhost:27017)
   / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
  / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
 /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
-                            Alien-Factory IoC v2.0.2 /___/
+                            Alien-Factory IoC v2.0.8 /___/
 
 IoC Registry built in 355ms and started up in 225ms
 
@@ -519,9 +519,10 @@ If you're looking for cross-platform MongoDB GUI client then look no further tha
 
 Release Notes [#releaseNotes]
 *****************************
-v1.0.4.2 [#v1.0.4.2]
-====================
+v1.0.6 [#v1.0.6]
+================
  - Chg: 'MapConverter.makeMap()' now always creates an ordered map.
+ - Bug: Only BSON types could be used for the '_id' field, now any type may.
 
 v1.0.4 [#v1.0.4]
 ================

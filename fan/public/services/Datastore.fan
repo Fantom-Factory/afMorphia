@@ -195,7 +195,8 @@ internal const class DatastoreImpl : Datastore {
 	override Obj? get(Obj id, Bool checked := true) {
 		if (!ReflectUtils.fits(id.typeof, idField.type))
 			throw ArgErr(ErrMsgs.datastore_idDoesNotFit(id, idField))
-		entity := collection.get(id, checked)
+		mongId := toMongo(id)
+		entity := collection.get(mongId, checked)
 		return (entity == null) ? null : fromMongoDoc(entity)
 	}
 
@@ -216,7 +217,8 @@ internal const class DatastoreImpl : Datastore {
 	override Void deleteById(Obj id, Bool checked := true) {
 		if (!ReflectUtils.fits(id.typeof, idField.type))
 			throw ArgErr(ErrMsgs.datastore_idDoesNotFit(id, idField))
-		n := collection.delete(["_id" : id], false)
+		mongId := toMongo(id)
+		n := collection.delete(["_id" : mongId], false)
 		if (checked && n != 1)
 			throw MorphiaErr(ErrMsgs.datastore_entityNotFound(type, id))
 	}
@@ -225,12 +227,13 @@ internal const class DatastoreImpl : Datastore {
 		if (!entity.typeof.fits(type))
 			throw ArgErr(ErrMsgs.datastore_entityWrongType(entity.typeof, type))
 		id := idField.get(entity)
-		noOfUpdates := collection.update(["_id" : id], toMongoDoc(entity), false, upsert)
+		mongId := toMongo(id)
+		noOfUpdates := collection.update(["_id" : mongId], toMongoDoc(entity), false, upsert)
 		if (noOfUpdates == 0 && upsert == false && checked) {
 			// Mongo reports zero updates if the given document hasn't changed,
 			// as this isn't an error let it slide...
-			if (get(id, false) == null)
-				throw MorphiaErr(ErrMsgs.datastore_entityNotFound(type, id))
+			if (get(mongId, false) == null)
+				throw MorphiaErr(ErrMsgs.datastore_entityNotFound(type, mongId))
 		}
 	}
 
