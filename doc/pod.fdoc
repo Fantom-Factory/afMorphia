@@ -399,21 +399,44 @@ Use a `QueryExecutor` as returned from the 'Datastore.query(...)' method to run 
 
    datastore.query(query).findAll
 
-Because you often create 'Query' objects to match fields, it can be helpful to squirrel away this little bit of code in its own method:
+The more complicated '$and' example is then written as:
 
+pre>
+  query := Query().and([
+      Query().or([
+          Query().field("price").eq(0.99f),
+          Query().field("price").eq(1.99f)
+      ]),
+      Query().or([
+          Query().field("sale" ).eq(true),
+          Query().field("qty"  ).lessThan(20)
+      ])
+  ])
+<pre
+
+It can be helpful to squirrel away common Query constructors into their own methods:
+
+pre>
   QueryCriterion field(Str fieldName) {
       Query().field(fieldName)
   }
 
-The more complicated '$and' example then becomes:
+  Query or(Query[] criteria) {
+      Query().or(criteria)
+  }
+<pre
 
+That way the '$and' example maybe re-written as:
+
+pre>
   query := Query().and([
-      Query().or([ field("price").eq(0.99f), field("price").eq(1.99f)  ]),
-      Query().or([ field("sale ").eq(true),  field("qty").lessThan(20) ])
+      or([ field("price").eq(0.99f), field("price").eq(1.99f)    ]),
+      or([ field("sale" ).eq(true),  field("qty"  ).lessThan(20) ])
   ])
+<pre
 
-Which, even though slightly more verbose, should be much easier to construct, understand, and debug.
-And the autocomplete nature of IDEs such as [F4]`http://www.xored.com/products/f4/` means you don't have to constantly consult the [Mongo documentation]`http://docs.mongodb.org/manual/reference/method/db.collection.find/`.
+Which, even though still verbose, should be much easier to construct, understand, and debug.
+Plus the autocomplete nature of IDEs such as [F4]`http://www.xored.com/products/f4/` means you don't have to constantly consult the [Mongo documentation]`http://docs.mongodb.org/manual/reference/method/db.collection.find/`!
 
 
 
@@ -521,8 +544,9 @@ Release Notes [#releaseNotes]
 *****************************
 v1.0.6 [#v1.0.6]
 ================
+ - New: Added 'Datastore.isEmpty()'.
  - Chg: 'MapConverter.makeMap()' now always creates an ordered map.
- - Bug: Only BSON types could be used for the '_id' field, now any type may.
+ - Bug: Only BSON types could be used for the '_id' field.
 
 v1.0.4 [#v1.0.4]
 ================
