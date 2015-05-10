@@ -34,6 +34,11 @@ const mixin Datastore {
 	** 
 	** @see `afMongo::Collection.exists`
 	abstract Bool exists()
+
+	** Returns 'true' if the collection has no documents.
+	** 
+	** Convenience for 'datastore.exists && datastore.size == 0'.
+	abstract Bool isEmpty()
 	
 	** Drops the underlying MongoDB collection.
 	** 
@@ -171,6 +176,10 @@ internal const class DatastoreImpl : Datastore {
 		collection.exists
 	}
 	
+	override Bool isEmpty() {
+		exists && size == 0
+	}
+
 	override This drop(Bool checked := true) {
 		collection.drop(checked)
 		return this

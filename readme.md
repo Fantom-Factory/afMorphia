@@ -1,7 +1,7 @@
-#Morphia v1.0.4.2
+#Morphia v1.0.4
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.0.4.2](http://img.shields.io/badge/pod-v1.0.4.2-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
+[![pod: v1.0.4](http://img.shields.io/badge/pod-v1.0.4-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -125,7 +125,7 @@ Connected to MongoDB v2.6.5 (at mongodb://localhost:27017)
   / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
  / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
 /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
-                            Alien-Factory IoC v2.0.2 /___/
+                            Alien-Factory IoC v2.0.8 /___/
 
 IoC Registry built in 355ms and started up in 225ms
 
