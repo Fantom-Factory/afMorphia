@@ -1,7 +1,7 @@
-#Morphia v1.0.4
+#Morphia v1.0.6
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.0.4](http://img.shields.io/badge/pod-v1.0.4-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
+[![pod: v1.0.6](http://img.shields.io/badge/pod-v1.0.6-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -373,20 +373,43 @@ Use a [QueryExecutor](http://repo.status302.com/doc/afMorphia/QueryExecutor.html
 
     datastore.query(query).findAll
 
-Because you often create `Query` objects to match fields, it can be helpful to squirrel away this little bit of code in its own method:
+The more complicated `$and` example is then written as:
 
-    QueryCriterion field(Str fieldName) {
-        Query().field(fieldName)
-    }
-
-The more complicated `$and` example then becomes:
-
-    query := Query().and([
-        Query().or([ field("price").eq(0.99f), field("price").eq(1.99f)  ]),
-        Query().or([ field("sale ").eq(true),  field("qty").lessThan(20) ])
+```
+query := Query().and([
+    Query().or([
+        Query().field("price").eq(0.99f),
+        Query().field("price").eq(1.99f)
+    ]),
+    Query().or([
+        Query().field("sale" ).eq(true),
+        Query().field("qty"  ).lessThan(20)
     ])
+])
+```
 
-Which, even though slightly more verbose, should be much easier to construct, understand, and debug. And the autocomplete nature of IDEs such as [F4](http://www.xored.com/products/f4/) means you don't have to constantly consult the [Mongo documentation](http://docs.mongodb.org/manual/reference/method/db.collection.find/).
+It can be helpful to squirrel away common Query constructors into their own methods:
+
+```
+QueryCriterion field(Str fieldName) {
+    Query().field(fieldName)
+}
+
+Query or(Query[] criteria) {
+    Query().or(criteria)
+}
+```
+
+That way the `$and` example maybe re-written as:
+
+```
+query := Query().and([
+    or([ field("price").eq(0.99f), field("price").eq(1.99f)    ]),
+    or([ field("sale" ).eq(true),  field("qty"  ).lessThan(20) ])
+])
+```
+
+Which, even though still verbose, should be much easier to construct, understand, and debug. Plus the autocomplete nature of IDEs such as [F4](http://www.xored.com/products/f4/) means you don't have to constantly consult the [Mongo documentation](http://docs.mongodb.org/manual/reference/method/db.collection.find/)!
 
 ## Testing
 
