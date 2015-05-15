@@ -38,11 +38,11 @@ internal const mixin ErrMsgs {
 	}
 
 	static Str datastore_idDoesNotFit(Obj id, Field idField) {
-		stripSys("Given ID does not fit ${idField.qname} ${idField.type.signature}# - ${id.typeof.signature} ${id}")
+		stripSys("ID does not fit ${idField.qname} ${idField.type.signature}# - ${id.typeof.signature} ${id}")
 	}
 
 	static Str datastore_entityWrongType(Type entityType, Type dsType) {
-		stripSys("Given Entity of type ${entityType.qname} does not fit Datastore type ${dsType.qname}")
+		stripSys("Entity of type ${entityType.qname} does not fit Datastore type ${dsType.qname}")
 	}
 
 	static Str datastore_facetTypeDoesNotFitField(Type facetType, Field field) {

@@ -21,13 +21,17 @@ const class MapConverter : Converter {
 		fanKeyType 	:= fanMapType.params["K"]
 		fanValType 	:= fanMapType.params["V"]
 
-		mongoMap	:= (Map) mongoObj
-		monMapType	:= mongoMap.typeof
-		monKeyType 	:= monMapType.params["K"]
+		mongoMapRaw	:= (Map) mongoObj
+		monMapType	:= mongoMapRaw.typeof
 		monValType 	:= monMapType.params["V"]
 		
 		// monKeyType should always be Str#
-		if (fanKeyType == Str# && monKeyType == Str#) {
+		mongoMap	:= makeMap(Map#.parameterize(["K":Str#, "V":monValType]))
+		mongoMapRaw.each |v, k| {
+			mongoMap[decodeKey(k.toStr)] = v
+		}
+		
+		if (fanKeyType == Str#) {
 			if (monValType.fits(fanValType))
 				return mongoMap
 
@@ -48,7 +52,7 @@ const class MapConverter : Converter {
 		fanMap		:= makeMap(fanMapType)
 		mongoMap.each |mVal, mKey| {
 			// Map keys are special and have to be converted <=> Str
-			fKey := typeCoercer.coerce(mKey, fanKeyType)
+			fKey := typeCoercer.coerce(decodeKey(mKey), fanKeyType)
 			fVal := converters.toFantom(fanValType, mVal)
 			fanMap[fKey] = fVal
 		}
@@ -59,12 +63,17 @@ const class MapConverter : Converter {
 		fanMap		:= (Map) fantomObj
 		mapType		:= fanMap.typeof
 		
-		// if the whole map is a valid BSON document, then return it as is
+		// if the whole map is a valid BSON document, then just encode the keys
 		if (!mapType.isGeneric) {
 			keyType 	:= mapType.params["K"]
 			valType 	:= mapType.params["V"]
-			if (keyType == Str# && BsonType.isBsonLiteral(valType))
-				return fantomObj
+			if (keyType == Str# && BsonType.isBsonLiteral(valType)) {
+				mongoMap	:= emptyDoc
+				fanMap.each |fVal, fKey| {
+					mongoMap[encodeKey(fKey)] = fVal
+				}
+				return mongoMap
+			}
 		}
 		
 		mongoMap	:= emptyDoc
@@ -73,7 +82,9 @@ const class MapConverter : Converter {
 			// As *anything* can be converter toStr(), let's check up front that we can convert it back to Fantom again!
 			if (!typeCoercer.canCoerce(Str#, fKey.typeof))
 				throw MorphiaErr(ErrMsgs.mapConverter_cannotCoerceKey(fKey.typeof))
-			mKey := typeCoercer.coerce(fKey, Str#)
+			
+			// encode map keys to handle the special '.' and '$' chars
+			mKey := encodeKey(typeCoercer.coerce(fKey, Str#))
 			mVal := converters.toMongo(fVal)
 			mongoMap[mKey] = mVal
 		}		
@@ -94,5 +105,12 @@ const class MapConverter : Converter {
 		((Map) BeanFactory.defaultValue(mapType, true)) {
 			it.ordered = true
 		}
+	}
+	
+	private Str encodeKey(Str key) {
+		key.replace("\\", "\\\\").replace("\$", "\\u0024").replace(".", "\\u002e")
+	}
+	private Str decodeKey(Str key) {
+		key.replace("\\u002e", ".").replace("\\u0024", "\$").replace("\\\\", "\\")
 	}
 }
