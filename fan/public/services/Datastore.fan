@@ -127,13 +127,11 @@ const mixin Datastore {
 	
 	** Converts the entity instance to a Mongo document.
 	** 
-	** Actually, 'entity' maybe any Fantom object and not just an entity,
-	** for this is just a convenience for calling 'Converters.toMongo(...)'.
-	abstract Str:Obj? toMongoDoc(Obj entity)
-
-	** Converts the value to a Mongo object.
-	** 
 	** Convenience for calling 'Converters.toMongo(...)'.
+	abstract Str:Obj? toMongoDoc(Obj entity)
+	
+	// TODO: make Datastore.toMongo() internal
+	@NoDoc @Deprecated { msg="Use Converters.toMongo(...) instead" }
 	abstract Obj? toMongo(Obj? entity)
 
 	// ---- Query Methods -------------------------------------------------------------------------
@@ -212,6 +210,8 @@ internal const class DatastoreImpl : Datastore {
 	// ---- Write Operations ----------------------------------------------------------------------
 
 	override Obj insert(Obj entity) {
+		if (!entity.typeof.fits(type))
+			throw ArgErr(ErrMsgs.datastore_entityWrongType(entity.typeof, type))
 		collection.insert(toMongoDoc(entity))
 		return entity
 	}
