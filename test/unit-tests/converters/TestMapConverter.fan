@@ -20,25 +20,27 @@ internal class TestMapConverter : MorphiaTest {
 //		verifyEq(fanMap.size, 0)
 //	}
 	
-	Void testKeySameValSame() {
-		mapConverter := (Converter) reg.createProxy(Converter#, MapConverter#)
-
-		monMap	:= Str:Obj?["gold":42]
-		fanMap	:= mapConverter.toFantom([Str:Obj?]#, monMap) as [Str:Obj?]
-		
-		verifySame(fanMap, monMap)
-		verifyEq(fanMap["gold"], 42)
-	}
+	// with key escaping - the map gets re-created
+//	Void testKeySameValSame() {
+//		mapConverter := (Converter) reg.createProxy(Converter#, MapConverter#)
+//
+//		monMap	:= Str:Obj?["gold":42]
+//		fanMap	:= mapConverter.toFantom([Str:Obj?]#, monMap) as [Str:Obj?]
+//		
+//		verifySame(fanMap, monMap)
+//		verifyEq(fanMap["gold"], 42)
+//	}
 	
-	Void testKeySameValCopy() {
-		mapConverter := (Converter) reg.createProxy(Converter#, MapConverter#)
-
-		monMap	:= Str:Int["gold":42]
-		fanMap	:= mapConverter.toFantom([Str:Int]#, monMap) as [Str:Int]
-		
-		verifySame(fanMap, monMap)
-		verifyEq(fanMap["gold"], 42)
-	}
+	// with key escaping - the map gets re-created
+//	Void testKeySameValCopy() {
+//		mapConverter := (Converter) reg.createProxy(Converter#, MapConverter#)
+//
+//		monMap	:= Str:Int["gold":42]
+//		fanMap	:= mapConverter.toFantom([Str:Int]#, monMap) as [Str:Int]
+//		
+//		verifySame(fanMap, monMap)
+//		verifyEq(fanMap["gold"], 42)
+//	}
 	
 	Void testKeySameValConvert() {
 		mapConverter := (Converter) reg.createProxy(Converter#, MapConverter#)
@@ -68,5 +70,55 @@ internal class TestMapConverter : MorphiaTest {
 		verifyErrMsg(MorphiaErr#, ErrMsgs.mapConverter_cannotCoerceKey(Err#)) {
 			mapConverter.toMongo(fanMap)
 		}
+	}
+	
+	Void testUnicodeKeyEscaping() {
+		key := ""
+
+		key = MapConverter.encodeKey("xxx\\1234xxx")
+		verifyEq(key, "xxx\\1234xxx")
+
+		key = MapConverter.encodeKey("xxx\\u1234xxx")
+		verifyEq(key, "xxx\\uu1234xxx")
+
+		key = MapConverter.encodeKey("xxx\\u1a2Bxxx")
+		verifyEq(key, "xxx\\uu1a2Bxxx")
+
+		key = MapConverter.encodeKey("xxx\\uu1234xxx")
+		verifyEq(key, "xxx\\uuu1234xxx")
+
+		key = MapConverter.encodeKey("xxx\\uu1234xxx\\uu1234xxx")
+		verifyEq(key, "xxx\\uuu1234xxx\\uuu1234xxx")
+
+		key = MapConverter.encodeKey("pod.name\\pod.\$name")
+		verifyEq(key, "pod\\u002ename\\pod\\u002e\\u0024name")
+
+		key = MapConverter.encodeKey("xxx\\u123xxx")
+		verifyEq(key, "xxx\\u123xxx")
+	}
+
+	Void testUnicodeKeyDescaping() {
+		key := ""
+
+		key = MapConverter.decodeKey("xxx\\1234xxx")
+		verifyEq(key, "xxx\\1234xxx")
+
+		key = MapConverter.decodeKey("xxx\\uu1234xxx")
+		verifyEq(key, "xxx\\u1234xxx")
+
+		key = MapConverter.decodeKey("xxx\\uu1a2Bxxx")
+		verifyEq(key, "xxx\\u1a2Bxxx")
+
+		key = MapConverter.decodeKey("xxx\\uuu1234xxx")
+		verifyEq(key, "xxx\\uu1234xxx")
+
+		key = MapConverter.decodeKey("xxx\\uuu1234xxx\\uuu1234xxx")
+		verifyEq(key, "xxx\\uu1234xxx\\uu1234xxx")
+
+		key = MapConverter.decodeKey("pod\\u002ename\\pod\\u002e\\u0024name")
+		verifyEq(key, "pod.name\\pod.\$name")
+
+		key = MapConverter.decodeKey("xxx\\u123xxx")
+		verifyEq(key, "xxx\\u123xxx")
 	}
 }
