@@ -244,6 +244,20 @@ afBson::Timestamp
    sys::Version
 ```
 
+#### Map Key Restrictions
+
+As detailed in [Restrictions on Field Names](http://docs.mongodb.org/manual/reference/limits/#Restrictions-on-Field-Names) MongoDB does not allow the characters `$` (dollar) and `.` (full stop) to be stored in Map keys. To overcome this limitation Morphia automatically encodes keys as unicode escape sequences, similar to how Java works. More specifically, the following characters are escaped:
+
+```
+\uXXXX  -->  \uuXXXX
+$       -->  \u0024
+.       -->  \u002e
+```
+
+Hence the key `pod.$name-Om\u2126` would be stored as `pod\u002e\u0024name-Om\uu2126`.
+
+Morphia automatically decodes Map keys when it reads them back from Mongo, so generally, the encoding / decoding process is of no concern. However, when constructing queries for such key values, it is something you need to be aware of.
+
 ### Embedded Objects
 
 Morphia is also able to convert embedded, or nested, Fantom objects. Extending the example in [Quick Start](#quickStart), here we substitute the `Str` name for an embedded `Name` object:
