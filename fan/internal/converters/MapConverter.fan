@@ -9,6 +9,8 @@ const class MapConverter : Converter {
 	@Inject 
 	private const Converters 	converters
 	private const TypeCoercer	typeCoercer
+	private static const Regex	unicodeRegex	:= "\\\\u+[0-9a-fA-F]{4}".toRegex
+	private static const Regex	unicodeRegex2	:= "\\\\u{2,}[0-9a-fA-F]{4}".toRegex
 	
 	new make(|This|in) {
 		in(this)
@@ -107,10 +109,24 @@ const class MapConverter : Converter {
 		}
 	}
 	
-	private Str encodeKey(Str key) {
-		key.replace("\\", "\\\\").replace("\$", "\\u0024").replace(".", "\\u002e")
+	// http://stackoverflow.com/questions/21522770/unicode-escape-syntax-in-java
+	internal static Str encodeKey(Str key) {
+		buf		:= StrBuf(key.size + 5).add(key)
+		matcher := unicodeRegex.matcher(key)
+		idx		:= 0
+		while (matcher.find) {
+			buf.insert(matcher.start(0) + 1 + idx++, "u")
+		}
+		return buf.toStr.replace("\$", "\\u0024").replace(".", "\\u002e")
 	}
-	private Str decodeKey(Str key) {
-		key.replace("\\u002e", ".").replace("\\u0024", "\$").replace("\\\\", "\\")
+	internal static Str decodeKey(Str key) {
+		replace	:= key.replace("\\u002e", ".").replace("\\u0024", "\$")
+		buf		:= StrBuf(replace.size).add(replace)
+		matcher := unicodeRegex2.matcher(replace)
+		idx		:= 0
+		while (matcher.find) {
+			buf.remove(matcher.start(0) + 1 + idx--)
+		}
+		return buf.toStr
 	}
 }

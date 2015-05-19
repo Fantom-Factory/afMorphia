@@ -86,7 +86,7 @@ internal class TestLiteralConversion : MorphiaTest {
 			// Mongo literals			
 			float 		= 69.0f
 			str 		= "string"
-			doc			= ["wot":"ever"]
+			doc			= Str:Str?["wot":"ever"]
 			list		= ["wot","ever"]
 			binaryStd	= Binary("dragon".toBuf)
 			binaryMd5	= Binary("dragon".toBuf, Binary.BIN_MD5)
@@ -120,7 +120,7 @@ internal class TestLiteralConversion : MorphiaTest {
 		
 		verifyEq  (mongoDoc["float"],		entity.float)
 		verifySame(mongoDoc["str"],			entity.str)
-		verifySame(mongoDoc["doc"],			entity.doc)
+		verifyEq  (mongoDoc["doc"],			Str:Obj?["wot":"ever"])	// all mongo maps have the Str:Obj? signature
 		verifySame(mongoDoc["list"],		entity.list)
 		verifySame(mongoDoc["binaryStd"],	entity.binaryStd)
 		verifySame(mongoDoc["binaryMd5"],	entity.binaryMd5)

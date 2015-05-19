@@ -260,17 +260,17 @@ afBson::Timestamp
 
 Map Key Restrictions [#mapKeyRestrictions]
 ------------------------------------------
-As detailed in [Restrictions on Field Names]`http://docs.mongodb.org/manual/reference/limits/#Restrictions-on-Field-Names` MongoDB does not allow the characters '$' (dollar) and '.' (full stop) to be stored in Map keys. To overcome this limitation Morphia automatically escapes them with a unicode escape sequence. More specifically, the following characters are escaped:
+As detailed in [Restrictions on Field Names]`http://docs.mongodb.org/manual/reference/limits/#Restrictions-on-Field-Names` MongoDB does not allow the characters '$' (dollar) and '.' (full stop) to be stored in Map keys. To overcome this limitation Morphia automatically encodes keys as unicode escape sequences, similar to how Java works. More specifically, the following characters are escaped:
 
 pre>
-\  -->  \\
-$  -->  \u0024
-.  -->  \u002e
+\uXXXX  -->  \uuXXXX
+$       -->  \u0024
+.       -->  \u002e
 <pre
 
-This means that the key 'pod.name\pod.$name' would be stored as 'pod\u002ename\\pod\u002e\u0024name'. As Morphia automatically decodes map keys when it reads them back from Mongo, you usually don't have to be concerned with this.
+Hence the key 'pod.$name-Om\u2126' would be stored as 'pod\u002e\u0024name-Om\uu2126'.
 
-However, when constructing queries for such key values, it is something you need to be aware of.
+Morphia automatically decodes Map keys when it reads them back from Mongo, so generally, the encoding / decoding process is of no concern. However, when constructing queries for such key values, it is something you need to be aware of.
 
 
 
@@ -560,7 +560,7 @@ Release Notes [#releaseNotes]
 *****************************
 v1.0.8 [#v1.0.8]
 ================
- - Chg: MongoDB does not allow the '$' and '.' characters to be used as Map keys, so they are now automatically encoded / decoded when saving / reading Maps.
+ - Chg: Map keys are automatically encoded / decoded as unicode escape sequences as MongoDB does not allow characters '$' and '.' in keys.
 
 v1.0.6 [#v1.0.6]
 ================
