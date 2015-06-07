@@ -53,7 +53,7 @@ internal const mixin ErrMsgs {
 		stripSys("Property name '${name}' is defined twice at '$field1.qname' and '${field2.qname}'")
 	}
 
-	static Str query_canNotMixSorts(Obj index, Obj field) {
+	static Str query_canNotMixSorts(Obj? index, Obj? field) {
 		"Can not mix index sorts and field sorts: ${index} vs. ${field}"
 	}
 

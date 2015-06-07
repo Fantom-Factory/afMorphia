@@ -4,6 +4,8 @@
 ** For more control over how a specific Fantom type is mapped to / from Mongo documents, create an implementation of 'Converter' for that type. 
 ** Then, in the 'AppModule', contribute an instance of the 'Converter' to the 'Converters' service:
 **
+**   syntax: fantom
+** 
 **   @Contribute { serviceType=Converters# }
 **   static Void contributeConverters(Configuration config) {
 **       config[MyType#] = MyTypeConverter()

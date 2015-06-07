@@ -6,6 +6,8 @@ using afBson::ObjectId
 ** 
 ** Contribute 'Converter' instances to this.
 ** 
+**   syntax: fantom
+** 
 **   @Contribute { serviceType=Converters# }
 **   static Void contributeConverters(Configuration config) {
 **       config[MyType#] = MyTypeConverter()

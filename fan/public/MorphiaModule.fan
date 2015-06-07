@@ -5,7 +5,7 @@ using afMongo
 using inet
 using concurrent
 
-** The [IoC]`http://www.fantomfactory.org/pods/afIoc` module class.
+** The [IoC]`pod:afIoc` module class.
 ** 
 ** This class is public so it may be referenced explicitly in test code.
 @NoDoc

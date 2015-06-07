@@ -5,6 +5,7 @@ const class SimpleConverter : Converter {
 	
 	** Creates a converter for the given type. The type must be annotated with:
 	** 
+	**   syntax: fantom
 	**   @Serializable { simple = true }
 	new make(Type type) {
 		serializable := (Serializable?) Type#.method("facet").callOn(type, [Serializable#, false])

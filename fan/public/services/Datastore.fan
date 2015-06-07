@@ -8,10 +8,14 @@ using afMongo
 ** 
 ** When injecting as a service, use the '@Inject.type' attribute to state which Entity type it is for: 
 ** 
+**   syntax: fantom
+** 
 **   @Inject { type=MyEntity# }
 **   private const Datastore myEntityDatastore
 ** 
 ** You can also autobuild a Datastore instance by passing in the entity type as a ctor param:
+** 
+**   syntax: fantom
 ** 
 **   registry.autobuild(Datastore#, [MyEntity#])
 const mixin Datastore {
