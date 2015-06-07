@@ -19,6 +19,7 @@ class Query {
 
 	** Selects documents based on the return value of a javascript function. Example:
 	** 
+	**   syntax: fantom
 	**   Query().where(Code("this.name == 'Judge Dredd'"))
 	** 
 	** As only 1 *where* function is allowed per query, only the last *where* function is used.
@@ -33,6 +34,7 @@ class Query {
 	** Selects documents that pass all the query expressions in the given list.
 	** Example:
 	** 
+	**   syntax: fantom
 	**   Query().and([
 	**     Query().field("quantity").lessThan(20),
 	**     Query().field("price").eq(10)
@@ -40,6 +42,7 @@ class Query {
 	** 
 	** Note the above could also be written implicitly with:
 	** 
+	**   syntax: fantom
 	**   Query().field("quantity").lessThan(20).field("price").eq(10)
 	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/and/`
@@ -52,6 +55,7 @@ class Query {
 	** Selects documents that pass any of the query expressions in the given list.
 	** Example:
 	** 
+	**   syntax: fantom
 	**   Query().or([
 	**     Query().field("quantity").lessThan(20),
 	**     Query().field("price").eq(10)
@@ -67,6 +71,7 @@ class Query {
 	** Selects documents that fail **all** the query expressions in the given list.
 	** Example:
 	** 
+	**   syntax: fantom
 	**   Query().or([
 	**     Query().field("quantity").lessThan(20),
 	**     Query().field("price").eq(10)

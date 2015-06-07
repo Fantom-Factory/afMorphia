@@ -6,18 +6,18 @@
 
 ## Overview
 
-`Morphia` is a Fantom to MongoDB object mapping library.
+Morphia is a Fantom to MongoDB object mapping library.
 
-`Morphia` is an extension to the [Mongo](http://www.fantomfactory.org/pods/afMongo) library that maps Fantom objects and their fields to and from MongoDB collections and documents.
+Morphia is an extension to the [Mongo](http://pods.fantomfactory.org/pods/afMongo) library that maps Fantom objects and their fields to and from MongoDB collections and documents.
 
-`Morphia` features include:
+Morphia features include:
 
-- All Fantom literals and [BSON](http://www.fantomfactory.org/pods/afBson) types supported by default,
+- All Fantom literals and [BSON](http://pods.fantomfactory.org/pods/afBson) types supported by default,
 - Support for embedded / nested Fantom objects,
 - Extensible mapping - add custom Fantom <-> Mongo converters,
 - Query Builder API.
 
-Note: `Morphia` has no association with [Morphia - the Java to MongoDB mapping library](https://github.com/mongodb/morphia/wiki). Well, except for the name of course!
+Note: Morphia has no association with [Morphia - the Java to MongoDB mapping library](https://github.com/mongodb/morphia/wiki). Well, except for the name of course!
 
 ## Install
 
@@ -31,109 +31,106 @@ To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan
 
 ## Documentation
 
-Full API & fandocs are available on the [Status302 repository](http://repo.status302.com/doc/afMorphia/).
+Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fantomfactory.org/pods/afMorphia/).
 
 ## Quick Start
 
-1). Start up an instance of MongoDB:
+1. Start up an instance of MongoDB:
 
-```
-C:\> mongod
+        C:\> mongod
+        
+        MongoDB starting
+        db version v2.6.5
+        waiting for connections on port 27017
 
-MongoDB starting
-db version v2.6.0
-waiting for connections on port 27017
-```
 
-2). Create a text file called `Example.fan`:
+2. Create a text file called `Example.fan`
 
-```
-using afMorphia
-using afBson
-using afIoc
-using afIocConfig
-
-@Entity
-class User {
-    @Property ObjectId _id
-    @Property Str      name
-    @Property Int      age
-
-    new make(|This|in) { in(this) }
-}
-
-class Example {
-    @Inject { type=User# }
-    Datastore? datastore
-
-    Void main() {
-        reg := RegistryBuilder().addModule(ExampleModule#).addModulesFromPod("afMorphia").build.startup
-        reg.injectIntoFields(this)
-
-        micky := User {
-            it._id  = ObjectId()
-            it.name = "Micky Mouse"
-            it.age  = 42
+        using afMorphia
+        using afBson
+        using afIoc
+        using afIocConfig
+        
+        @Entity
+        class User {
+            @Property ObjectId _id
+            @Property Str      name
+            @Property Int      age
+        
+            new make(|This|in) { in(this) }
+        }
+        
+        class Example {
+            @Inject { type=User# }
+            Datastore? datastore
+        
+            Void main() {
+                reg := RegistryBuilder().addModule(ExampleModule#).addModulesFromPod("afMorphia").build.startup
+                reg.injectIntoFields(this)
+        
+                micky := User {
+                    it._id  = ObjectId()
+                    it.name = "Micky Mouse"
+                    it.age  = 42
+                }
+        
+                // ---- Create ------
+                datastore.insert(micky)
+        
+                // ---- Read --------
+                q     := Query().field("age").eq(42)
+                mouse := (User) datastore.query(q).findOne
+                echo(mouse.name)  // --> Micky Mouse
+        
+                // ---- Update -----
+                mouse.name = "Minny"
+                datastore.update(mouse)
+        
+                // ---- Delete ------
+                datastore.delete(micky)
+        
+                reg.shutdown
+            }
+        }
+        
+        class ExampleModule {
+            @Contribute { serviceType=ApplicationDefaults# }
+            static Void contributeAppDefaults(Configuration config) {
+                config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
+            }
         }
 
-        // ---- Create ------
-        datastore.insert(micky)
 
-        // ---- Read --------
-        q     := Query().field("age").eq(42)
-        mouse := (User) datastore.query(q).findOne
-        echo(mouse.name)  // --> Micky Mouse
+3. Run `Example.fan` as a Fantom script from the command line:
 
-        // ---- Update -----
-        mouse.name = "Minny"
-        datastore.update(mouse)
+        [afIoc] Adding module definitions from pod 'afMorphia'
+        [afIoc] Adding module definition for afMorphia::MorphiaModule
+        [afIoc] Adding module definition for afIocConfig::IocConfigModule
+        [afIoc] Adding module definition for afMorphia::ExampleModule
+        [afMongo]
+        
+             Alien-Factory
+         _____ ___ ___ ___ ___
+        |     | . |   | . | . |
+        |_|_|_|___|_|_|_  |___|
+                      |___|1.0.4
+        
+        Connected to MongoDB v2.6.5 (at mongodb://localhost:27017)
+        
+           ___    __                 _____        _
+          / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
+         / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
+        /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
+                                    Alien-Factory IoC v2.0.8 /___/
+        
+        IoC Registry built in 355ms and started up in 225ms
+        
+        Micky Mouse
+        
+        [afIoc] IoC shutdown in 12ms
+        [afIoc] "Goodbye!" from afIoc!
 
-        // ---- Delete ------
-        datastore.delete(micky)
 
-        reg.shutdown
-    }
-}
-
-class ExampleModule {
-    @Contribute { serviceType=ApplicationDefaults# }
-    static Void contributeAppDefaults(Configuration config) {
-        config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
-    }
-}
-```
-
-3). Run `Example.fan` as a Fantom script from the command line:
-
-```
-[afIoc] Adding module definitions from pod 'afMorphia'
-[afIoc] Adding module definition for afMorphia::MorphiaModule
-[afIoc] Adding module definition for afIocConfig::IocConfigModule
-[afIoc] Adding module definition for afMorphia::ExampleModule
-[afMongo]
-
-     Alien-Factory
- _____ ___ ___ ___ ___
-|     | . |   | . | . |
-|_|_|_|___|_|_|_  |___|
-              |___|1.0.2
-
-Connected to MongoDB v2.6.5 (at mongodb://localhost:27017)
-
-[afIoc]
-   ___    __                 _____        _
-  / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
- / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
-/_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
-                            Alien-Factory IoC v2.0.8 /___/
-
-IoC Registry built in 355ms and started up in 225ms
-
-Micky Mouse
-
-[afIoc] IoC shutdown in 12ms
-[afIoc] "Goodbye!" from afIoc!
-```
 
 ## Usage
 
@@ -148,20 +145,20 @@ static Void contributeAppDefaults(Configuration config) {
 }
 ```
 
-`Morphia` uses the connection URL to create a pooled [ConnectionManager](http://repo.status302.com/doc/afMongo/ConnectionManagerPooled.html). The `ConnectionManager`, and all of its connections, are gracefully closed when IoC / BedSheet is shutdown.
+`Morphia` uses the connection URL to create a pooled [ConnectionManager](http://pods.fantomfactory.org/pods/afMongo/api/ConnectionManagerPooled). The `ConnectionManager`, and all of its connections, are gracefully closed when IoC / BedSheet is shutdown.
 
 Some connection URL options are supported:
 
 - `mongodb://username:password@example1.com/database?maxPoolSize=50`
 - `mongodb://example2.com?minPoolSize=10&maxPoolSize=25`
 
-See [ConnectionManagerPooled](http://repo.status302.com/doc/afMongo/ConnectionManagerPooled.html) for more details.
+See [ConnectionManagerPooled](http://pods.fantomfactory.org/pods/afMongo/api/ConnectionManagerPooled) for more details.
 
 ### Entities
 
 An entity is a top level domain object that is persisted in a MongoDB collection.
 
-Entity objects must be annotated with the [@Entity](http://repo.status302.com/doc/afMorphia/Entity.html) facet. By default the MongoDB collection name is the same as the (unqualified) entity type name. Example, if your entity type is `acmeExample::User` then it maps to a Mongo collection named `User`. This may be overriden by providing a value for the `@Entity.name` attribute.
+Entity objects must be annotated with the [@Entity](http://pods.fantomfactory.org/pods/afMorphia/api/Entity) facet. By default the MongoDB collection name is the same as the (unqualified) entity type name. Example, if your entity type is `acmeExample::User` then it maps to a Mongo collection named `User`. This may be overriden by providing a value for the `@Entity.name` attribute.
 
 Entity fields are mapped to properties in a MongoDB document. Use the `@Property` facet to mark fields that should be mapped to / from a Mongo property. Again, the default is to take the property name and type from the field, but it may be overridden by facet values.
 
@@ -187,7 +184,7 @@ Note that a Mongo Id *does not* need to be an `ObjectId`. Any object may be used
 
 ### Datastore
 
-A [Datastore](http://repo.status302.com/doc/afMorphia/Datastore.html) wraps a [Mongo Collection](http://repo.status302.com/doc/afMongo/Collection.html) and is your gateway to saving and reading Fantom objects to / from the MongoDB.
+A [Datastore](http://pods.fantomfactory.org/pods/afMorphia/api/Datastore) wraps a [Mongo Collection](http://pods.fantomfactory.org/pods/afMongo/api/Collection) and is your gateway to saving and reading Fantom objects to / from the MongoDB.
 
 Each `Datastore` instance is specific to an Entity type, so to inject a `Datastore` you need to specify which Entity it is associated with. Use the `@Inject.type` attribute to do this. Example:
 
@@ -201,7 +198,7 @@ You can also inject Mongo `Collections` in the same manner:
 
 ## Mapping
 
-At the core of `Morphia` is a suite of [Converters](http://repo.status302.com/doc/afMorphia/Converter.html) that map Fantom objects to Mongo documents.
+At the core of `Morphia` is a suite of [Converters](http://pods.fantomfactory.org/pods/afMorphia/api/Converter) that map Fantom objects to Mongo documents.
 
 ### Standard Converters
 
@@ -345,7 +342,7 @@ echo(mongoDoc) // --> [_id:xxxx, age:42, name:Micky-Mouse]
 
 ### Storing Nulls in Mongo
 
-When converting Fantom objects *to* Mongo, the [ObjConverter](http://repo.status302.com/doc/afMorphia/ObjConverter.html) decides what to do if a Fantom field has the value `null`. Should it store a key in the MongoDb with a `null` value, or should it not store the key at all?
+When converting Fantom objects *to* Mongo, the [ObjConverter](http://pods.fantomfactory.org/pods/afMorphia/api/ObjConverter) decides what to do if a Fantom field has the value `null`. Should it store a key in the MongoDb with a `null` value, or should it not store the key at all?
 
 To conserve storage space in MongoDB, by default `ObjConverter` does not store the keys.
 
@@ -379,11 +376,11 @@ query := [
 ]
 ```
 
-For that reason Morphia provides a means to build and execute [Query](http://repo.status302.com/doc/afMorphia/Query.html) objects that rely on more meaningful method names. The simple example may be re-written as:
+For that reason Morphia provides a means to build and execute [Query](http://pods.fantomfactory.org/pods/afMorphia/api/Query) objects that rely on more meaningful method names. The simple example may be re-written as:
 
     query := Query().field("age").eq(42)
 
-Use a [QueryExecutor](http://repo.status302.com/doc/afMorphia/QueryExecutor.html) as returned from the `Datastore.query(...)` method to run the query.
+Use a [QueryExecutor](http://pods.fantomfactory.org/pods/afMorphia/api/QueryExecutor) as returned from the `Datastore.query(...)` method to run the query.
 
     datastore.query(query).findAll
 

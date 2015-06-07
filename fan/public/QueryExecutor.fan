@@ -1,10 +1,12 @@
 
 ** Executes `Query` objects against a `Datastore`. Example:
 ** 
+**   syntax: fantom
 **   QueryExecutor(datastore, query).skip(10).limit(50).orderBy("name").findAll
 ** 
 ** Or you can use the instance returned by 'Datastore.query(...)':
 ** 
+**   syntax: fantom
 **   datastore.query(query).orderBy("name").findAll
 ** 
 class QueryExecutor {
@@ -27,6 +29,7 @@ class QueryExecutor {
 	** Multiple calls to 'orderBy()' may be made to indicate sub-sorts.
 	** Example:
 	** 
+	**   syntax: fantom
 	**   QueryExecutor(...).orderBy("name").orderBy("-value").findAll
 	** 
 	** Note this is actually the MongoDB property name and *not* the field name. 
@@ -45,7 +48,7 @@ class QueryExecutor {
 
 	** Specifies an index to use for sorting.
 	This orderByIndex(Str indexName) {
-		if (_orderBy isnot Str)
+		if (_orderBy != null && _orderBy isnot Str)
 			throw ArgErr(ErrMsgs.query_canNotMixSorts(indexName, _orderBy))
 		_orderBy = indexName
 		return this
@@ -80,7 +83,7 @@ class QueryExecutor {
 	** A value of 'null' or '0' indicates no limit.
 	** 
 	** Only used by 'findAll()'. 
-	This limit(Int limit) {
+	This limit(Int? limit) {
 		this._limit = limit
 		return this
 	}
