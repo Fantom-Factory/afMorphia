@@ -1,7 +1,7 @@
-#Morphia v1.0.8
+#Morphia v1.0.10
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.0.8](http://img.shields.io/badge/pod-v1.0.8-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
+[![pod: v1.0.10](http://img.shields.io/badge/pod-v1.0.10-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
