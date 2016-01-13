@@ -9,9 +9,9 @@ using afMongo
 @NoDoc	// public so people can change the null strategy
 const class ObjConverter : Converter {
 
-	@Inject private const Registry		registry
-	@Inject private const Converters	converters
-			private const Bool			storeNullFields
+	@Inject private const |->Scope|			activeScope
+	@Inject private const |->Converters|	converters
+			private const Bool				storeNullFields
 	
 	** Creates a new 'DocumentConverter' with the given 'null' strategy.
 	** 
@@ -41,7 +41,7 @@ const class ObjConverter : Converter {
 			implType := property.type ?: field.type
 			propVal  := mongoDoc.get(propName, null)
 			
-			fieldVal := converters.toFantom(implType, propVal)
+			fieldVal := converters().toFantom(implType, propVal)
 			
 			if (fieldVal == null && !field.type.isNullable) {
 				// a value *is* required so decide which Err msg to throw 
@@ -57,9 +57,7 @@ const class ObjConverter : Converter {
 
 			fieldVals[field] = fieldVal
 		}
-		
-		a:= registry.autobuild(fantomType, null, fieldVals)
-		return a
+		return activeScope().build(fantomType, null, fieldVals)
 	}
 	
 	@NoDoc
@@ -75,7 +73,7 @@ const class ObjConverter : Converter {
 			propName := property.name ?: field.name			
 			
 			// should we recursively convert...? 
-			propVal	 := converters.toMongo(fieldVal)			
+			propVal	 := converters().toMongo(fieldVal)			
 			
 			if (propVal == null && !storeNullFields)
 				return

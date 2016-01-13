@@ -46,7 +46,7 @@ internal class TestLiteralsInDb : MorphiaDbTest {
 			map			= [3:T_Entity01_Enum.ever]
 			
 			// Moar Fantom classes
-			field		= MorphiaTest#reg
+			field		= MorphiaTest#scope
 			depend		= Depend("afIoc 2.0.6 - 2.0")
 			locale		= Locale("en-GB")
 			method		= MorphiaTest#setup
@@ -100,7 +100,7 @@ internal class TestLiteralsInDb : MorphiaDbTest {
 		verifyEq(entity.map[3],		T_Entity01_Enum.ever)
 
 		// Moar Fantom classes
-		verifyEq(entity.field,		MorphiaTest#reg)
+		verifyEq(entity.field,		MorphiaTest#scope)
 		verifyEq(entity.depend,		Depend("afIoc 2.0.6 - 2.0"))
 		verifyEq(entity.locale,		Locale("en-GB"))
 		verifyEq(entity.method,		MorphiaTest#setup)

@@ -7,10 +7,10 @@ using afBson
 const class MapConverter : Converter {
 
 	@Inject 
-	private const Converters 	converters
-	private const TypeCoercer	typeCoercer
-	private static const Regex	unicodeRegex	:= "\\\\u+[0-9a-fA-F]{4}".toRegex
-	private static const Regex	unicodeRegex2	:= "\\\\u{2,}[0-9a-fA-F]{4}".toRegex
+	private const |->Converters| 	converters
+	private const TypeCoercer		typeCoercer
+	private static const Regex		unicodeRegex	:= "\\\\u+[0-9a-fA-F]{4}".toRegex
+	private static const Regex		unicodeRegex2	:= "\\\\u{2,}[0-9a-fA-F]{4}".toRegex
 	
 	new make(|This|in) {
 		in(this)
@@ -45,7 +45,7 @@ const class MapConverter : Converter {
 			} else {
 				// keep the keys, just convert the vals
 				mongoMap.each |mVal, mKey| {
-					fanMap[mKey] = converters.toFantom(fanValType, mVal)
+					fanMap[mKey] = converters().toFantom(fanValType, mVal)
 				}				
 			}
 			return fanMap
@@ -55,7 +55,7 @@ const class MapConverter : Converter {
 		mongoMap.each |mVal, mKey| {
 			// Map keys are special and have to be converted <=> Str
 			fKey := typeCoercer.coerce(decodeKey(mKey), fanKeyType)
-			fVal := converters.toFantom(fanValType, mVal)
+			fVal := converters().toFantom(fanValType, mVal)
 			fanMap[fKey] = fVal
 		}
 		return fanMap
@@ -87,7 +87,7 @@ const class MapConverter : Converter {
 			
 			// encode map keys to handle the special '.' and '$' chars
 			mKey := encodeKey(typeCoercer.coerce(fKey, Str#))
-			mVal := converters.toMongo(fVal)
+			mVal := converters().toMongo(fVal)
 			mongoMap[mKey] = mVal
 		}		
 		return mongoMap

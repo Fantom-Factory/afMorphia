@@ -133,10 +133,6 @@ const mixin Datastore {
 	** 
 	** Convenience for calling 'Converters.toMongo(...)'.
 	abstract Str:Obj? toMongoDoc(Obj entity)
-	
-	// TODO: make Datastore.toMongo() internal
-	@NoDoc @Deprecated { msg="Use Converters.toMongo(...) instead" }
-	abstract Obj? toMongo(Obj? entity)
 
 	// ---- Query Methods -------------------------------------------------------------------------
 	
@@ -266,7 +262,7 @@ internal const class DatastoreImpl : Datastore {
 		converters.toMongo(entity)		
 	}	
 
-	override Obj? toMongo(Obj? entity) {
+	internal Obj? toMongo(Obj? entity) {
 		converters.toMongo(entity)		
 	}	
 
