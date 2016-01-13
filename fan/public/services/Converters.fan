@@ -18,7 +18,7 @@ const mixin Converters {
 
 	** Converts a Mongo object to the given Fantom type.
 	** 
-	** 'mongoObj' is nullable so converters can create empty lists and maps.
+	** 'mongoObj' is nullable so converters can choose whether or not to create empty lists and maps.
 	abstract Obj? toFantom(Type fantomType, Obj? mongoObj)
 
 	** Converts the given Fantom object to its Mongo representation.

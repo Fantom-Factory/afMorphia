@@ -2,6 +2,7 @@ using afIoc
 using afIocConfig
 using afBson
 using afMongo
+using afConcurrent
 using inet
 using concurrent
 
@@ -11,10 +12,10 @@ using concurrent
 @NoDoc
 const class MorphiaModule {
 
-	static Void defineServices(ServiceDefinitions defs) {
-		defs.add(Morphia#)
-		defs.add(Converters#)
-		defs.add(IntSequences#)
+	static Void defineServices(RegistryBuilder defs) {
+		defs.addService(Morphia#)
+		defs.addService(Converters#)
+		defs.addService(IntSequences#)
 	}
 	
 	@Build { serviceId="afMongo::ConnectionManager" }
@@ -37,8 +38,8 @@ const class MorphiaModule {
 	
 	@Contribute { serviceType=DependencyProviders# }
 	static Void contributeDependencyProviders(Configuration config) {
-		config.set("afMorphia.datastoreProvider",  config.autobuild( DatastoreProvider#)).before("afIoc.serviceProvider")
-		config.set("afMorphia.collectionProvider", config.autobuild(CollectionProvider#)).before("afIoc.serviceProvider")
+		config.set("afMorphia.datastoreProvider",  config.build( DatastoreProvider#)).before("afIoc.service")
+		config.set("afMorphia.collectionProvider", config.build(CollectionProvider#)).before("afIoc.service")
 	}
 	
 	@Contribute { serviceType=ActorPools# }
@@ -48,7 +49,7 @@ const class MorphiaModule {
 
 	@Contribute { serviceType=Converters# }
 	static Void contributeConverters(Configuration config) {		
-		mongoLiteral		:= config.autobuild(LiteralConverter#)
+		mongoLiteral		:= config.build(LiteralConverter#)
 		
 		// Mongo Literals
 		config[Bool#]		= mongoLiteral
@@ -66,9 +67,9 @@ const class MorphiaModule {
 		config[Timestamp#]	= mongoLiteral
 		
 		// Containers
-		config[Obj#]		= config.createProxy(Converter#, ObjConverter#, [false])
-		config[Map#]		= config.createProxy(Converter#, MapConverter#)
-		config[List#]		= config.createProxy(Converter#, ListConverter#)
+		config[Obj#]		= config.build(ObjConverter#, [false])
+		config[Map#]		= config.build(MapConverter#)
+		config[List#]		= config.build(ListConverter#)
 		
 		// Fantom Literals
 		config[Date#]		= DateConverter()
@@ -95,16 +96,14 @@ const class MorphiaModule {
 		config[MorphiaConfigIds.intSequencesCollectionName] = "IntSequences"
 	}
 	
-	@Contribute { serviceType=RegistryStartup# }
-	internal static Void contributeRegistryStartup(Configuration config, ConnectionManager conMgr) {
+	internal static Void onRegistryStartup(Configuration config, ConnectionManager conMgr) {
 		config["afMorphia.testConnection"] = |->| {
 			// print that logo! Oh, and check that DB version while you're at it!
 			mc := MongoClient(conMgr)
 		}
 	}
 
-	@Contribute { serviceType=RegistryShutdown# }
-	internal static Void contributeRegistryShutdown(Configuration config, ConnectionManager conMgr) {
+	internal static Void onRegistryShutdown(Configuration config, ConnectionManager conMgr) {
 		config["afMorphia.closeConnections"] = |->| {
 			conMgr.shutdown
 		}

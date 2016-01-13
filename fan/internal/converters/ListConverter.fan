@@ -4,7 +4,7 @@ using afBson
 @NoDoc
 const class ListConverter : Converter {
 
-	@Inject private const Converters 	converters
+	@Inject private const |->Converters|	converters
 	
 	new make(|This|in) {
 		in(this)
@@ -26,7 +26,7 @@ const class ListConverter : Converter {
 		if (BsonType.isBsonLiteral(fanValType))
 			fanList.addAll(mongoList)
 		else
-			fanList.addAll(mongoList.map { converters.toFantom(fanValType, it) })
+			fanList.addAll(mongoList.map { converters().toFantom(fanValType, it) })
 
 		return fanList
 	}
@@ -41,6 +41,6 @@ const class ListConverter : Converter {
 				return fantomObj
 		
 		
-		return ((List) fantomObj).map { converters.toMongo(it) }
+		return ((List) fantomObj).map { converters().toMongo(it) }
 	}
 }

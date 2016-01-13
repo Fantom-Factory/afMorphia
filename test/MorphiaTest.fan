@@ -3,15 +3,15 @@ using afIocConfig
 
 abstract internal class MorphiaTest : Test {
 
-	Registry? reg
+	Scope? scope
 	
 	override Void setup() {
-		reg = RegistryBuilder().addModules([MorphiaModule#, ConfigModule#, T_MorphiaTestModule#]).build.startup
-		reg.injectIntoFields(this)
+		scope = RegistryBuilder().addModulesFromPod("afMorphia").addModule(T_MorphiaTestModule#).build.rootScope
+		scope.inject(this)
 	}
 	
 	override Void teardown() {
-		reg?.shutdown
+		scope?.registry?.shutdown
 	}
 
 	Void verifyMorphiaErrMsg(Str errMsg, |Obj| func) {
@@ -25,8 +25,7 @@ internal const class T_MorphiaTestModule {
 		config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/afMorphiaTest`
 	}
 	
-	@Contribute { serviceType=RegistryStartup# }
-	internal static Void contributeRegistryStartup(Configuration config) {
+	internal static Void onRegistryStartup(Configuration config) {
 		config.remove("afMorphia.testConnection")
 	}
 }

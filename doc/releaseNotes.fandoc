@@ -1,6 +1,10 @@
 Versions
 ********
 
+v1.1.0
+======
+ - Chg: Updated to use [IoC 3.0]`pod:afIoc`.
+
 v1.0.10
 =======
  - Bug: 'QueryExecutor.orderByIndex()' always threw an Err.
@@ -30,7 +34,7 @@ v1.0.2
 v1.0.0
 ======
  - New: Introduced the Query Builder API.
- - New: 'IntSequences' services provides an alternative to unique ObjectIDs.
+ - New: 'IntSequences' service provides an alternative to unique ObjectIDs.
  - New: Mongo 'Collections' maybe injected in the same manner as 'Datastore' objects, using the '@Inject.type' attribute.
 
 v0.0.10

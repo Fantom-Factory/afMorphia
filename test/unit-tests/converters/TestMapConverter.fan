@@ -3,7 +3,7 @@ using afIoc
 internal class TestMapConverter : MorphiaTest {
 	
 	Void testNullStrategy_null() {
-		mapConverter := (Converter) reg.createProxy(Converter#, MapConverter#)
+		mapConverter := (Converter) scope.build(MapConverter#)
 		fanObj := mapConverter.toFantom([Int:Str?]?#, null)
 		verifyNull(fanObj)
 	}
@@ -43,7 +43,7 @@ internal class TestMapConverter : MorphiaTest {
 //	}
 	
 	Void testKeySameValConvert() {
-		mapConverter := (Converter) reg.createProxy(Converter#, MapConverter#)
+		mapConverter := (Converter) scope.build(MapConverter#)
 
 		monMap	:= Str:Obj["gold":"ever"]
 		fanMap	:= mapConverter.toFantom([Str:T_Entity01_Enum]#, monMap) as [Str:T_Entity01_Enum]
@@ -53,7 +53,7 @@ internal class TestMapConverter : MorphiaTest {
 	}
 	
 	Void testKeyConvertValConvert() {
-		mapConverter := (Converter) reg.createProxy(Converter#, MapConverter#)
+		mapConverter := (Converter) scope.build(MapConverter#)
 		
 		monMap	:= Str:Obj?["wot":"ever", "ever":"wot"]
 		fanMap	:= mapConverter.toFantom([T_Entity01_Enum:T_Entity01_Enum?]#, monMap) as [T_Entity01_Enum:T_Entity01_Enum?]
@@ -64,7 +64,7 @@ internal class TestMapConverter : MorphiaTest {
 	}
 
 	Void testKeyConvertErr() {
-		mapConverter := (Converter) reg.createProxy(Converter#, MapConverter#)
+		mapConverter := (Converter) scope.build(MapConverter#)
 		
 		fanMap	:= [Err():"wotever"]
 		verifyErrMsg(MorphiaErr#, ErrMsgs.mapConverter_cannotCoerceKey(Err#)) {

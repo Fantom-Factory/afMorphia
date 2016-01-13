@@ -35,7 +35,7 @@ internal const class MorphiaImpl : Morphia {
 	override const Database	database
 	
 	@Inject private const Converters	converters
-	@Inject private const Registry 		registry
+	@Inject private const Scope 		scope
 
 	private new make(Database database, |This|in) {
 		in(this)
@@ -48,7 +48,7 @@ internal const class MorphiaImpl : Morphia {
 	}
 	
 	override Datastore datastore(Type entityType, Database? database := null) {
-		registry.autobuild(Datastore#, [entityType, database ?: this.database])
+		scope.build(Datastore#, [entityType, database ?: this.database])
 	}
 	
 	override Obj fromMongoDoc(Type entityType, Str:Obj? mongoDoc) {

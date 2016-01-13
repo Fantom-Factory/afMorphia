@@ -3,7 +3,7 @@ using afIoc
 internal class TestListConverter : MorphiaTest {
 	
 	Void testNullStrategy_null() {
-		listConverter := (Converter) reg.createProxy(Converter#, ListConverter#)
+		listConverter := (Converter) scope.build(ListConverter#)
 		fanObj := listConverter.toFantom(Int?[]?#, null)
 		verifyNull(fanObj)
 	}
@@ -22,7 +22,7 @@ internal class TestListConverter : MorphiaTest {
 //	}
 	
 	Void testValSame() {
-		listConverter := (Converter) reg.createProxy(Converter#, ListConverter#)
+		listConverter := (Converter) scope.build(ListConverter#)
 
 		monList	:= Obj?["gold","welsh"]
 		fanList	:= listConverter.toFantom(Obj?[]#, monList) as Obj?[]
@@ -33,7 +33,7 @@ internal class TestListConverter : MorphiaTest {
 	}
 	
 	Void testValCopy() {
-		listConverter := (Converter) reg.createProxy(Converter#, ListConverter#)
+		listConverter := (Converter) scope.build(ListConverter#)
 
 		monList	:= Obj?["gold","welsh"]
 		fanList	:= listConverter.toFantom(Str[]#, monList) as Str[]
@@ -45,7 +45,7 @@ internal class TestListConverter : MorphiaTest {
 	}
 	
 	Void testValConversion() {
-		listConverter := (Converter) reg.createProxy(Converter#, ListConverter#)
+		listConverter := (Converter) scope.build(ListConverter#)
 
 		monList	:= Obj?["wot","ever"]
 		fanList	:= listConverter.toFantom(T_Entity01_Enum[]#, monList) as T_Entity01_Enum[]
