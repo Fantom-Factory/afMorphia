@@ -29,8 +29,8 @@ const class SimpleConverter : Converter {
 	}
 
 	@NoDoc
-	override Obj? toMongo(Obj fantomObj) {
-		fantomObj.toStr
+	override Obj? toMongo(Type type, Obj? fantomObj) {
+		fantomObj?.toStr
 	}
 	
 	@NoDoc

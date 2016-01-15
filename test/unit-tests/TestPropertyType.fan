@@ -16,7 +16,7 @@ internal class TestPropertyType : MorphiaTest {
 	Void testSerialize() {
 		entity := T_Entity16() { inty = 42 }
 		
-		mongoDoc := serialiser.toMongo(entity) as Map
+		mongoDoc := serialiser.toMongo(T_Entity16#, entity) as Map
 		
 		verifyEq(mongoDoc["inty"],	42)
 		verifyEq(mongoDoc["inty"].typeof, Int#)

@@ -7,7 +7,7 @@ internal class TestSerialiseEmbedded : MorphiaTest {
 	Void testSerializeEmbedded() {
 		ent := T_Entity02()
 
-		doc := serialiser.toMongo(ent) as Map
+		doc := serialiser.toMongo(T_Entity02#, ent) as Map
 		
 		map := (Str:Obj?) doc["name"]
 		verifyEq(map["name"], "Dredd")

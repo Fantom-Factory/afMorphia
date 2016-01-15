@@ -15,7 +15,7 @@ class QueryCriterion {
 	
 	** Matches values that are equal to the given object.
 	Query eq(Obj? value) {
-		_addFieldFunc |DatastoreImpl ds -> Obj?| {	ds.toMongo(value) }
+		_addFieldFunc |DatastoreImpl ds -> Obj?| { ds.toMongo(value) }
 	}
 
 	** Matches values that are **not** equal to the given object.
@@ -24,14 +24,14 @@ class QueryCriterion {
 	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/ne/`
 	Query notEq(Obj? value) {
-		_addFieldFunc |DatastoreImpl ds -> Obj?| {	map["\$ne"] = ds.toMongo(value) }
+		_addFieldFunc |DatastoreImpl ds -> Obj?| { map["\$ne"] = ds.toMongo(value) }
 	}
 
 	** Matches values that equal any one of the given values.
 	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/in/`
 	Query in(Obj[] values) {
-		_addFieldFunc |DatastoreImpl ds -> Obj?| {	map["\$in"] = values.map { ds.toMongo(it) } }
+		_addFieldFunc |DatastoreImpl ds -> Obj?| { map["\$in"] = values.map { ds.toMongo(it) } }
 	}
 
 	** Matches values that do **not** equal any one of the given values.
@@ -40,35 +40,35 @@ class QueryCriterion {
 	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/nin/`
 	Query notIn(Obj[] values) {
-		_addFieldFunc |DatastoreImpl ds -> Obj?| {	map["\$nin"] = values.map { ds.toMongo(it) } }
+		_addFieldFunc |DatastoreImpl ds -> Obj?| { map["\$nin"] = values.map { ds.toMongo(it) } }
 	}
 
 	** Matches values that are greater than the given object.
 	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/gt/`
 	Query greaterThan(Obj value) {
-		_addFieldFunc |DatastoreImpl ds -> Obj?| {	map["\$gt"] = ds.toMongo(value) }
+		_addFieldFunc |DatastoreImpl ds -> Obj?| { map["\$gt"] = ds.toMongo(value) }
 	}
 
 	** Matches values that are greater than or equal to the given object.
 	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/gte/`
 	Query greaterThanOrEqTo(Obj value) {
-		_addFieldFunc |DatastoreImpl ds -> Obj?| {	map["\$gte"] = ds.toMongo(value) }
+		_addFieldFunc |DatastoreImpl ds -> Obj?| { map["\$gte"] = ds.toMongo(value) }
 	}
 
 	** Matches values that are less than the given object.
 	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/gt/`
 	Query lessThan(Obj value) {
-		_addFieldFunc |DatastoreImpl ds -> Obj?| {	map["\$lt"] = ds.toMongo(value) }
+		_addFieldFunc |DatastoreImpl ds -> Obj?| { map["\$lt"] = ds.toMongo(value) }
 	}
 
 	** Matches values that are less than or equal to the given object.
 	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/lte/`
 	Query lessThanOrEqTo(Obj value) {
-		_addFieldFunc |DatastoreImpl ds -> Obj?| {	map["\$lte"] = ds.toMongo(value) }
+		_addFieldFunc |DatastoreImpl ds -> Obj?| { map["\$lte"] = ds.toMongo(value) }
 	}
 
 	// ---- Element Query Operators ---------------------------------------------------------------
@@ -77,14 +77,14 @@ class QueryCriterion {
 	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/exists/`
 	Query exists(Bool exists) {
-		_addFieldFunc |Datastore ds -> Obj?| {	map["\$exists"] = exists }
+		_addFieldFunc |Datastore ds -> Obj?| 	{ map["\$exists"] = exists }
 	}
 	
 	// ---- String Query Operators ----------------------------------------------------------------
 	
 	** Matches string values that equal the given regular expression.
 	Query matchesRegex(Regex regex) {
-		_addFieldFunc |Datastore ds -> Obj?| {	map["\$regex"] = regex }
+		_addFieldFunc |Datastore ds -> Obj?| 	{ map["\$regex"] = regex }
 	}
 
 	** Matches string values that equal (ignoring case) the given value.

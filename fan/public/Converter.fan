@@ -22,6 +22,9 @@ const mixin Converter {
 	** Converts a Fantom object to its Mongo representation. 
 	** 
 	** Must return a valid BSON type (or a List or Map thereof).
-	abstract Obj? toMongo(Obj fantomObj)
+	** 
+	** 'fantomType' is required in case 'fantomObj' is null. 
+	** 'fantomObj' is nullable so converters can create empty / default objects.
+	abstract Obj? toMongo(Type fantomType, Obj? fantomObj)
 	
 }

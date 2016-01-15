@@ -27,7 +27,7 @@ const mixin Morphia {
 	** Converts the given entity instance to a Mongo document.
 	** 
 	** Convenience for '(Str:Obj?) Converters.toMongo(...)' - note the cast.
-	abstract Str:Obj? toMongoDoc(Obj entity)
+	abstract Str:Obj? toMongoDoc(Type entityType, Obj? entity)
 }
 
 internal const class MorphiaImpl : Morphia {
@@ -55,7 +55,7 @@ internal const class MorphiaImpl : Morphia {
 		converters.toFantom(entityType, mongoDoc)
 	}
 	
-	override Str:Obj? toMongoDoc(Obj entity) {
-		converters.toMongo(entity)		
+	override Str:Obj? toMongoDoc(Type entityType, Obj? entity) {
+		converters.toMongo(entityType, entity)		
 	}
 }

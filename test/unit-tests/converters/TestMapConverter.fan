@@ -68,7 +68,7 @@ internal class TestMapConverter : MorphiaTest {
 		
 		fanMap	:= [Err():"wotever"]
 		verifyErrMsg(MorphiaErr#, ErrMsgs.mapConverter_cannotCoerceKey(Err#)) {
-			mapConverter.toMongo(fanMap)
+			mapConverter.toMongo(Obj#, fanMap)
 		}
 	}
 	

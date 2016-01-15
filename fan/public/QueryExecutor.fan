@@ -53,23 +53,6 @@ class QueryExecutor {
 		_orderBy = indexName
 		return this
 	}
-
-	** An (optomised) method to return one document from the query.
-	** 
-	** Throws 'MongoErr' if no documents are found and 'checked' is 'true', returns 'null' otherwise.
-	** Always throws 'MongoErr' if the query returns more than one document.
-	**  
-	** @see `afMongo::Collection.findOne`
-	Obj? findOne(Bool checked := true) {
-		_datastore.findOne(_query, checked)
-	}
-
-	** Returns a list of entities that match the query.
-	** 
-	** @see `afMongo::Collection.findAll`
-	Obj[] findAll() {
-		_datastore.findAll(_query, _orderBy, _skip, _limit)
-	}
 	
 	** Starts the query results at a particular zero-based offset.
 	** 
@@ -86,6 +69,23 @@ class QueryExecutor {
 	This limit(Int? limit) {
 		this._limit = limit
 		return this
+	}
+
+	** An (optimised) method to return one document from the query.
+	** 
+	** Throws 'MongoErr' if no documents are found and 'checked' is 'true', returns 'null' otherwise.
+	** Always throws 'MongoErr' if the query returns more than one document.
+	**  
+	** @see `afMongo::Collection.findOne`
+	Obj? findOne(Bool checked := true) {
+		_datastore.findOne(_query, checked)
+	}
+
+	** Returns a list of entities that match the query.
+	** 
+	** @see `afMongo::Collection.findAll`
+	Obj[] findAll() {
+		_datastore.findAll(_query, _orderBy, _skip, _limit)
 	}
 	
 	** Returns the number of documents that would be returned by the query.

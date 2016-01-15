@@ -9,7 +9,7 @@ internal class TestSerialiseList : MorphiaTest {
 			list = [T_Entity06_Enum.wot, T_Entity06_Enum.ever]
 		}
 
-		doc := converters.toMongo(ent) as Map
+		doc := converters.toMongo(T_Entity07#, ent) as Map
 		map := (Obj[]) doc["list"]
 		verifyEq(map[0], "wot")
 		verifyEq(map[1], "ever")

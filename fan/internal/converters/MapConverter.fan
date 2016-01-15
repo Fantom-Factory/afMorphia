@@ -61,7 +61,8 @@ const class MapConverter : Converter {
 		return fanMap
 	}
 	
-	override Obj? toMongo(Obj fantomObj) {
+	override Obj? toMongo(Type type, Obj? fantomObj) {
+		if (fantomObj == null) return null
 		fanMap		:= (Map) fantomObj
 		mapType		:= fanMap.typeof
 		
@@ -87,7 +88,7 @@ const class MapConverter : Converter {
 			
 			// encode map keys to handle the special '.' and '$' chars
 			mKey := encodeKey(typeCoercer.coerce(fKey, Str#))
-			mVal := converters().toMongo(fVal)
+			mVal := fVal == null ? null : converters().toMongo(fVal.typeof, fVal)
 			mongoMap[mKey] = mVal
 		}		
 		return mongoMap

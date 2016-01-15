@@ -31,7 +31,9 @@ const class ListConverter : Converter {
 		return fanList
 	}
 	
-	override Obj? toMongo(Obj fantomObj) {
+	override Obj? toMongo(Type type, Obj? fantomObj) {
+		if (fantomObj == null) return null
+
 		fanList	 := (List) fantomObj
 		listType := fanList.typeof
 		
@@ -41,6 +43,6 @@ const class ListConverter : Converter {
 				return fantomObj
 		
 		
-		return ((List) fantomObj).map { converters().toMongo(it) }
+		return ((List) fantomObj).map { it == null ? null : converters().toMongo(it.typeof, it) }
 	}
 }
