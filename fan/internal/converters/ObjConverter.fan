@@ -61,7 +61,8 @@ const class ObjConverter : Converter {
 	}
 	
 	@NoDoc
-	override Obj? toMongo(Obj fantomObj) {
+	override Obj? toMongo(Type type, Obj? fantomObj) {
+		if (fantomObj == null) return null
 		mongoDoc := emptyDoc
 		
 		fantomObj.typeof.fields.each |field| {
@@ -73,7 +74,7 @@ const class ObjConverter : Converter {
 			propName := property.name ?: field.name			
 			
 			// should we recursively convert...? 
-			propVal	 := converters().toMongo(fieldVal)			
+			propVal	 := converters().toMongo(fieldVal?.typeof ?: field.type, fieldVal)			
 			
 			if (propVal == null && !storeNullFields)
 				return

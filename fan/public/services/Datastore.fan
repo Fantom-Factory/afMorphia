@@ -27,6 +27,9 @@ const mixin Datastore {
 	abstract Type	type()
 	
 	** The qualified name of the MongoDB collection.
+	** It takes the form of: 
+	** 
+	**   <database>.<collection>
 	abstract Str qname()
 
 	** The simple name of the MongoDB collection.
@@ -51,7 +54,7 @@ const mixin Datastore {
 
 	// ---- Cursor Queries ------------------------------------------------------------------------
 	
-	** An (optomised) method to return one document from the given 'query'.
+	** An (optimised) method to return one document from the given 'query'.
 	** 
 	** Note: This method requires you to be familiar with Mongo query notation. If not, use the `Query` builder instead.
 	** 
@@ -161,7 +164,7 @@ internal const class DatastoreImpl : Datastore {
 		this.collection	= Collection(database, entity.name ?: type.name)
 		this.qname		= collection.qname
 		this.name		= collection.name
-		idField			= type.fields.findAll { it.hasFacet(Property#) }.find |field->Bool| {
+		this.idField	= type.fields.findAll { it.hasFacet(Property#) }.find |field->Bool| {
 			property := (Property) Slot#.method("facet").callOn(field, [Property#])
 			return field.name == "_id" || property.name == "_id"
 		} ?: throw IdNotFoundErr(ErrMsgs.datastore_idFieldNotFound(type), propertyNames(type))
@@ -259,11 +262,11 @@ internal const class DatastoreImpl : Datastore {
 	}
 	
 	override Str:Obj? toMongoDoc(Obj entity) {
-		converters.toMongo(entity)		
+		converters.toMongo(type, entity)		
 	}	
 
 	internal Obj? toMongo(Obj? entity) {
-		converters.toMongo(entity)		
+		entity == null ? null : converters.toMongo(entity.typeof, entity)		
 	}	
 
 	// ---- Query Methods -------------------------------------------------------------------------

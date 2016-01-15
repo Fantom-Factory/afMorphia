@@ -6,8 +6,8 @@ internal const class TypeConverter : Converter {
 		return Type.find((Str) mongoObj)
 	}
 	
-	override Obj? toMongo(Obj fantomObj) {
-		((Type) fantomObj).qname
+	override Obj? toMongo(Type type, Obj? fantomObj) {
+		if (fantomObj == null) return null
+		return ((Type) fantomObj).qname
 	}
-
 }

@@ -116,7 +116,7 @@ internal class TestLiteralConversion : MorphiaTest {
 			map			= [3:T_Entity01_Enum.ever]
 		}
 		
-		mongoDoc := serialiser.toMongo(entity) as Map
+		mongoDoc := serialiser.toMongo(T_Entity01#, entity) as Map
 		
 		verifyEq  (mongoDoc["float"],		entity.float)
 		verifySame(mongoDoc["str"],			entity.str)

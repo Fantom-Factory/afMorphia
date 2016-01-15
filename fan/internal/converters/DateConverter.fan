@@ -7,7 +7,8 @@ internal const class DateConverter : Converter {
 		return ((DateTime) mongoObj).date
 	}
 	
-	override Obj? toMongo(Obj fantomObj) {
-		((Date) fantomObj).toDateTime(Time.defVal)
+	override Obj? toMongo(Type type, Obj? fantomObj) {
+		if (fantomObj == null) return null
+		return ((Date) fantomObj).toDateTime(Time.defVal)
 	}
 }

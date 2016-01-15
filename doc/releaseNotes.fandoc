@@ -3,6 +3,7 @@ Versions
 
 v1.1.0
 ======
+ - Chg: 'Converter.toMongo()' now takes a 'Type' param as the 'fantomObj' arg may now be nullable. This allows fantom 'null' objects to be represented by non-null Mongo objects.
  - Chg: Updated to use [IoC 3.0]`pod:afIoc`.
 
 v1.0.10

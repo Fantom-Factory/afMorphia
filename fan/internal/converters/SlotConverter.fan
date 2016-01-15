@@ -6,8 +6,9 @@ internal const class SlotConverter : Converter {
 		return Slot.find((Str) mongoObj)
 	}
 	
-	override Obj? toMongo(Obj fantomObj) {
-		((Slot) fantomObj).qname
+	override Obj? toMongo(Type type, Obj? fantomObj) {
+		if (fantomObj == null) return null
+		return ((Slot) fantomObj).qname
 	}
 
 }

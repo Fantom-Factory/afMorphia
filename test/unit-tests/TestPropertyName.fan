@@ -19,7 +19,7 @@ internal class TestPropertyName : MorphiaTest {
 			wotever		= "dude"
 		}
 		
-		mongoDoc := serialiser.toMongo(entity) as Map
+		mongoDoc := serialiser.toMongo(T_Entity08#, entity) as Map
 		
 		verifyEq(mongoDoc["judge"],		"dude")
 	}

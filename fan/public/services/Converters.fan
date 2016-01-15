@@ -23,8 +23,9 @@ const mixin Converters {
 
 	** Converts the given Fantom object to its Mongo representation.
 	** 
-	** If 'null' is passed in, then 'null' is returned.
-	abstract Obj? toMongo(Obj? fantomObj)
+	** 'fantomType' is required in case 'fantomObj' is null. 
+	** 'fantomObj' is nullable so converters can create empty / default objects.
+	abstract Obj? toMongo(Type fantomType, Obj? fantomObj)
 	
 }
 
@@ -40,8 +41,8 @@ internal const class ConvertersImpl : Converters {
 		get(fantomType).toFantom(fantomType, mongoObj)
 	}
 
-	override Obj? toMongo(Obj? fantomObj) {
-		(fantomObj == null) ? null : get(fantomObj.typeof).toMongo(fantomObj)
+	override Obj? toMongo(Type fantomType, Obj? fantomObj) {
+		get(fantomType).toMongo(fantomType, fantomObj)
 	}
 	
 	private Converter get(Type type) {

@@ -10,7 +10,7 @@ internal class TestSerialiseMap : MorphiaTest {
 		ent.keys[T_Entity06_Enum.wot] = 6
 		ent.keys[T_Entity06_Enum.ever] = 9
 
-		doc := serialiser.toMongo(ent) as Map
+		doc := serialiser.toMongo(T_Entity06#, ent) as Map
 		
 		map := (Str:Obj?) doc["keys"]
 		verifyEq(map["wot"],  6)
@@ -32,7 +32,7 @@ internal class TestSerialiseMap : MorphiaTest {
 		ent.vals[6] = T_Entity06_Enum.wot
 		ent.vals[9] = T_Entity06_Enum.ever
 
-		doc := serialiser.toMongo(ent) as Map
+		doc := serialiser.toMongo(T_Entity06#, ent) as Map
 		
 		map := (Str:Obj?) doc["vals"]
 		verifyEq(map["6"], "wot")
