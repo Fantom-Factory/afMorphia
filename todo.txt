@@ -29,7 +29,8 @@ Needs to be handled both *to* and *from* Mongo.
 Naa - Can't be arsed!
 =====================
 PrePersist & PostPersist, PreLoad & PostLoad (better names?), configure via a Facet Interceptor -> tie in with Entity mixin?
- - Naa, this can be handled by application DAO objects
+ - You'll also want an exhaustive PreUpdate, PostUpdate, PreDelete, PostDelete, PreMapToBson, PostMapToBson, PreMapToFantom, PostMapToFantom, etc, ...
+ - Naa, this can be handled by custom application DAO objects
 
 
 
