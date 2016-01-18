@@ -25,7 +25,7 @@ const class ObjConverter : Converter {
 	override Obj? toFantom(Type fantomType, Obj? mongoObj) {
 		if (mongoObj == null) return null
 
-		// because DocumentConverter is a catch-all converter, we sometimes get sent here by mistake
+		// because ObjConverter is a catch-all converter, we sometimes get sent here by mistake
 		if (mongoObj.typeof.name != "Map")
 			throw MorphiaErr(ErrMsgs.documentConv_noConverter(fantomType, mongoObj))
 
@@ -57,13 +57,13 @@ const class ObjConverter : Converter {
 
 			fieldVals[field] = fieldVal
 		}
-		return activeScope().build(fantomType, null, fieldVals)
+		return createEntity(fantomType, fieldVals)
 	}
 	
 	@NoDoc
 	override Obj? toMongo(Type type, Obj? fantomObj) {
 		if (fantomObj == null) return null
-		mongoDoc := emptyDoc
+		mongoDoc := createJsonObj
 		
 		fantomObj.typeof.fields.each |field| {
 			property := (Property?) Field#.method("facet").callOn(field, [Property#, false])
@@ -87,9 +87,14 @@ const class ObjConverter : Converter {
 		return mongoDoc
 	}
 
-	** Creates an empty *ordered* Mongo document. Override if you want different defaults.
-	virtual Str:Obj? emptyDoc() {
-		Str:Obj?[:] { ordered = true }
+	** An overridable hook that uses IoC to autobuild an Entity instance.
+	virtual Obj? createEntity(Type type, Field:Obj? fieldVals) {
+		activeScope().build(type, null, fieldVals)
+	}
+	
+	** Creates an empty *ordered* map. Override if you prefer your JSON maps to be unordered or case-insensitive.
+	virtual Str:Obj? createJsonObj() {
+		Str:Obj?[:] { it.ordered = true }
 	}
 	
 	private static const Type[] literals	:= [Bool#, Buf#, Date#, DateTime#, Decimal#, Duration#, Enum#, Float#, Int#, ObjectId#, Regex#, Range#, Slot#, Str#, Type#]
