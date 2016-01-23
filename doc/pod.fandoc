@@ -437,32 +437,19 @@ pre>
   ])
 <pre
 
-It can be helpful to squirrel away common Query constructors into their own methods:
+The `Queries` mixin squirrels away common Query constructors into their own methods.
+Should your class extend the 'Queries' mixin, the '$and' example maybe re-written as:
 
 pre>
   syntax: fantom
 
-  QueryCriterion field(Str fieldName) {
-      Query().field(fieldName)
-  }
-
-  Query or(Query[] criteria) {
-      Query().or(criteria)
-  }
-<pre
-
-That way the '$and' example maybe re-written as:
-
-pre>
-  syntax: fantom
-
-  query := Query().and([
-      or([ field("price").eq(0.99f), field("price").eq(1.99f)    ]),
-      or([ field("sale" ).eq(true),  field("qty"  ).lessThan(20) ])
+  query := and([
+      or([ eq("price", 0.99f), eq("price", 1.99f)  ]),
+      or([ eq("sale", true),   lessThan("qty", 29) ])
   ])
 <pre
 
-Which, even though still verbose, should be much easier to construct, understand, and debug.
+Which is much easier to construct, understand, and debug.
 Plus the autocomplete nature of IDEs such as [F4]`http://www.xored.com/products/f4/` means you don't have to constantly consult the [Mongo documentation]`http://docs.mongodb.org/manual/reference/method/db.collection.find/`!
 
 

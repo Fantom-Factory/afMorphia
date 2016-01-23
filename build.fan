@@ -17,9 +17,9 @@ class Build : BuildPod {
 		index	= [	"afIoc.module"	: "afMorphia::MorphiaModule" ]
 
 		depends = [
-			"sys        1.0", 
-			"concurrent 1.0",	// for contributing an ActorPool 
-			"inet       1.0", 
+			"sys        1.0.68 - 1.0", 
+			"concurrent 1.0.68 - 1.0",	// for contributing an ActorPool 
+			"inet       1.0.68 - 1.0", 
 			
 			// ---- Core ------------------------
 			"afBeanUtils  1.0.8  - 1.0",

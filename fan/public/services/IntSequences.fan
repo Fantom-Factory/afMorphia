@@ -43,7 +43,7 @@ const mixin IntSequences {
 internal const class IntSequencesImpl : IntSequences {
 	
 	@Config { id="afMorphia.intSequencesCollectionName" }
-	@Inject override const Str collectionName
+	override const Str collectionName
 	
 	private const Collection intSeqCol
 	
