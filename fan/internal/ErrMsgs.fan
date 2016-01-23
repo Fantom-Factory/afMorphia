@@ -1,3 +1,4 @@
+using afBeanUtils
 
 internal const mixin ErrMsgs {
 
@@ -18,7 +19,7 @@ internal const mixin ErrMsgs {
 	}
 
 	static Str mapConverter_cannotCoerceKey(Type keyType) {
-		stripSys("Unsupported Map key type '${keyType.qname}', cannot coerce from Str#. See 'afIoc::TypeCoercer' for details.")
+		stripSys("Unsupported Map key type '${keyType.qname}', cannot coerce from Str#. See ${TypeCoercer#.qname} for details.")
 	}
 
 	static Str datastore_entityFacetNotFound(Type entityType) {

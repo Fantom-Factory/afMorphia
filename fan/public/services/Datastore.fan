@@ -283,7 +283,7 @@ internal const class DatastoreImpl : Datastore {
 		type.fields.findAll { it.hasFacet(Property#) }.each |field| {
 			property := (Property) Slot#.method("facet").callOn(field, [Property#])
 			pName := property.name ?: field.name
-			pType := property.type ?: field.type
+			pType := property.implType ?: field.type
 			if (!ReflectUtils.fits(pType, field.type))
 				throw MorphiaErr(ErrMsgs.datastore_facetTypeDoesNotFitField(pType, field))
 			if (names.containsKey(pName))

@@ -22,7 +22,7 @@ const class SimpleConverter : Converter {
 		// use 'type' not 'this.type' incase we're passed a subclass
 		fromStr := type.method("fromStr", true)
 		try {
-			return fromStr.call(mongoObj, true)
+			return fromStr.call(mongoObj)
 		} catch (Err err) {
 			throw MorphiaErr("Could not call ${fromStr.qname} ${fromStr.signature} with ${mongoObj.typeof.qname}", err)
 		}

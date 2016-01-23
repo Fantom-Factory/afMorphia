@@ -30,8 +30,10 @@ const mixin Queries {
 	** }
 	** <pre
 	static new makeInstance() {
-		QueriesImpl()
+		instance
 	}
+	
+	private static const Queries instance := QueriesImpl()
 	
 	// ---- Comparison Query Operators ------------------------------------------------------------
 	

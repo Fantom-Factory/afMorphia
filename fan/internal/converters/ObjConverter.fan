@@ -38,7 +38,7 @@ const class ObjConverter : Converter {
 				return
 			
 			propName := property.name ?: field.name
-			implType := property.type ?: field.type
+			implType := property.implType ?: field.type
 			propVal  := mongoDoc.get(propName, null)
 			
 			fieldVal := converters().toFantom(implType, propVal)
@@ -63,7 +63,7 @@ const class ObjConverter : Converter {
 	@NoDoc
 	override Obj? toMongo(Type type, Obj? fantomObj) {
 		if (fantomObj == null) return null
-		mongoDoc := createJsonObj
+		mongoDoc := createMongoDoc
 		
 		fantomObj.typeof.fields.each |field| {
 			property := (Property?) Field#.method("facet").callOn(field, [Property#, false])
@@ -87,13 +87,17 @@ const class ObjConverter : Converter {
 		return mongoDoc
 	}
 
-	** An overridable hook that uses IoC to autobuild an Entity instance.
+	** Creates an Entity instance using [BeanFactory]`afBeanUtils::BeanFactory`.
+	** 
+	** Override if you prefer your entities to be autobuilt by IoC.
 	virtual Obj? createEntity(Type type, Field:Obj? fieldVals) {
 		activeScope().build(type, null, fieldVals)
 	}
 	
-	** Creates an empty *ordered* map. Override if you prefer your JSON maps to be unordered or case-insensitive.
-	virtual Str:Obj? createJsonObj() {
+	** Creates an empty *ordered* Mongo document.
+	** 
+	** Override if you prefer your Mongo documents unordered or case-insensitive.
+	virtual Str:Obj? createMongoDoc() {
 		Str:Obj?[:] { it.ordered = true }
 	}
 	

@@ -13,7 +13,7 @@ const class ListConverter : Converter {
 	override Obj? toFantom(Type fanListType, Obj? mongoObj) {
 		if (mongoObj == null) return null
 
-		fanValType := fanListType.params["V"]
+		fanValType	:= fanListType.params["V"]
 		mongoList	:= (List) mongoObj
 		monListType	:= mongoList.typeof
 		monValType	:= monListType.params["V"]
