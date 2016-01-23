@@ -1,7 +1,24 @@
 
 ** Convenience shortcut methods for creating 'Query' objects.
 ** These values mimic those on `QueryCriterion`.
+** 
+** pre>
+** syntax: fantom
+** 
+** const class MyQueries : Queries {
+** 
+**     Query price() {
+**         return and([
+**             or([ eq("price", 0.99f), eq("price", 1.99f)  ]),
+**             or([ eq("sale", true),   lessThan("qty", 29) ])
+**         ])
+**     }
+** <pre
 const mixin Queries {
+
+	static new makeInstance() {
+		QueriesImpl()
+	}
 	
 	// ---- Comparison Query Operators ------------------------------------------------------------
 	
@@ -176,6 +193,6 @@ const mixin Queries {
 	Query nor(Query[] criteria) {
 		Query().nor(criteria)
 	}
-
 }
 
+internal const class QueriesImpl : Queries { }
