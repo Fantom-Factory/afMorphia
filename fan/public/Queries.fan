@@ -16,6 +16,19 @@
 ** <pre
 const mixin Queries {
 
+	** Returns an instance of 'Queries'. Use when you'd rather not inherit from 'Queries'.
+	** 
+	** pre>
+	** syntax: fantom
+	** 
+	** Query price() {
+	**     q := Queries()
+	**     return q.or([
+	**         q.eq("price", 0.99f), 
+	**         q.eq("price", 1.99f)
+	**     ])
+	** }
+	** <pre
 	static new makeInstance() {
 		QueriesImpl()
 	}
