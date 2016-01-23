@@ -21,5 +21,5 @@ facet class Property {
 	** Used when mapping from MongoDB documents to Fantom objects. 
 	** 
 	** Defaults to the field type.
-	const Type? type
+	const Type? implType
 }

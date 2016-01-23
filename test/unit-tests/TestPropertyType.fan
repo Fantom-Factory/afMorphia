@@ -26,6 +26,6 @@ internal class TestPropertyType : MorphiaTest {
 @Entity
 internal class T_Entity16 {
 	@Property Int _id
-	@Property { type=Int# }	Num	inty
+	@Property { implType=Int# }	Num	inty
 	new make(|This|in) { in(this) }
 }

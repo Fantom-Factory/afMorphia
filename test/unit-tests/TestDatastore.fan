@@ -80,7 +80,7 @@ internal class T_Entity13 { @Property { name="_id" } Int id }
 @Entity
 internal class T_Entity15 {
 	@Property Int _id
-	@Property { type=Int# }	Str	inty
+	@Property { implType=Int# }	Str	inty
 	new make(|This|in) { in(this) }
 }
 
