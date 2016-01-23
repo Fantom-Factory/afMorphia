@@ -5,7 +5,7 @@ using afBson
 ** Pass 'Query' objects to a `QueryExecutor` to run them.
 class Query {
 	
-	private |Datastore, Str:Obj|[] _toMongoFuncs	:= [,]
+	private |Datastore, Str:Obj|[] _toMongoFuncs	:= |Datastore, Str:Obj|[,]
 	
 	** Creates a match for the given field name. It may reference nested objects using dot notation. Example, 'user.name'
 	** 
@@ -72,7 +72,7 @@ class Query {
 	** Example:
 	** 
 	**   syntax: fantom
-	**   Query().or([
+	**   Query().nor([
 	**     Query().field("quantity").lessThan(20),
 	**     Query().field("price").eq(10)
 	**   ])

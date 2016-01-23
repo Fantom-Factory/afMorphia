@@ -17,7 +17,7 @@ using afMongo
 ** 
 **   syntax: fantom
 ** 
-**   registry.autobuild(Datastore#, [MyEntity#])
+**   scope.build(Datastore#, [MyEntity#])
 const mixin Datastore {
 	
 	** The underlying MongoDB collection this Datastore wraps.

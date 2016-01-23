@@ -76,7 +76,7 @@ class QueryCriterion {
 	** Matches if the field exists (or not), even if it is 'null'.
 	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/exists/`
-	Query exists(Bool exists) {
+	Query exists(Bool exists := true) {
 		_addFieldFunc |Datastore ds -> Obj?| 	{ map["\$exists"] = exists }
 	}
 	
@@ -91,7 +91,7 @@ class QueryCriterion {
 	** 
 	** Note that matching is performed with regular expressions. 
 	Query eqIgnoreCase(Str value) {
-		matchesRegex("(?i)^${_quoteRegex(value)}\$".toRegex)
+		matchesRegex("(?i)^${Regex.quote(value)}\$".toRegex)
 	}
 
 	** Matches string values that contain the given value.
@@ -99,7 +99,7 @@ class QueryCriterion {
 	** Note that matching is performed with regular expressions. 
 	Query contains(Str value, Bool caseInsensitive := true) {
 		i := caseInsensitive ? "(?i)" : Str.defVal
-		return matchesRegex("${i}${_quoteRegex(value)}".toRegex)
+		return matchesRegex("${i}${Regex.quote(value)}".toRegex)
 	}
 
 	** Matches string values that start with the given value.
@@ -107,7 +107,7 @@ class QueryCriterion {
 	** Note that matching is performed with regular expressions. 
 	Query startsWith(Str value, Bool caseInsensitive := true) {
 		i := caseInsensitive ? "(?i)" : Str.defVal
-		return matchesRegex("${i}^${_quoteRegex(value)}".toRegex)
+		return matchesRegex("${i}^${Regex.quote(value)}".toRegex)
 	}
 
 	** Matches string values that end with the given value.
@@ -115,7 +115,7 @@ class QueryCriterion {
 	** Note that matching is performed with regular expressions. 
 	Query endsWith(Str value, Bool caseInsensitive := true) {
 		i := caseInsensitive ? "(?i)" : Str.defVal
-		return matchesRegex("${i}${_quoteRegex(value)}\$".toRegex)
+		return matchesRegex("${i}${Regex.quote(value)}\$".toRegex)
 	}
 
 	// ---- Evaluation Query Operators ------------------------------------------------------------
@@ -157,16 +157,6 @@ class QueryCriterion {
 			} else
 				mongoQuery[_fieldName] = val
 		}
-	}
-	
-	// TODO: Fantom-1.0.67
-	private static Regex _quoteRegex(Str str) {
-		quoted := StrBuf()
-		str.each |c| {   
-			if (!c.isAlphaNum) quoted.addChar('\\')
-			quoted.addChar(c)
-		}
-		return quoted.toStr.toRegex
 	}
 
 	private static Str:Obj map() {
