@@ -9,11 +9,12 @@ using afMongo
 @NoDoc	// public so people can change the null strategy
 const class ObjConverter : Converter {
 
+	** If 'false' then properties with 'null' values are not stored in the database.
+					const Bool				storeNullFields
 	@Inject private const |->Scope|			activeScope
 	@Inject private const |->Converters|	converters
-			private const Bool				storeNullFields
 	
-	** Creates a new 'DocumentConverter' with the given 'null' strategy.
+	** Creates a new 'ObjConverter' with the given 'null' strategy.
 	** 
 	** If 'storeNullFields' is 'false' then properties with 'null' values are not stored in the database.
 	new make(Bool storeNullFields, |This|in) {

@@ -62,7 +62,7 @@ const mixin Datastore {
 	** Always throws 'MongoErr' if the query returns more than one document.
 	**  
 	** @see `afMongo::Collection.findOne`
-	abstract Obj? findOne(Str:Obj? query, Bool checked := true)
+	abstract Obj? findOne([Str:Obj?]? query := null, Bool checked := true)
 
 	** Returns a list of entities that match the given 'query'.
 	** 
@@ -77,19 +77,19 @@ const mixin Datastore {
 	** The 'sort' map, should it contain more than 1 entry, must be ordered.
 	** 
 	** @see `afMongo::Collection.findAll`
-	abstract Obj[] findAll(Str:Obj? query := [:], Obj? sort := null, Int skip := 0, Int? limit := null)
+	abstract Obj[] findAll([Str:Obj?]? query := null, Obj? sort := null, Int skip := 0, Int? limit := null)
 
 	** Returns the number of documents that would be returned by the given 'query'.
 	** 
 	** Note: This method requires you to be familiar with Mongo query notation. If not, use the `Query` builder instead.
 	** 
 	** @see `afMongo::Collection.findCount`
-	abstract Int findCount(Str:Obj? query)
+	abstract Int findCount([Str:Obj?]? query := null)
 
 	** Returns the document with the given Id.
 	** Convenience / shorthand notation for 'findOne(["_id": id], checked)'
 	@Operator
-	abstract Obj? get(Obj id, Bool checked := true)
+	abstract Obj? get(Obj? id, Bool checked := true)
 
 	// ---- Write Operations ----------------------------------------------------------------------
 
@@ -188,22 +188,22 @@ internal const class DatastoreImpl : Datastore {
 
 	// ---- Cursor Queries ------------------------------------------------------------------------
 	
-	override Obj? findOne(Str:Obj? query, Bool checked := true) {
+	override Obj? findOne([Str:Obj?]? query := null, Bool checked := true) {
 		entity := collection.findOne(query, checked)
 		return (entity == null) ? null : fromMongoDoc(entity)
 	}
 
-	override Obj[] findAll(Str:Obj? query := [:], Obj? sort := null, Int skip := 0, Int? limit := null) {
+	override Obj[] findAll([Str:Obj?]? query := null, Obj? sort := null, Int skip := 0, Int? limit := null) {
 		collection.findAll(query, sort, skip, limit).map { fromMongoDoc(it) }
 	}
 
-	override Int findCount(Str:Obj? query) {
+	override Int findCount([Str:Obj?]? query := null) {
 		collection.findCount(query)
 	}
 
 	@Operator
-	override Obj? get(Obj id, Bool checked := true) {
-		if (!ReflectUtils.fits(id.typeof, idField.type))
+	override Obj? get(Obj? id, Bool checked := true) {
+		if (id != null && !ReflectUtils.fits(id.typeof, idField.type))
 			throw ArgErr(ErrMsgs.datastore_idDoesNotFit(id, idField))
 		mongId := toMongo(id)
 		entity := collection.get(mongId, checked)
@@ -281,7 +281,7 @@ internal const class DatastoreImpl : Datastore {
 	internal static Type verifyEntityType(Type type) {
 		names := Str:Field[:]
 		type.fields.findAll { it.hasFacet(Property#) }.each |field| {
-			property := (Property) Slot#.method("facet").callOn(field, [Property#])
+			property := (Property) field.facet(Property#)
 			pName := property.name ?: field.name
 			pType := property.implType ?: field.type
 			if (!ReflectUtils.fits(pType, field.type))
@@ -295,7 +295,7 @@ internal const class DatastoreImpl : Datastore {
 	
 	private static Str[] propertyNames(Type type) {
 		type.fields.findAll { it.hasFacet(Property#) }.map |field->Str| {
-			property := (Property) Slot#.method("facet").callOn(field, [Property#])
+			property := (Property) field.facet(Property#)
 			return property.name ?: field.name			
 		}
 	}
