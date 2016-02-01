@@ -166,10 +166,10 @@ const mixin Queries {
 	** Example:
 	** 
 	**   syntax: fantom
-	**   query := and([
+	**   query := and(
 	**     lessThan("quantity", 20),
 	**     eq("price", 10)
-	**   ])
+	**   )
 	** 
 	** Note the above could also be written as:
 	** 
@@ -177,36 +177,51 @@ const mixin Queries {
 	**   lessThan("quantity", 20).and([eq("price", 10)])
 	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/and/`
-	Query and(Query[] criteria) {
-		Query().and(criteria)
-	}	
+	Query and(Query q1, Query q2, Query? q3 := null, Query? q4 := null) {
+		qs := [q1, q2]
+		if (q3 != null)
+			qs.add(q3)
+		if (q4 != null)
+			qs.add(q4)
+		return Query().and(qs)
+	}
 
 	** Selects documents that pass any of the query expressions in the given list.
 	** Example:
 	** 
 	**   syntax: fantom
-	**   query := or([
+	**   query := or(
 	**     lessThan("quantity", 20),
 	**     eq("price", 10)
-	**   ])
+	**   )
 	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/or/`
-	Query or(Query[] criteria) {
-		Query().or(criteria)
+	Query or(Query q1, Query q2, Query? q3 := null, Query? q4 := null) {
+		qs := [q1, q2]
+		if (q3 != null)
+			qs.add(q3)
+		if (q4 != null)
+			qs.add(q4)
+		return Query().or(qs)
 	}
 
 	** Selects documents that fail **all** the query expressions in the given list.
 	** Example:
 	** 
 	**   syntax: fantom
-	**   query := nor([
+	**   query := nor(
 	**     lessThan("quantity", 20),
 	**     eq("price", 10)
-	**   ])
+	**   )
 	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/nor/`
-	Query nor(Query[] criteria) {
-		Query().nor(criteria)
+	Query nor(Query q1, Query q2, Query? q3 := null, Query? q4 := null) {
+		qs := [q1, q2]
+		if (q3 != null)
+			qs.add(q3)
+		if (q4 != null)
+			qs.add(q4)
+		return Query().nor(qs)
 	}
 }
 
