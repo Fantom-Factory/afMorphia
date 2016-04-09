@@ -1,7 +1,7 @@
-#Morphia v1.0.10
+#Morphia v1.1.0
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.0.10](http://img.shields.io/badge/pod-v1.0.10-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
+[![pod: v1.1.0](http://img.shields.io/badge/pod-v1.1.0-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -23,11 +23,11 @@ Note: Morphia has no association with [Morphia - the Java to MongoDB mapping lib
 
 Install `Morphia` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc/docFanr/Tool.html#install) ):
 
-    C:\> fanr install -r http://repo.status302.com/fanr/ afMorphia
+    C:\> fanr install -r http://pods.fantomfactory.org/fanr/ afMorphia
 
 To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan`:
 
-    depends = ["sys 1.0", ..., "afMorphia 1.0"]
+    depends = ["sys 1.0", ..., "afMorphia 1.1"]
 
 ## Documentation
 
@@ -399,28 +399,16 @@ query := Query().and([
 ])
 ```
 
-It can be helpful to squirrel away common Query constructors into their own methods:
+The [Queries](http://pods.fantomfactory.org/pods/afMorphia/api/Queries) mixin squirrels away common Query constructors into their own methods. Should your class extend the `Queries` mixin, the `$and` example maybe re-written as:
 
 ```
-QueryCriterion field(Str fieldName) {
-    Query().field(fieldName)
-}
-
-Query or(Query[] criteria) {
-    Query().or(criteria)
-}
-```
-
-That way the `$and` example maybe re-written as:
-
-```
-query := Query().and([
-    or([ field("price").eq(0.99f), field("price").eq(1.99f)    ]),
-    or([ field("sale" ).eq(true),  field("qty"  ).lessThan(20) ])
+query := and([
+    or([ eq("price", 0.99f), eq("price", 1.99f)  ]),
+    or([ eq("sale", true),   lessThan("qty", 29) ])
 ])
 ```
 
-Which, even though still verbose, should be much easier to construct, understand, and debug. Plus the autocomplete nature of IDEs such as [F4](http://www.xored.com/products/f4/) means you don't have to constantly consult the [Mongo documentation](http://docs.mongodb.org/manual/reference/method/db.collection.find/)!
+Which is much easier to construct, understand, and debug. Plus the autocomplete nature of IDEs such as [F4](http://www.xored.com/products/f4/) means you don't have to constantly consult the [Mongo documentation](http://docs.mongodb.org/manual/reference/method/db.collection.find/)!
 
 ## Testing
 
