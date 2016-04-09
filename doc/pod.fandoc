@@ -367,7 +367,7 @@ echo(mongoDoc) // --> [_id:xxxx, age:42, name:Micky-Mouse]
 
 Storing Nulls in Mongo
 ======================
-When converting Fantom objects *to* Mongo, the `ObjConverter` decides what to do if a Fantom field has the value 'null'.
+When converting Fantom objects *to* Mongo, the 'ObjConverter' decides what to do if a Fantom field has the value 'null'.
 Should it store a key in the MongoDb with a 'null' value, or should it not store the key at all?
 
 To conserve storage space in MongoDB, by default 'ObjConverter' does not store the keys.
