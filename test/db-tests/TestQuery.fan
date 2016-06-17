@@ -219,6 +219,21 @@ internal class TestQuery : MorphiaDbTest {
 		verifyEq(res[3].name, "Wotever")
 	}
 	
+	// ---- Misc Methods --------------------------------------------------------------------------
+	
+	Void testListType() {
+		res := ds.query.findAll
+		verifyFalse(res.isEmpty)
+		verifyEq(res.typeof.params["V"], T_Entity18#)
+	}
+
+	Void testEmptyListType() {
+		ds.drop
+		res := ds.query.findAll
+		verify(res.isEmpty)
+		verifyEq(res.typeof.params["V"], T_Entity18#)
+	}
+
 	// ---- Private Methods -----------------------------------------------------------------------
 	
 	// squirrel this away

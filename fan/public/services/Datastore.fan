@@ -194,7 +194,11 @@ internal const class DatastoreImpl : Datastore {
 	}
 
 	override Obj[] findAll([Str:Obj?]? query := null, Obj? sort := null, Int skip := 0, Int? limit := null) {
-		collection.findAll(query, sort, skip, limit).map { fromMongoDoc(it) }
+		all := collection.findAll(query, sort, skip, limit)
+		// ensure empty lists are correctly typed
+		list := List.make(type, all.size)
+		all.each { list.add(fromMongoDoc(it)) }
+		return list
 	}
 
 	override Int findCount([Str:Obj?]? query := null) {
