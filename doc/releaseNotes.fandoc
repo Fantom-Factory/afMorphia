@@ -1,6 +1,10 @@
 Versions
 ********
 
+v1.1.2
+======
+ - Chg: Lists returned from 'Datastore.findAll()' are now *of* the datatype, not Obj.
+
 v1.1.0
 ======
  - New: 'Queries' mixin to ease Query construction.
