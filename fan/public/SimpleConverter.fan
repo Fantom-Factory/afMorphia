@@ -8,7 +8,7 @@ const class SimpleConverter : Converter {
 	**   syntax: fantom
 	**   @Serializable { simple = true }
 	new make(Type type) {
-		serializable := (Serializable?) Type#.method("facet").callOn(type, [Serializable#, false])
+		serializable := (Serializable?) type.facet(Serializable#, false)
 		if (serializable == null)
 			throw ArgErr(ErrMsgs.simpleConverter_typeNotSerialisable(type))
 		if (!serializable.simple)

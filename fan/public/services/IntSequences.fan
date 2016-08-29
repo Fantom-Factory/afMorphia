@@ -53,7 +53,7 @@ internal const class IntSequencesImpl : IntSequences {
 	}
 
 	override Int nextId(Type entityType) {
-		entity  := (Entity?) Type#.method("facet").callOn(entityType, [Entity#, false])
+		entity  := (Entity?) entityType.facet(Entity#, false)
 				?: throw ArgErr(ErrMsgs.datastore_entityFacetNotFound(entityType))		
 		name := entity.name ?: entityType.name
 		return nextInt(name)
