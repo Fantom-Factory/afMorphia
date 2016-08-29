@@ -34,7 +34,7 @@ const class ObjConverter : Converter {
 		fieldVals	:= [Field:Obj?][:]
 
 		fantomType.fields.each |field| {
-			property := (Property?) Field#.method("facet").callOn(field, [Property#, false])
+			property := (Property?) field.facet(Property#, false)
 			if (property == null)
 				return
 			
@@ -67,7 +67,7 @@ const class ObjConverter : Converter {
 		mongoDoc := createMongoDoc
 		
 		fantomObj.typeof.fields.each |field| {
-			property := (Property?) Field#.method("facet").callOn(field, [Property#, false])
+			property := (Property?) field.facet(Property#, false)
 			if (property == null)
 				return
 

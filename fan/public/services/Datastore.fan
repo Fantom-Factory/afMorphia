@@ -155,7 +155,7 @@ internal const class DatastoreImpl : Datastore {
 	private const Field 		idField
 	
 	internal new make(Type type, Database database, |This|in) {
-		entity  := (Entity?) Type#.method("facet").callOn(type, [Entity#, false])
+		entity  := (Entity?) type.facet(Entity#, false)
 				?: throw ArgErr(ErrMsgs.datastore_entityFacetNotFound(type))
 
 		in(this)
@@ -165,7 +165,7 @@ internal const class DatastoreImpl : Datastore {
 		this.qname		= collection.qname
 		this.name		= collection.name
 		this.idField	= type.fields.findAll { it.hasFacet(Property#) }.find |field->Bool| {
-			property := (Property) Slot#.method("facet").callOn(field, [Property#])
+			property := (Property) field.facet(Property#)
 			return field.name == "_id" || property.name == "_id"
 		} ?: throw IdNotFoundErr(ErrMsgs.datastore_idFieldNotFound(type), propertyNames(type))
 
