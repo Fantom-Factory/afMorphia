@@ -38,114 +38,144 @@ const mixin Queries {
 	// ---- Comparison Query Operators ------------------------------------------------------------
 	
 	** Matches values that are equal to the given object.
-	Query eq(Str fieldName, Obj? value) {
-		Query().field(fieldName).eq(value)
+	** 
+	** 'name' may either a MongoDB property name (Str) or a field annotated with '@Property'.
+	Query eq(Obj name, Obj? value) {
+		Query().field(name).eq(value)
 	}
 
 	** Matches values that are **not** equal to the given object.
 	** 
 	** Note this also matches documents that do not contain the field.
 	** 
+	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
+	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/ne/`
-	Query notEq(Str fieldName, Obj? value) {
-		Query().field(fieldName).notEq(value)
+	Query notEq(Obj name, Obj? value) {
+		Query().field(name).notEq(value)
 	}
 
 	** Matches values that equal any one of the given values.
 	** 
+	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
+	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/in/`
-	Query in(Str fieldName, Obj[] values) {
-		Query().field(fieldName).in(values)
+	Query in(Obj name, Obj[] values) {
+		Query().field(name).in(values)
 	}
 
 	** Matches values that do **not** equal any one of the given values.
 	** 
 	** Note this also matches documents that do not contain the field.
 	** 
+	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
+	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/nin/`
-	Query notIn(Str fieldName, Obj[] values) {
-		Query().field(fieldName).notIn(values)
+	Query notIn(Obj name, Obj[] values) {
+		Query().field(name).notIn(values)
 	}
 
 	** Matches values that are greater than the given object.
 	** 
+	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
+	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/gt/`
-	Query greaterThan(Str fieldName, Obj value) {
-		Query().field(fieldName).greaterThan(value)
+	Query greaterThan(Obj name, Obj value) {
+		Query().field(name).greaterThan(value)
 	}
 
 	** Matches values that are greater than or equal to the given object.
 	** 
+	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
+	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/gte/`
-	Query greaterThanOrEqTo(Str fieldName, Obj value) {
-		Query().field(fieldName).greaterThanOrEqTo(value)
+	Query greaterThanOrEqTo(Obj name, Obj value) {
+		Query().field(name).greaterThanOrEqTo(value)
 	}
 
 	** Matches values that are less than the given object.
 	** 
+	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
+	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/gt/`
-	Query lessThan(Str fieldName, Obj value) {
-		Query().field(fieldName).lessThan(value)
+	Query lessThan(Obj name, Obj value) {
+		Query().field(name).lessThan(value)
 	}
 
 	** Matches values that are less than or equal to the given object.
 	** 
+	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
+	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/lte/`
-	Query lessThanOrEqTo(Str fieldName, Obj value) {
-		Query().field(fieldName).lessThanOrEqTo(value)
+	Query lessThanOrEqTo(Obj name, Obj value) {
+		Query().field(name).lessThanOrEqTo(value)
 	}
 
 	// ---- Element Query Operators ---------------------------------------------------------------
 
 	** Matches if the field exists (or not), even if it is 'null'.
 	** 
+	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
+	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/exists/`
-	Query exists(Str fieldName, Bool exists := true) {
-		Query().field(fieldName).exists(exists)
+	Query exists(Obj name, Bool exists := true) {
+		Query().field(name).exists(exists)
 	}
 	
 	// ---- String Query Operators ----------------------------------------------------------------
 	
 	** Matches string values that equal the given regular expression.
-	Query matchesRegex(Str fieldName, Regex regex) {
-		Query().field(fieldName).matchesRegex(regex)
+	** 
+	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
+	Query matchesRegex(Obj name, Regex regex) {
+		Query().field(name).matchesRegex(regex)
 	}
 
 	** Matches string values that equal (ignoring case) the given value.
 	** 
 	** Note that matching is performed with regular expressions. 
-	Query eqIgnoreCase(Str fieldName, Str value) {
-		Query().field(fieldName).eqIgnoreCase(value)
+	** 
+	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
+	Query eqIgnoreCase(Obj name, Str value) {
+		Query().field(name).eqIgnoreCase(value)
 	}
 
 	** Matches string values that contain the given value.
 	** 
 	** Note that matching is performed with regular expressions. 
-	Query contains(Str fieldName, Str value, Bool caseInsensitive := true) {
-		Query().field(fieldName).contains(value, caseInsensitive)
+	** 
+	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
+	Query contains(Obj name, Str value, Bool caseInsensitive := true) {
+		Query().field(name).contains(value, caseInsensitive)
 	}
 
 	** Matches string values that start with the given value.
 	** 
 	** Note that matching is performed with regular expressions. 
-	Query startsWith(Str fieldName, Str value, Bool caseInsensitive := true) {
-		Query().field(fieldName).startsWith(value, caseInsensitive)
+	** 
+	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
+	Query startsWith(Obj name, Str value, Bool caseInsensitive := true) {
+		Query().field(name).startsWith(value, caseInsensitive)
 	}
 
 	** Matches string values that end with the given value.
 	** 
 	** Note that matching is performed with regular expressions. 
-	Query endsWith(Str fieldName, Str value, Bool caseInsensitive := true) {
-		Query().field(fieldName).endsWith(value, caseInsensitive)
+	** 
+	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
+	Query endsWith(Obj name, Str value, Bool caseInsensitive := true) {
+		Query().field(name).endsWith(value, caseInsensitive)
 	}
 
 	// ---- Evaluation Query Operators ------------------------------------------------------------
 
 	** Matches values based on their remainder after a division (modulo operation).
 	** 
+	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
+	** 
 	** @see `http://docs.mongodb.org/manual/reference/operator/query/mod/`
-	Query mod(Str fieldName, Int divisor, Int remainder) {
-		Query().field(fieldName).mod(divisor, remainder)
+	Query mod(Obj name, Int divisor, Int remainder) {
+		Query().field(name).mod(divisor, remainder)
 	}
 	
 	// ---- Logical Query Operators ---------------------------------------------------------------

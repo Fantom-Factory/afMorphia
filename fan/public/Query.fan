@@ -9,11 +9,25 @@ class Query {
 	
 	** Creates a match for the given field name. It may reference nested objects using dot notation. Example, 'user.name'
 	** 
-	** Note this is actually the MongoDB property name and *not* the field name. 
-	** Though, the two are usually the same unless you use the '@Property.name' attribute. 
-	QueryCriterion field(Str fieldName) {
-		// todo: validate field exists - very difficult for nested properties
-		// Note, this cannot take a field for we can't verify nested objects
+	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
+	QueryCriterion field(Obj name) {
+		fieldName := null as Str
+
+		if (name is Field) {
+			field := (Field) name
+			property := (Property?) field.facet(Property#, false)
+			// we can't check if the field belongs to an entity (think nested objects), but it should be annotated with @Property
+			if (property == null)
+				throw ArgErr()
+			propName := property?.name ?: field.name
+		} else
+
+		if (name is Str)
+			fieldName = name
+
+		if (fieldName == null)
+			throw ArgErr(ErrMsgs.query_unknownField(name))
+
 		return QueryCriterion(this, fieldName)
 	}
 

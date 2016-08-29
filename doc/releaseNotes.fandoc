@@ -3,6 +3,7 @@ Versions
 
 v1.1.2
 ======
+ - Chg: 'Query.field()' may now take an actual entity field instance.
  - Chg: Lists returned from 'Datastore.findAll()' are now *of* the datatype, not Obj.
  - Bug: If using a non-BSON type for ID fields, an Err was thrown after an update if the document hadn't changed.
 
