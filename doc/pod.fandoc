@@ -327,7 +327,10 @@ const class NameConverter : Converter {
         return Name { it.firstName = mong[0]; it.lastName = mong[1] }
     }
 
-    override Obj? toMongo(Obj fantomObj) {
+    override Obj? toMongo(Type fantomType, Obj? fantomObj) {
+        // decide how you want to handle null values
+        if (fantomObj == null) return null
+
         name := (Name) fantomObj
         return "${name.firstName}-${name.lastName}"
     }
@@ -380,11 +383,9 @@ syntax: fantom
 
 @Contribute { serviceType=Converters# }
 static Void contributeConverters(Configuration config) {
-    config.overrideValue(Obj#, config.createProxy(Converter#, ObjConverter#,  [true]), "MyObjConverter")
+    config.overrideValue(Obj#, config.build(ObjConverter#,  [true]), "MyObjConverter")
 }
 <pre
-
-(A proxy is required due to the circular nature of Converters.)
 
 See [Storing null vs not storing the key at all in MongoDB]`http://stackoverflow.com/questions/12403240/storing-null-vs-not-storing-the-key-at-all-in-mongodb` for more details.
 
@@ -423,30 +424,33 @@ Use a `QueryExecutor` as returned from the 'Datastore.query(...)' method to run 
 The more complicated '$and' example is then written as:
 
 pre>
-  syntax: fantom
+syntax: fantom
 
-  query := Query().and([
-      Query().or([
-          Query().field("price").eq(0.99f),
-          Query().field("price").eq(1.99f)
-      ]),
-      Query().or([
-          Query().field("sale" ).eq(true),
-          Query().field("qty"  ).lessThan(20)
-      ])
-  ])
+query := Query().and([
+    Query().or([
+        Query().field("price").eq(0.99f),
+        Query().field("price").eq(1.99f)
+    ]),
+    Query().or([
+        Query().field("sale" ).eq(true),
+        Query().field("qty"  ).lessThan(20)
+    ])
+])
 <pre
 
-The `Queries` mixin squirrels away common Query constructors into their own methods.
-Should your class extend the 'Queries' mixin, the '$and' example maybe re-written as:
+The `Queries` mixin squirrels away common Query constructors into their own methods. Create a simple 'q()' method minimise code:
 
 pre>
-  syntax: fantom
+syntax: fantom
 
-  query := and([
-      or([ eq("price", 0.99f), eq("price", 1.99f)  ]),
-      or([ eq("sale", true),   lessThan("qty", 29) ])
-  ])
+Queries q() { Queries() }
+
+...
+
+query := q.and([
+    q.or([ q.eq("price", 0.99f), q.eq("price", 1.99f)  ]),
+    q.or([ q.eq("sale", true),   q.lessThan("qty", 29) ])
+])
 <pre
 
 Which is much easier to construct, understand, and debug.

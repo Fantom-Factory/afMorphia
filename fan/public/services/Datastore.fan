@@ -248,7 +248,7 @@ internal const class DatastoreImpl : Datastore {
 		if (noOfUpdates == 0 && upsert == false && checked) {
 			// Mongo reports zero updates if the given document hasn't changed,
 			// as this isn't an error let it slide...
-			if (get(mongId, false) == null)
+			if (collection.get(mongId, false) == null)
 				throw MorphiaErr(ErrMsgs.datastore_entityNotFound(type, mongId))
 		}
 	}
