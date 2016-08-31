@@ -18,8 +18,8 @@ class Query {
 			property := (Property?) field.facet(Property#, false)
 			// we can't check if the field belongs to an entity (think nested objects), but it should be annotated with @Property
 			if (property == null)
-				throw ArgErr()
-			propName := property?.name ?: field.name
+				throw ArgErr(ErrMsgs.query_fieldMustBeAnnotated(field))
+			fieldName = property?.name ?: field.name
 		} else
 
 		if (name is Str)
