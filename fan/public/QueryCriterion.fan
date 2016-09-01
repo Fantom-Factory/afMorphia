@@ -1,6 +1,8 @@
 
 ** Defines match criterion for a field.
 ** Created and returned from 'Query.field()' methods.
+// TODO add 'where' clause - https://docs.mongodb.com/manual/reference/operator/query/where/
+// TODO add 'text' clause - https://docs.mongodb.com/manual/reference/operator/query/text/
 class QueryCriterion {
 	private Str?	_fieldName
 	private Query	_query
