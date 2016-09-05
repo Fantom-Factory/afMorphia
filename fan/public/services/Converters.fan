@@ -27,6 +27,9 @@ const mixin Converters {
 	** 'fantomObj' is nullable so converters can create empty / default objects.
 	abstract Obj? toMongo(Type fantomType, Obj? fantomObj)
 	
+	** Returns the 'Converter' instance used to convert the given type. 
+	@Operator
+	abstract Converter get(Type type)
 }
 
 internal const class ConvertersImpl : Converters {
@@ -45,7 +48,7 @@ internal const class ConvertersImpl : Converters {
 		get(fantomType).toMongo(fantomType, fantomObj)
 	}
 	
-	private Converter get(Type type) {
+	override Converter get(Type type) {
 		// if a specific converter can't be found then embed a document
 		typeLookup.findParent(type)
 	}	

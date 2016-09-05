@@ -155,13 +155,10 @@ internal const class DatastoreImpl : Datastore {
 	private const Field 		idField
 	
 	internal new make(Type type, Database database, |This|in) {
-		entity  := (Entity?) type.facet(Entity#, false)
-				?: throw ArgErr(ErrMsgs.datastore_entityFacetNotFound(type))
-
 		in(this)
 
+		this.collection	= Collection(database, Utils.entityName(type))
 		this.type		= verifyEntityType(type)
-		this.collection	= Collection(database, entity.name ?: type.name)
 		this.qname		= collection.qname
 		this.name		= collection.name
 		this.idField	= type.fields.findAll { it.hasFacet(Property#) }.find |field->Bool| {
@@ -282,12 +279,18 @@ internal const class DatastoreImpl : Datastore {
 	
 	// ---- Helper Methods ------------------------------------------------------------------------
 	
-	internal static Type verifyEntityType(Type type) {
+	internal Type verifyEntityType(Type type) {
+		// try to use the ObjConverter hook to find property fields
+		fields := (Field[]?) (converters.get(Obj#) as ObjConverter)?.findPropertyFields(type)
+		
+		// if null, we can't be sure what fields are valid, so skip validation
+		if (fields == null)
+			return type
+	
 		names := Str:Field[:]
-		type.fields.findAll { it.hasFacet(Property#) }.each |field| {
-			property := (Property) field.facet(Property#)
-			pName := property.name ?: field.name
-			pType := property.implType ?: field.type
+		fields.each |field| {
+			pName := Utils.propertyName(field)
+			pType := Utils.propertyType(field)
 			if (!ReflectUtils.fits(pType, field.type))
 				throw MorphiaErr(ErrMsgs.datastore_facetTypeDoesNotFitField(pType, field))
 			if (names.containsKey(pName))

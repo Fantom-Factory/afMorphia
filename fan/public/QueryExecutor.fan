@@ -1,3 +1,4 @@
+using afMongo::Index
 
 ** Executes `Query` objects against a `Datastore`. Example:
 ** 
@@ -24,7 +25,9 @@ class QueryExecutor {
 	
 	** Specifies a property / field to use for ordering. 
 	** 
-	** Ordering is ascending by default. Prefix the name with '-' to specify a descending order.
+	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
+	** If passing a 'Str', it may be prefixed with '-' to specify a descending order, otherwise 
+	** ordering defaults to ascending. 
 	** 
 	** Multiple calls to 'orderBy()' may be made to indicate sub-sorts.
 	** Example:
@@ -32,9 +35,8 @@ class QueryExecutor {
 	**   syntax: fantom
 	**   QueryExecutor(...).orderBy("name").orderBy("-value").findAll
 	** 
-	** Note this is actually the MongoDB property name and *not* the field name. 
-	** Though, the two are usually the same unless you use the '@Property.name' attribute. 
-	This orderBy(Str fieldName) {
+	This orderBy(Obj name, Int sortOrder := Index.ASC) {
+		fieldName := Utils.propertyName(name)
 		if (_orderBy is Str)
 			throw ArgErr(ErrMsgs.query_canNotMixSorts(_orderBy, fieldName))
 		if (_orderBy == null)
@@ -42,7 +44,7 @@ class QueryExecutor {
 		if (fieldName.startsWith("-"))		
 			((Str:Obj?) _orderBy)[fieldName[1..-1]] = "DESC"
 		else
-			((Str:Obj?) _orderBy)[fieldName] = "ASC"
+			((Str:Obj?) _orderBy)[fieldName] = sortOrder == Index.DESC ? "DESC" : "ASC"
 		return this
 	}
 

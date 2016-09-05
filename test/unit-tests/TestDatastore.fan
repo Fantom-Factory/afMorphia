@@ -50,17 +50,18 @@ internal class TestDatastore : MorphiaTest {
 	}
 	
 	Void testPropertyMustFit() {
-		verifyErrMsg(MorphiaErr#, ErrMsgs.datastore_facetTypeDoesNotFitField(Int#, T_Entity15#inty)) {
-			DatastoreImpl.verifyEntityType(T_Entity15#)
+		// IocErr wraps the MorphiaErr
+		verifyErrMsg(IocErr#, ErrMsgs.datastore_facetTypeDoesNotFitField(Int#, T_Entity15#inty)) {
+			scope.build(Datastore#, [T_Entity15#])
 		}
 	}
 
 	Void testDuplicatePropertyNames() {
-		verifyErrMsg(MorphiaErr#, ErrMsgs.datastore_duplicatePropertyName("_id", T_Entity17#_id, T_Entity17#anotherId)) {
-			DatastoreImpl.verifyEntityType(T_Entity17#)
+		// IocErr wraps the MorphiaErr
+		verifyErrMsg(IocErr#, ErrMsgs.datastore_duplicatePropertyName("_id", T_Entity17#_id, T_Entity17#anotherId)) {
+			scope.build(Datastore#, [T_Entity17#])
 		}
 	}
-
 }
 
 internal class T_Entity09 { }

@@ -33,15 +33,10 @@ const class ObjConverter : Converter {
 		mongoDoc	:= (Str:Obj?) mongoObj
 		fieldVals	:= [Field:Obj?][:]
 
-		fantomType.fields.each |field| {
-			property := (Property?) field.facet(Property#, false)
-			if (property == null)
-				return
-			
-			propName := property.name ?: field.name
-			implType := property.implType ?: field.type
+		findPropertyFields(fantomType).each |field| {
+			propName := Utils.propertyName(field)
+			implType := Utils.propertyType(field)
 			propVal  := mongoDoc.get(propName, null)
-			
 			fieldVal := converters().toFantom(implType, propVal)
 			
 			if (fieldVal == null && !field.type.isNullable) {
@@ -66,15 +61,13 @@ const class ObjConverter : Converter {
 		if (fantomObj == null) return null
 		mongoDoc := createMongoDoc
 		
-		fantomObj.typeof.fields.each |field| {
-			property := (Property?) field.facet(Property#, false)
-			if (property == null)
-				return
-
+		findPropertyFields(fantomObj.typeof).each |field| {
 			fieldVal := field.get(fantomObj)
-			propName := property.name ?: field.name			
-			
+			propName := Utils.propertyName(field)			
+			implType := Utils.propertyType(field)
+
 			// should we recursively convert...? 
+			// note this should NOT use Utils.propertyType
 			propVal	 := converters().toMongo(fieldVal?.typeof ?: field.type, fieldVal)			
 			
 			if (propVal == null && !storeNullFields)
@@ -88,6 +81,13 @@ const class ObjConverter : Converter {
 		return mongoDoc
 	}
 
+	** Hook for finding all fields that relate to MongoDB properties.
+	** 
+	** By default this returns all fields annotated with '@Property'.
+	virtual Field[] findPropertyFields(Type entityType) {
+		entityType.fields.findAll { it.hasFacet(Property#) }
+	}
+	
 	** Creates an Entity instance using [BeanFactory]`afBeanUtils::BeanFactory`.
 	** 
 	** Override if you prefer your entities to be autobuilt by IoC.
