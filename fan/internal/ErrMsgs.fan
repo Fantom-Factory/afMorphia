@@ -58,10 +58,6 @@ internal const mixin ErrMsgs {
 		"Can not mix index sorts and field sorts: ${index} vs. ${field}"
 	}
 
-	static Str query_fieldMustBeAnnotated(Field field) {
-		"Field must be an annotated with @Property - $field.qname"
-	}
-
 	static Str query_unknownField(Obj field) {
 		"Field must be an entity Field or a Mongo property name: $field.typeof.qname - $field"
 	}
