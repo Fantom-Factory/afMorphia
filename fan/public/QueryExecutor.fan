@@ -36,7 +36,7 @@ class QueryExecutor {
 	**   QueryExecutor(...).orderBy("name").orderBy("-value").findAll
 	** 
 	This orderBy(Obj name, Int sortOrder := Index.ASC) {
-		fieldName := Utils.propertyName(name)
+		fieldName := Utils.objToPropertyName(name)
 		if (_orderBy is Str)
 			throw ArgErr(ErrMsgs.query_canNotMixSorts(_orderBy, fieldName))
 		if (_orderBy == null)

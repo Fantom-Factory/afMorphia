@@ -11,20 +11,7 @@ class Query {
 	** 
 	** 'name' may either an entity 'Field' annotated with '@Property' or a MongoDB property name (Str).
 	QueryCriterion field(Obj name) {
-		fieldName := null as Str
-
-		if (name is Field) {
-			// we can't check if the field belongs to an entity (think nested objects)
-			// and if the user overrides ObjConverter.findPropertyFields() then it need not been annotated with @Property either
-			fieldName = Utils.propertyName(name)
-		} else
-
-		if (name is Str)
-			fieldName = name
-
-		if (fieldName == null)
-			throw ArgErr(ErrMsgs.query_unknownField(name))
-
+		fieldName := Utils.objToPropertyName(name)
 		return QueryCriterion(this, fieldName)
 	}
 
