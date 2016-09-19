@@ -1,7 +1,7 @@
-#Morphia v1.1.0
+#Morphia v1.1.2
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.1.0](http://img.shields.io/badge/pod-v1.1.0-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
+[![pod: v1.1.2](http://img.shields.io/badge/pod-v1.1.2-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -46,32 +46,36 @@ Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fant
 
 2. Create a text file called `Example.fan`
 
+        using afIocConfig::ApplicationDefaults
+        using afBson::ObjectId
         using afMorphia
-        using afBson
         using afIoc
-        using afIocConfig
         
         @Entity
         class User {
-            @Property ObjectId _id
-            @Property Str      name
-            @Property Int      age
+            @Property ObjectId    _id
+            @Property Str        name
+            @Property Int        age
         
             new make(|This|in) { in(this) }
         }
         
         class Example {
+        
             @Inject { type=User# }
             Datastore? datastore
         
             Void main() {
-                reg := RegistryBuilder().addModule(ExampleModule#).addModulesFromPod("afMorphia").build.startup
-                reg.injectIntoFields(this)
+                reg := RegistryBuilder()
+                        .addModule(ExampleModule#)
+                        .addModulesFromPod("afMorphia")
+                        .build
+                reg.activeScope.inject(this)
         
                 micky := User {
-                    it._id  = ObjectId()
+                    it._id     = ObjectId()
+                    it.age    = 42
                     it.name = "Micky Mouse"
-                    it.age  = 42
                 }
         
                 // ---- Create ------
@@ -83,7 +87,7 @@ Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fant
                 echo(mouse.name)  // --> Micky Mouse
         
                 // ---- Update -----
-                mouse.name = "Minny"
+                mouse.name = "Minny Mouse"
                 datastore.update(mouse)
         
                 // ---- Delete ------
@@ -93,7 +97,7 @@ Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fant
             }
         }
         
-        class ExampleModule {
+        const class ExampleModule {
             @Contribute { serviceType=ApplicationDefaults# }
             static Void contributeAppDefaults(Configuration config) {
                 config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
@@ -103,27 +107,29 @@ Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fant
 
 3. Run `Example.fan` as a Fantom script from the command line:
 
+        [afIoc] Adding module Example_0::ExampleModule
         [afIoc] Adding module definitions from pod 'afMorphia'
-        [afIoc] Adding module definition for afMorphia::MorphiaModule
-        [afIoc] Adding module definition for afIocConfig::IocConfigModule
-        [afIoc] Adding module definition for afMorphia::ExampleModule
+        [afIoc] Adding module afMorphia::MorphiaModule
+        [afIoc] Adding module afConcurrent::ConcurrentModule
+        [afIoc] Adding module afIocConfig::IocConfigModule
         [afMongo]
         
              Alien-Factory
          _____ ___ ___ ___ ___
         |     | . |   | . | . |
         |_|_|_|___|_|_|_  |___|
-                      |___|1.0.4
+                      |___|1.0.8
         
-        Connected to MongoDB v2.6.5 (at mongodb://localhost:27017)
+        Connected to MongoDB v3.2.8 (at mongodb://localhost:27017)
         
+        [afIoc]
            ___    __                 _____        _
           / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
          / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
         /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
-                                    Alien-Factory IoC v2.0.8 /___/
+                                    Alien-Factory IoC v3.0.4 /___/
         
-        IoC Registry built in 355ms and started up in 225ms
+        IoC Registry built in 81ms and started up in 205ms
         
         Micky Mouse
         
@@ -308,7 +314,10 @@ const class NameConverter : Converter {
         return Name { it.firstName = mong[0]; it.lastName = mong[1] }
     }
 
-    override Obj? toMongo(Obj fantomObj) {
+    override Obj? toMongo(Type fantomType, Obj? fantomObj) {
+        // decide how you want to handle null values
+        if (fantomObj == null) return null
+
         name := (Name) fantomObj
         return "${name.firstName}-${name.lastName}"
     }
@@ -319,7 +328,7 @@ Then contribute it in your AppModule:
 
 ```
 @Contribute { serviceType=Converters# }
-static Void contributeConverters(Configuration config) {
+Void contributeConverters(Configuration config) {
     config[Name#] = NameConverter()
 }
 ```
@@ -342,7 +351,7 @@ echo(mongoDoc) // --> [_id:xxxx, age:42, name:Micky-Mouse]
 
 ### Storing Nulls in Mongo
 
-When converting Fantom objects *to* Mongo, the [ObjConverter](http://pods.fantomfactory.org/pods/afMorphia/api/ObjConverter) decides what to do if a Fantom field has the value `null`. Should it store a key in the MongoDb with a `null` value, or should it not store the key at all?
+When converting Fantom objects *to* Mongo, the `ObjConverter` decides what to do if a Fantom field has the value `null`. Should it store a key in the MongoDb with a `null` value, or should it not store the key at all?
 
 To conserve storage space in MongoDB, by default `ObjConverter` does not store the keys.
 
@@ -350,12 +359,10 @@ If you want to store `null` values, then create a new `ObjConverter` passing `tr
 
 ```
 @Contribute { serviceType=Converters# }
-static Void contributeConverters(Configuration config) {
-    config.overrideValue(Obj#, config.createProxy(Converter#, ObjConverter#,  [true]), "MyObjConverter")
+Void contributeConverters(Configuration config) {
+    config.overrideValue(Obj#, config.build(ObjConverter#,  [true]), "MyObjConverter")
 }
 ```
-
-(A proxy is required due to the circular nature of Converters.)
 
 See [Storing null vs not storing the key at all in MongoDB](http://stackoverflow.com/questions/12403240/storing-null-vs-not-storing-the-key-at-all-in-mongodb) for more details.
 
@@ -399,12 +406,16 @@ query := Query().and([
 ])
 ```
 
-The [Queries](http://pods.fantomfactory.org/pods/afMorphia/api/Queries) mixin squirrels away common Query constructors into their own methods. Should your class extend the `Queries` mixin, the `$and` example maybe re-written as:
+The [Queries](http://pods.fantomfactory.org/pods/afMorphia/api/Queries) mixin squirrels away common Query constructors into their own methods. Tip: Create a simple `q()` method to minimise code:
 
 ```
-query := and([
-    or([ eq("price", 0.99f), eq("price", 1.99f)  ]),
-    or([ eq("sale", true),   lessThan("qty", 29) ])
+Queries q() { Queries() }
+
+...
+
+query := q.and([
+    q.or([ q.eq("price", 0.99f), q.eq("price", 1.99f)  ]),
+    q.or([ q.eq("sale", true),   q.lessThan("qty", 29) ])
 ])
 ```
 
@@ -434,9 +445,8 @@ class TestExample : Test {
         reg = RegistryBuilder()
                   .addModule(TestModule#)
                   .addModulesFromPod("afMorphia")
-                  .addModulesFromPod("afIocConfig")
                   .build.startup
-        reg.injectIntoFields(this)
+        reg.activeScope.inject(this)
     }
 
     override Void teardown() {
@@ -452,9 +462,9 @@ class TestExample : Test {
     }
 }
 
-class TestModule {
+const class TestModule {
     @Contribute { serviceType=ApplicationDefaults# }
-    static Void contributeAppDefaults(Configuration config) {
+    Void contributeAppDefaults(Configuration config) {
         config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
     }
 }
@@ -482,15 +492,15 @@ The strategy here is to split the `AppModule` into two, one that configures web 
 ```
 ** Configure BedSheet and other web services here
 @SubModule { modules=[DatabaseModule#] }
-class AppModule {
+const class AppModule {
     ....
 }
 
 ** Configure Morphia and other database services here
-class DatabaseModule {
+const class DatabaseModule {
 
     @Contribute { serviceType=ApplicationDefaults# }
-    static Void contributeAppDefaults(Configuration config) {
+    Void contributeAppDefaults(Configuration config) {
         config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
     }
 

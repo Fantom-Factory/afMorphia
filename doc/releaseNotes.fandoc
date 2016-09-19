@@ -12,7 +12,7 @@ v1.1.2
 v1.1.0
 ======
  - New: 'Queries' mixin to ease Query construction.
- - Chg: 'Converter.toMongo()' now takes a 'Type' param as the 'fantomObj' arg may now be nullable. This allows fantom 'null' objects to be represented by non-null Mongo objects. (Breaking change.)
+ - Chg: 'Converter.toMongo()' now takes a 'Type' param as the 'fantomObj' arg may now be nullable. This allows 'null' Fantom objects to be represented by non-null Mongo objects. (Breaking change.)
  - Chg: Renamed '@Property.type -> @Property.implType'. (Breaking change.)
  - Chg: Select methods on 'Datastore' may take a 'null' ID (handy for inlining reads) - as long as 'checked' is 'false'!
  - Chg: Updated to use [IoC 3.0]`pod:afIoc`.

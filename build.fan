@@ -5,13 +5,13 @@ class Build : BuildPod {
 	new make() {
 		podName = "afMorphia"
 		summary = "A Fantom to MongoDB object mapping library"
-		version = Version("1.1.1")
+		version = Version("1.1.2")
 
 		meta = [
-			"proj.name"		: "Morphia",
-			"afIoc.module"	: "afMorphia::MorphiaModule",
-			"repo.tags"		: "database",
-			"repo.public"	: "false"
+			"pod.displayName"	: "Morphia",
+			"afIoc.module"		: "afMorphia::MorphiaModule",
+			"repo.tags"			: "database",
+			"repo.public"		: "true"
 		]
 
 		index	= [	"afIoc.module"	: "afMorphia::MorphiaModule" ]
@@ -28,8 +28,8 @@ class Build : BuildPod {
 			"afIocConfig  1.1.0  - 1.1",
 
 			// ---- Mongo -----------------------
-			"afBson  1.0.0 - 1.0",
-			"afMongo 1.0.6 - 1.0"
+			"afBson  1.0.0  - 1.0",
+			"afMongo 1.0.10 - 1.0"
 		]
 		
 		srcDirs = [`fan/`, `fan/internal/`, `fan/internal/converters/`, `fan/public/`, `fan/public/services/`, `test/`, `test/db-tests/`, `test/unit-tests/`, `test/unit-tests/converters/`]

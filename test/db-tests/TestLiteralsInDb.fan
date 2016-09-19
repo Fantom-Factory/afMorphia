@@ -110,6 +110,5 @@ internal class TestLiteralsInDb : MorphiaDbTest {
 		verifyEq(entity.unit,		Unit("pH"))
 		verifyEq(entity.uuid,		Uuid("03f0e2bb-8f1a-c800-e1f8-00623f7473c4"))
 		verifyEq(entity.version,	Version([6, 9, 6, 9]))
-
 	}
 }
