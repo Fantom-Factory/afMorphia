@@ -1,6 +1,10 @@
 Versions
 ********
 
+v1.1.4
+======
+ - Bug: Passing 'null' to 'QueryCriterion.eq()' or 'QueryCriterion.notEq()' resulted in an NPE.
+
 v1.1.2
 ======
  - Chg: 'Query.field()' & 'QueryExecutor.orderBy()' may now take an actual entity field instance.

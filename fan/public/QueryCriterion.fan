@@ -147,7 +147,7 @@ class QueryCriterion {
 	// ---- Private Methods -----------------------------------------------------------------------
 	
 	private Query _addFieldFunc(|Datastore -> Obj?| func) {
-		_query._addFunc |Datastore datastore, Str:Obj mongoQuery| {
+		_query._addFunc |Datastore datastore, Str:Obj? mongoQuery| {
 			val := func(datastore)
 			if (_not)
 				val = map["\$not"] = val
@@ -161,8 +161,8 @@ class QueryCriterion {
 		}
 	}
 
-	private static Str:Obj map() {
-		Str:Obj[:] { ordered = true }
+	private static Str:Obj? map() {
+		Str:Obj?[:] { ordered = true }
 	}
 }
 
