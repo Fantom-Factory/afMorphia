@@ -6,7 +6,8 @@ using afMongo::PrettyPrinter
 ** Pass 'Query' objects to a `QueryExecutor` to run them.
 class Query {
 	
-	private |Datastore?, Str:Obj|[] _toMongoFuncs	:= |Datastore?, Str:Obj|[,]
+	private  |Datastore?, Str:Obj|[] _toMongoFuncs	:= |Datastore?, Str:Obj|[,]
+	internal Bool _textSearch
 	
 	** Creates a match for the given field name. It may reference nested objects using dot notation. Example, 'user.name'
 	** 
@@ -16,7 +17,16 @@ class Query {
 		return QueryCriterion(this, fieldName)
 	}
 
-	**
+	** Performs a text search on the collection. 
+	** 
+	** Text searching makes use of stemming and ignores language stop words.
+	** Quotes may be used to search for exact phrases and prefixing a word with a hyphen-minus (-) negates it.
+	** 
+	** Results are automatically ordered by search relevance.
+	**  
+	** To use text searching, make sure the Collection has a text Index else MongoDB will throw an Err.
+	** 
+	** 'options' may include the following:
 	** 
 	**   table:
 	**   Name                 Type  Desc
@@ -24,13 +34,15 @@ class Query {
 	**   $language            Bool  Determines the list of stop words for the search and the rules for the stemmer and tokenizer. See [Supported Text Search Languages]`https://docs.mongodb.com/manual/reference/text-search-languages/#text-search-languages`. Specify 'none' for simple tokenization with no stop words and no stemming. Defaults to the language of the index.
 	**   $caseSensitive       Bool  Enable or disable case sensitive searching. Defaults to 'false'.
 	**   $diacriticSensitive  Int   Enable or disable diacritic sensitive searching. Defaults to 'false'.
-	**  
+	** 
+	** @see `https://docs.mongodb.com/manual/reference/operator/query/text/`.
 	Query textSearch(Str search, [Str:Obj?]? options := null) {
-		_addFunc |Datastore? datastore, Str:Obj mongoQuery| {
+		this._textSearch = true
+		return _addFunc |Datastore? datastore, Str:Obj mongoQuery| {
 			mongoQuery["\$text"] = (options?.dup ?: Str:Obj?[:]).add("\$search", search)
-		}		
+		}
 	}
-	
+
 	** Selects documents based on the return value of a javascript function. Example:
 	** 
 	**   syntax: fantom

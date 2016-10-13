@@ -27,7 +27,7 @@ internal class TestLiteralConversion : MorphiaTest {
 			"regex"			: "2 problems".toRegex,
 			"code"			: Code("func() { ... }"),
 			"codeScope"		: Code("func() { ... }", ["wot":"ever"]),
-			"timestamp"		: Timestamp(3sec, 69),
+			"timestamp"		: Timestamp(500, 69),
 			"int"			: 666,
 			"minKey"		: MinKey(),
 			"maxKey"		: MaxKey(),
@@ -99,7 +99,7 @@ internal class TestLiteralConversion : MorphiaTest {
 			regex		= "2 problems".toRegex
 			code		= Code("func() { ... }")
 			codeScope	= Code("func() { ... }", ["wot":"ever"])
-			timestamp	= Timestamp(3sec, 69)
+			timestamp	= Timestamp(500, 69)
 			int 		= 69
 			minKey		= MinKey()
 			maxKey		= MaxKey()
