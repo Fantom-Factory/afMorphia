@@ -29,7 +29,7 @@ internal class TestLiteralsInDb : MorphiaDbTest {
 			regex		= "2 problems".toRegex
 			code		= Code("func() { ... }")
 			codeScope	= Code("func() { ... }", Str:Obj?["wot":"ever"])
-			timestamp	= Timestamp(3sec, 69)
+			timestamp	= Timestamp(500, 69)
 			int 		= 999
 			minKey		= MinKey()
 			maxKey		= MaxKey()
@@ -83,7 +83,7 @@ internal class TestLiteralsInDb : MorphiaDbTest {
 		verifyEq(entity.code.scope, [Str:Obj?][:])
 		verifyEq(entity.codeScope.code,	"func() { ... }")
 		verifyEq(entity.codeScope.scope,	Str:Obj?["wot":"ever"])
-		verifyEq(entity.timestamp,	Timestamp(3sec, 69))
+		verifyEq(entity.timestamp,	Timestamp(500, 69))
 		verifyEq(entity.int,		999)
 		verifyEq(entity.minKey,		MinKey())
 		verifyEq(entity.maxKey,		MaxKey())

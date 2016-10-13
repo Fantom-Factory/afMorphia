@@ -6,7 +6,19 @@ abstract internal class MorphiaTest : Test {
 	Scope? scope
 	
 	override Void setup() {
-		scope = RegistryBuilder().addModulesFromPod("afMorphia").addModule(T_MorphiaTestModule#).build.rootScope
+		scope = RegistryBuilder() { it.suppressLogging = true }
+			.addModulesFromPod("afMorphia")
+			.addModule(T_MorphiaTestModule#)
+			.onRegistryStartup |Configuration config| {
+				config.remove("afIoc.logServices")
+				config.remove("afIoc.logBanner")
+				config.remove("afIoc.logStartupTimes")
+			}
+			.onRegistryShutdown |Configuration config| {
+				config.remove("afIoc.sayGoodbye")
+			}
+			.build
+			.rootScope
 		scope.inject(this)
 	}
 	
