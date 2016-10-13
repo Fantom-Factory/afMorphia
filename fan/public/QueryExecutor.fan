@@ -11,16 +11,21 @@ using afMongo::Index
 **   datastore.query(query).orderBy("name").findAll
 ** 
 class QueryExecutor {
+	internal static const Str	_textScoreFieldName	:= "_textScore"
+
 	private Datastore	_datastore
 	private [Str:Obj]	_query
 	private Obj?		_orderBy
 	private Int 		_skip	:= 0
 	private Int? 		_limit	:= null
+	private Bool 		_textSearch
+	
 	
 	** Creates a 'QueryExecutor' to run the given query against the datastore.
 	new make(Datastore datastore, Query query) {
 		this._datastore  = datastore
 		this._query 	 = query.toMongo(datastore)
+		this._textSearch = query._textSearch
 	}
 	
 	** Specifies a property / field to use for ordering. 
@@ -44,7 +49,7 @@ class QueryExecutor {
 		if (fieldName.startsWith("-"))		
 			((Str:Obj?) _orderBy)[fieldName[1..-1]] = "DESC"
 		else
-			((Str:Obj?) _orderBy)[fieldName] = sortOrder == Index.DESC ? "DESC" : "ASC"
+			((Str:Obj?) _orderBy)[fieldName] = (sortOrder == Index.DESC) ? "DESC" : "ASC"
 		return this
 	}
 
@@ -53,6 +58,38 @@ class QueryExecutor {
 		if (_orderBy != null && _orderBy isnot Str)
 			throw ArgErr(ErrMsgs.query_canNotMixSorts(indexName, _orderBy))
 		_orderBy = indexName
+		return this
+	}
+
+	** (Advanced)
+	** Allows you to specify your own sort document.
+	This orderByDoc(Str:Obj? sortDoc) {
+		if (_orderBy is Str)
+			throw ArgErr(ErrMsgs.query_canNotMixSorts(_orderBy, sortDoc))
+		_orderBy = sortDoc
+		return this
+	}
+
+	** When performing a text search, this orders the returned documents by search relevance.
+	** Should only be used with 'findAll()'.
+	** 
+	** Note that 'Query.textSearch()' automatically sets text score ordering. 
+	This orderByTextScore(Bool order := true) {
+		
+		if (order == true) {
+			if (_orderBy is Str)
+				throw ArgErr(ErrMsgs.query_canNotMixSorts(_orderBy, ["\$meta": "textScore"]))
+			if (_orderBy == null)
+				_orderBy = map
+			((Str:Obj?) _orderBy)[_textScoreFieldName] = ["\$meta": "textScore"]
+			_textSearch = true
+		}
+
+		if (order == false) {
+			(_orderBy as Str:Obj?)?.remove(_textScoreFieldName)
+			_textSearch = false			
+		}
+
 		return this
 	}
 	
@@ -87,7 +124,7 @@ class QueryExecutor {
 	** 
 	** @see `afMongo::Collection.findAll`
 	Obj[] findAll() {
-		_datastore.findAll(_query, _orderBy, _skip, _limit)
+		_datastore.findAll(_query, _orderBy, _skip, _limit, _textSearch ? [_textScoreFieldName : ["\$meta": "textScore"]] : null)
 	}
 	
 	** Returns the number of documents that would be returned by the query.

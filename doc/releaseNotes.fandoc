@@ -1,8 +1,10 @@
 Versions
 ********
 
-v1.1.4
+v1.2.0
 ======
+ - New: Support for Text Searching!
+ - New: 'Query.toStr()' returns something useful.
  - Bug: Passing 'null' to 'QueryCriterion.eq()' or 'QueryCriterion.notEq()' resulted in an NPE.
 
 v1.1.2

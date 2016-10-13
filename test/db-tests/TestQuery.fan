@@ -1,5 +1,6 @@
 using afIoc
 using afBson
+using afMongo::Index
 
 internal class TestQuery : MorphiaDbTest {
 	
@@ -12,6 +13,8 @@ internal class TestQuery : MorphiaDbTest {
 		ds.insert(T_Entity18("Judge",   16))
 		ds.insert(T_Entity18("Dredd",   19))
 		ds.insert(T_Entity18("Wotever", 20))
+		
+		ds.collection.index("_text_").ensure(["name":Index.TEXT], null)
 	}
 
 	// ---- Comparison Query Operators ------------------------------------------------------------
@@ -205,6 +208,12 @@ internal class TestQuery : MorphiaDbTest {
 		verifyEq(res.first.name, "Dredd")
 	}
 
+	Void testTextSearch() {
+		res := query(Query().textSearch("Dredd"))
+		verifyEq(res.size, 1)
+		verifyEq(res.first.name, "Dredd")
+	}
+	
 	// ---- Sort Tests ----------------------------------------------------------------------------
 	
 	Void testSort() {
@@ -251,13 +260,19 @@ internal class T_Entity18 {
 	
 	@Property	ObjectId	_id	:= ObjectId() 
 	@Property	Str?		name
+	@Property	Str?		summary
 	@Property	Int?		value
 
 	@Inject
 	new make(|This| in) { in(this) }
 
+	new makeText(Str name, Str summary) {
+		this.name 	 = name
+		this.summary = summary
+	}
+
 	new makeName(Str name, Int value) {
-		this.name = name
+		this.name  = name
 		this.value = value
 	}
 }

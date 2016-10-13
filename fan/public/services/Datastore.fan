@@ -77,7 +77,7 @@ const mixin Datastore {
 	** The 'sort' map, should it contain more than 1 entry, must be ordered.
 	** 
 	** @see `afMongo::Collection.findAll`
-	abstract Obj[] findAll([Str:Obj?]? query := null, Obj? sort := null, Int skip := 0, Int? limit := null)
+	abstract Obj[] findAll([Str:Obj?]? query := null, Obj? sort := null, Int skip := 0, Int? limit := null, [Str:Obj?]? projection := null)
 
 	** Returns the number of documents that would be returned by the given 'query'.
 	** 
@@ -139,8 +139,9 @@ const mixin Datastore {
 
 	// ---- Query Methods -------------------------------------------------------------------------
 	
-	** Returns a `Query` object used to build Mongo queries.
-	abstract QueryExecutor query(Query? query := null)	
+	** Use to execute the given query.
+	abstract QueryExecutor query(Query? query := null)
+
 }
 
 internal const class DatastoreImpl : Datastore {
@@ -190,8 +191,8 @@ internal const class DatastoreImpl : Datastore {
 		return (entity == null) ? null : fromMongoDoc(entity)
 	}
 
-	override Obj[] findAll([Str:Obj?]? query := null, Obj? sort := null, Int skip := 0, Int? limit := null) {
-		all := collection.findAll(query, sort, skip, limit)
+	override Obj[] findAll([Str:Obj?]? query := null, Obj? sort := null, Int skip := 0, Int? limit := null, [Str:Obj?]? projection := null) {
+		all := collection.findAll(query, sort, skip, limit, projection)
 		// ensure empty lists are correctly typed
 		list := List.make(type, all.size)
 		all.each { list.add(fromMongoDoc(it)) }
