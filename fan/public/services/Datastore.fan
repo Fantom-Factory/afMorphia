@@ -50,7 +50,7 @@ const mixin Datastore {
 	** Drops the underlying MongoDB collection.
 	** 
 	** @see `afMongo::Collection.drop`
-	abstract This drop(Bool checked := true)
+	abstract This drop(Bool force := false)
 
 	// ---- Cursor Queries ------------------------------------------------------------------------
 	
@@ -178,8 +178,8 @@ internal const class DatastoreImpl : Datastore {
 		exists && size == 0
 	}
 
-	override This drop(Bool checked := true) {
-		collection.drop(checked)
+	override This drop(Bool force := false) {
+		collection.drop(force)
 		return this
 	}
 
