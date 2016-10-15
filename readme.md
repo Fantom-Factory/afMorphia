@@ -1,7 +1,7 @@
-#Morphia v1.1.2
+#Morphia v1.2.0
 ---
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.1.2](http://img.shields.io/badge/pod-v1.1.2-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
+[![pod: v1.2.0](http://img.shields.io/badge/pod-v1.2.0-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
 ![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
 ## Overview
@@ -27,7 +27,7 @@ Install `Morphia` with the Fantom Repository Manager ( [fanr](http://fantom.org/
 
 To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan`:
 
-    depends = ["sys 1.0", ..., "afMorphia 1.1"]
+    depends = ["sys 1.0", ..., "afMorphia 1.2"]
 
 ## Documentation
 
@@ -40,7 +40,7 @@ Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fant
         C:\> mongod
         
         MongoDB starting
-        db version v2.6.5
+        db version v3.2.10
         waiting for connections on port 27017
 
 
@@ -53,7 +53,7 @@ Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fant
         
         @Entity
         class User {
-            @Property ObjectId    _id
+            @Property ObjectId   _id
             @Property Str        name
             @Property Int        age
         
@@ -73,8 +73,8 @@ Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fant
                 reg.activeScope.inject(this)
         
                 micky := User {
-                    it._id     = ObjectId()
-                    it.age    = 42
+                    it._id  = ObjectId()
+                    it.age  = 42
                     it.name = "Micky Mouse"
                 }
         
@@ -82,7 +82,7 @@ Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fant
                 datastore.insert(micky)
         
                 // ---- Read --------
-                q     := Query().field("age").eq(42)
+                q     := Query().field(User#age).eq(42)
                 mouse := (User) datastore.query(q).findOne
                 echo(mouse.name)  // --> Micky Mouse
         
@@ -118,9 +118,9 @@ Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fant
          _____ ___ ___ ___ ___
         |     | . |   | . | . |
         |_|_|_|___|_|_|_  |___|
-                      |___|1.0.8
+                      |___|1.1.0
         
-        Connected to MongoDB v3.2.8 (at mongodb://localhost:27017)
+        Connected to MongoDB v3.2.10 (at mongodb://localhost:27017)
         
         [afIoc]
            ___    __                 _____        _
@@ -142,7 +142,13 @@ Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fant
 
 ### MongoDB Connections
 
-A [Mongo Connection URL](http://docs.mongodb.org/manual/reference/connection-string/) should be contributed as an application default. This supplies the default database to connect to, along with any default user credentials. Example, in your `AppModule`:
+A [Mongo Connection URL](http://docs.mongodb.org/manual/reference/connection-string/) should be contributed as an application default. This supplies the default database to connect to, along with any default user credentials.
+
+To do so, create a `config.props` file in the root directory of your application:
+
+    afMorphia.mongoUrl = mongodb://username:password@localhost:27017/exampledb
+
+Or you can add the contribution in your `AppModule`:
 
 ```
 @Contribute { serviceType=ApplicationDefaults# }
@@ -197,7 +203,7 @@ Each `Datastore` instance is specific to an Entity type, so to inject a `Datasto
     @Inject { type=User# }
     Datastore userDatastore
 
-You can also inject Mongo `Collections` in the same manner:
+You may also inject Mongo `Collections` in the same manner:
 
     @Inject { type=User# }
     Collection userCollection
@@ -295,7 +301,7 @@ mongoDoc := datastore.toMongoDoc(micky)
 echo(mongoDoc) // --> [_id:xxxx, age:42, name:[lastName:Mouse, firstName:Micky]]
 ```
 
-Note that embedded Fantom types should *not* be annotated with `@Entity`.
+Note that embedded Fantom types need *not* be annotated with `@Entity`. The Entity facet is reserved for top level objects only.
 
 ### Custom Converters
 
