@@ -21,7 +21,7 @@ Quick Start [#quickStart]
     C:\> mongod
 
     MongoDB starting
-    db version v2.6.5
+    db version v3.2.10
     waiting for connections on port 27017
 
 2. Create a text file called 'Example.fan'
@@ -35,7 +35,7 @@ Quick Start [#quickStart]
 
     @Entity
     class User {
-        @Property ObjectId    _id
+        @Property ObjectId   _id
         @Property Str        name
         @Property Int        age
 
@@ -55,8 +55,8 @@ Quick Start [#quickStart]
             reg.activeScope.inject(this)
 
             micky := User {
-                it._id     = ObjectId()
-                it.age    = 42
+                it._id  = ObjectId()
+                it.age  = 42
                 it.name = "Micky Mouse"
             }
 
@@ -64,7 +64,7 @@ Quick Start [#quickStart]
             datastore.insert(micky)
 
             // ---- Read --------
-            q     := Query().field("age").eq(42)
+            q     := Query().field(User#age).eq(42)
             mouse := (User) datastore.query(q).findOne
             echo(mouse.name)  // --> Micky Mouse
 
@@ -100,9 +100,9 @@ Quick Start [#quickStart]
      _____ ___ ___ ___ ___
     |     | . |   | . | . |
     |_|_|_|___|_|_|_  |___|
-                  |___|1.0.8
+                  |___|1.1.0
 
-    Connected to MongoDB v3.2.8 (at mongodb://localhost:27017)
+    Connected to MongoDB v3.2.10 (at mongodb://localhost:27017)
 
     [afIoc]
        ___    __                 _____        _
@@ -127,7 +127,13 @@ Usage
 MongoDB Connections
 ===================
 A [Mongo Connection URL]`http://docs.mongodb.org/manual/reference/connection-string/` should be contributed as an application default.
-This supplies the default database to connect to, along with any default user credentials. Example, in your 'AppModule':
+This supplies the default database to connect to, along with any default user credentials.
+
+To do so, create a 'config.props' file in the root directory of your application:
+
+  afMorphia.mongoUrl = mongodb://username:password@localhost:27017/exampledb
+
+Or you can add the contribution in your 'AppModule':
 
 pre>
 syntax: fantom
@@ -201,7 +207,7 @@ Use the '@Inject.type' attribute to do this. Example:
   @Inject { type=User# }
   Datastore userDatastore
 
-You can also inject Mongo 'Collections' in the same manner:
+You may also inject Mongo 'Collections' in the same manner:
 
   syntax: fantom
 
@@ -310,7 +316,7 @@ mongoDoc := datastore.toMongoDoc(micky)
 echo(mongoDoc) // --> [_id:xxxx, age:42, name:[lastName:Mouse, firstName:Micky]]
 <pre
 
-Note that embedded Fantom types should *not* be annotated with '@Entity'.
+Note that embedded Fantom types need *not* be annotated with '@Entity'. The Entity facet is reserved for top level objects only.
 
 
 
