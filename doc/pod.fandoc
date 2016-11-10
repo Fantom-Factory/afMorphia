@@ -381,6 +381,39 @@ echo(mongoDoc) // --> [_id:xxxx, age:42, name:Micky-Mouse]
 
 
 
+Mixed Inheritance
+=================
+Sometimes you want to store a list of mixed embedded classes. Often the list is a mix of different implementations of a common superclass:
+
+pre>
+syntax: fantom
+
+@Property
+SuperClass[] allMixedUp
+
+...
+
+allMixedUp := SuperClass[
+    SubClass1(),
+    SubClass2()
+]
+<pre
+
+This works fine when saving to MongoDb, but when reading the list back Morphia doesn't know which implementation class to create for each item.
+
+To get round this, you could create your own converter class for 'SuperClass' which determines which implementation to create.
+
+Or, you could add a '@Property' to the items called '_type' that stores the implementation type. Morphia will then use this to determine which implementation type to create. The easiest way to do this is to just add the following to 'SuperClass':
+
+pre>
+syntax: fantom
+
+@Property
+Type _type := typeof
+<pre
+
+
+
 Storing Nulls in Mongo
 ======================
 When converting Fantom objects *to* Mongo, the 'ObjConverter' decides what to do if a Fantom field has the value 'null'.

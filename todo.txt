@@ -1,12 +1,7 @@
 
-For 1.1.0
+For 1.2.2
 =========
 _version -> auto optimistic locking
-
-Text search
- - http://docs.mongodb.org/manual/reference/operator/query/text/
- - check indexing and sorting and returning meta
-
 
 
 For Future

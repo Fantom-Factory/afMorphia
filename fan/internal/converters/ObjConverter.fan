@@ -33,6 +33,9 @@ const class ObjConverter : Converter {
 		mongoDoc	:= (Str:Obj?) mongoObj
 		fieldVals	:= [Field:Obj?][:]
 
+		if (mongoDoc.containsKey("_type"))
+			fantomType = Type.find(mongoDoc["_type"])
+
 		findPropertyFields(fantomType).each |field| {
 			propName := Utils.propertyName(field)
 			implType := Utils.propertyType(field)
@@ -53,6 +56,7 @@ const class ObjConverter : Converter {
 
 			fieldVals[field] = fieldVal
 		}
+		
 		return createEntity(fantomType, fieldVals)
 	}
 	
@@ -88,9 +92,9 @@ const class ObjConverter : Converter {
 		entityType.fields.findAll { it.hasFacet(Property#) }
 	}
 	
-	** Creates an Entity instance using [BeanFactory]`afBeanUtils::BeanFactory`.
+	** Creates an Entity instance using IoC. 
 	** 
-	** Override if you prefer your entities to be autobuilt by IoC.
+	** Override if you prefer your entities to be built by [BeanFactory]`afBeanUtils::BeanFactory`.
 	virtual Obj? createEntity(Type type, Field:Obj? fieldVals) {
 		activeScope().build(type, null, fieldVals)
 	}
