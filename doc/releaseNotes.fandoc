@@ -1,6 +1,10 @@
 Versions
 ********
 
+v1.2.2
+======
+ - New: Mixed inheritance support via '_type' properties.
+
 v1.2.0
 ======
  - New: Support for Text Searching!
