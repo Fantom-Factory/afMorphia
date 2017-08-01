@@ -8,11 +8,10 @@ class Build : BuildPod {
 		version = Version("1.2.1")
 
 		meta = [
-			"pod.dis"			: "Morphia",
-			"pod.displayName"	: "Morphia",
-			"afIoc.module"		: "afMorphia::MorphiaModule",
-			"repo.tags"			: "database",
-			"repo.public"		: "true"
+			"pod.dis"		: "Morphia",
+			"afIoc.module"	: "afMorphia::MorphiaModule",
+			"repo.tags"		: "database",
+			"repo.public"	: "true"
 		]
 
 		index	= [	"afIoc.module"	: "afMorphia::MorphiaModule" ]

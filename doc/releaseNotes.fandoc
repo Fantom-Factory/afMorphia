@@ -1,9 +1,7 @@
-Versions
-********
-
 v1.2.2
 ======
  - New: Mixed inheritance support via '_type' properties.
+ - Chg: 'Queries' mixin is now non-const.
 
 v1.2.0
 ======
