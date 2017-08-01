@@ -14,9 +14,9 @@
 **         ])
 **     }
 ** <pre
-const mixin Queries {
+mixin Queries {
 
-	** Returns an instance of 'Queries'. Use when you'd rather not inherit from 'Queries'.
+	** Returns a singleton instance of 'Queries'. Use when you'd rather not inherit from 'Queries'.
 	** 
 	** pre>
 	** syntax: fantom
@@ -29,11 +29,11 @@ const mixin Queries {
 	**     ])
 	** }
 	** <pre
-	static new makeInstance() {
-		instance
+	static new instance() {
+		instanceRef
 	}
 	
-	private static const Queries instance := QueriesImpl()
+	private static const QueriesImpl instanceRef := QueriesImpl()
 	
 	// ---- Comparison Query Operators ------------------------------------------------------------
 	
