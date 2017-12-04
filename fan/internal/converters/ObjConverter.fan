@@ -36,6 +36,8 @@ const class ObjConverter : Converter {
 		if (mongoDoc.containsKey("_type"))
 			fantomType = Type.find(mongoDoc["_type"])
 
+		// TODO optionally throw an Err if we have unmapped Mongo data 
+		
 		findPropertyFields(fantomType).each |field| {
 			propName := Utils.propertyName(field)
 			implType := Utils.propertyType(field)
