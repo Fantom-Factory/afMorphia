@@ -225,10 +225,15 @@ Standard Converters
 By default, 'Morphia' provides support and converters for the following Fantom types:
 
 pre>
+        null
 afBson::Binary
+afBson::Code
+afBson::MaxKey
+afBson::MinKey
+afBson::ObjectId
+afBson::Timestamp
    sys::Bool
    sys::Buf
-afBson::Code
    sys::Date
    sys::DateTime
    sys::Decimal
@@ -241,19 +246,14 @@ afBson::Code
    sys::List
    sys::Locale
    sys::Map
-afBson::MaxKey
    sys::Method
    sys::MimeType
-afBson::MinKey
-        null
-afBson::ObjectId
    sys::Regex
    sys::Range
    sys::Slot
    sys::Str
    sys::Time
    sys::TimeZone
-afBson::Timestamp
    sys::Type
    sys::Unit
    sys::Uri
