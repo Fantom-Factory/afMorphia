@@ -1,7 +1,7 @@
 using afBeanUtils::ReflectUtils
-using afIoc
-using afBson
-using afMongo
+using afIoc::Inject
+using afIoc::Scope
+using afBson::ObjectId
 
 ** The main converter for MongoDB documents. 
 ** 

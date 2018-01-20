@@ -1,6 +1,5 @@
-using afIoc
+using afIoc::Inject
 using afBson
-using afMongo
 
 internal class TestLiteralsInDb : MorphiaDbTest {
 	

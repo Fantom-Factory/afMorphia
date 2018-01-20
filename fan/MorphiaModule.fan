@@ -3,8 +3,8 @@ using afIocConfig
 using afBson
 using afMongo
 using afConcurrent
-using inet
-using concurrent
+using concurrent::Actor
+using concurrent::ActorPool
 
 ** The [IoC]`pod:afIoc` module class.
 ** 

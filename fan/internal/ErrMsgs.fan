@@ -1,4 +1,4 @@
-using afBeanUtils
+using afBeanUtils::TypeCoercer
 
 internal const mixin ErrMsgs {
 

@@ -1,5 +1,5 @@
-using afIoc
-using afMongo
+using afIoc::Inject
+using afMongo::Database
 
 internal class MorphiaDbTest : MorphiaTest {
 	

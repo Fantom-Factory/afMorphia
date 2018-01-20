@@ -1,4 +1,3 @@
-using afIoc
 using afIocConfig::Config
 using afBson::ObjectId
 
