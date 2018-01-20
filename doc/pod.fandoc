@@ -1,4 +1,4 @@
-Overview
+_Overview
 ********
 Morphia is a Fantom to MongoDB object mapping library.
 
@@ -501,6 +501,32 @@ query := q.and([
 
 Which is much easier to construct, understand, and debug.
 Plus the autocomplete nature of IDEs such as [F4]`http://www.xored.com/products/f4/` means you don't have to constantly consult the [Mongo documentation]`http://docs.mongodb.org/manual/reference/method/db.collection.find/`!
+
+
+
+Optimistic Locking
+******************
+Think of the following scenario:
+
+ 1. User A reads an entity
+ 2. User B reads the same entity
+ 3. User B saves their entity
+ 4. User A saves their entity
+
+Here, User A has just overwritten all User B's changes. To prevent this, Morphia supports optimistic locking.
+
+Optimistic locking is where an entity has a special '_version' integer property which is incremented everytime an entity is saved. If you attempt to save an entity that has a different '_version' property to what's in the database (presumably because your entity is out of date) then Morphia throws an 'OptimisticLockErr'.
+
+To use, just define an 'Int _version' field property on your top level entity:
+
+pre>
+syntax: fantom
+
+@Property
+Int _version
+<pre
+
+On a successful save. and if the field is non-const, 'Datastore.update()' will increment the '_version' field on the entity so you may re-save it again without having to re-read it from the database.
 
 
 

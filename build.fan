@@ -19,7 +19,6 @@ class Build : BuildPod {
 		depends = [
 			"sys        1.0.69 - 1.0", 
 			"concurrent 1.0.69 - 1.0",	// for contributing an ActorPool 
-			"inet       1.0.69 - 1.0", 
 			
 			// ---- Core ------------------------
 			"afBeanUtils  1.0.8  - 1.0",
@@ -29,7 +28,7 @@ class Build : BuildPod {
 
 			// ---- Mongo -----------------------
 			"afBson  1.1.0 - 1.1",
-			"afMongo 1.1.0 - 1.1"
+			"afMongo 1.1.5 - 1.1"	// *****
 		]
 		
 		srcDirs = [`fan/`, `fan/internal/`, `fan/internal/converters/`, `fan/public/`, `fan/public/services/`, `test/`, `test/db-tests/`, `test/unit-tests/`, `test/unit-tests/converters/`]

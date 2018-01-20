@@ -1,7 +1,8 @@
 using afBeanUtils::NotFoundErr
 using afBeanUtils::ReflectUtils
-using afIoc
-using afMongo
+using afIoc::Inject
+using afMongo::Collection
+using afMongo::Database
 
 ** (Service) -
 ** Wraps a MongoDB [Collection]`afMongo::Collection`, converting Fantom entities to / from Mongo documents.
@@ -114,6 +115,9 @@ const mixin Datastore {
 	** Updates the given entity.
 	** Throws 'MorphiaErr' if 'checked' and nothing was updated. 
 	** 
+	** Will always throw 'OptimisticLockErr' if the entity contains a '_version' field which doesn't match what's in the 
+	** database. On a successful save, this will increment the '_version' field on the entity.
+	** 
 	** @see `afMongo::Collection.update`
 	abstract Void update(Obj entity, Bool? upsert := false, Bool checked := true)
 
@@ -154,19 +158,32 @@ internal const class DatastoreImpl : Datastore {
 	@Inject
 	private const Converters	converters
 	private const Field 		idField
+	private const Field? 		versionField
 	
 	internal new make(Type type, Database database, |This|in) {
 		in(this)
 
+		// try to use the ObjConverter hook to find property fields
+		fields := (Field[]?) (converters.get(Obj#) as ObjConverter)?.findPropertyFields(type)
+		if (fields == null)
+			fields = type.fields.findAll { it.hasFacet(Property#) }
+		
 		this.collection	= Collection(database, Utils.entityName(type))
-		this.type		= verifyEntityType(type)
+		this.type		= verifyEntityType(fields, type)
 		this.qname		= collection.qname
 		this.name		= collection.name
-		this.idField	= type.fields.findAll { it.hasFacet(Property#) }.find |field->Bool| {
+		
+		this.idField	= fields.find |field->Bool| {
 			property := (Property) field.facet(Property#)
 			return field.name == "_id" || property.name == "_id"
 		} ?: throw IdNotFoundErr(ErrMsgs.datastore_idFieldNotFound(type), propertyNames(type))
 
+		this.versionField = fields.find |field->Bool| {
+			property := (Property) field.facet(Property#)
+			return field.name == "_version" || property.name == "_version"
+		}
+		if (versionField != null && !versionField.type.fits(Int#))
+			throw Err(ErrMsgs.datastore_versionFieldNotInt(versionField))
 	}
 
 	// ---- Collection ----------------------------------------------------------------------------
@@ -240,14 +257,39 @@ internal const class DatastoreImpl : Datastore {
 	override Void update(Obj entity, Bool? upsert := false, Bool checked := true) {
 		if (!entity.typeof.fits(type))
 			throw ArgErr(ErrMsgs.datastore_entityWrongType(entity.typeof, type))
-		id := idField.get(entity)
-		mongId := toMongo(id)
-		noOfUpdates := collection.update(["_id" : mongId], toMongoDoc(entity), false, upsert)
-		if (noOfUpdates == 0 && upsert == false && checked) {
-			// Mongo reports zero updates if the given document hasn't changed,
-			// as this isn't an error let it slide...
-			if (collection.get(mongId, false) == null)
+		id		:= idField.get(entity)
+		mongId	:= toMongo(id)
+		
+		if (versionField == null) {
+			result := collection.update(["_id" : mongId], toMongoDoc(entity), false, upsert)
+			noOfMatches := result["n"]
+			if (noOfMatches == 0 && checked)
 				throw MorphiaErr(ErrMsgs.datastore_entityNotFound(type, mongId))
+			
+		} else {
+			// use the $inc command as oppose to setting the _version field in Fantom
+			// because the entity may be const
+			version	:= (Int) versionField.get(entity)
+			result	:= collection.update(["_id" : mongId, "_version" : version], [
+				"\$set" : toMongoDoc(entity) { remove("_version") },
+				"\$inc" : ["_version" : 1]
+			], false, upsert)
+			noOfMatches := result["n"]
+	
+			if (noOfMatches == 0) {
+				// determine which err we're gonna throw, if any
+				// always throw an optimistic locking err - that's what the _version is for!
+				// to 'force' a save, drop down to Mongo collections.
+				if (collection.get(mongId, false) != null)
+					throw OptimisticLockErr(ErrMsgs.datastore_optimisticLock(type, mongId), type, version)
+				if (checked)
+					throw MorphiaErr(ErrMsgs.datastore_entityNotFound(type, mongId))
+				return
+			}
+			
+			// if all okay, attempt to inc the _version in the entity
+			if (!versionField.isConst)
+				versionField.set(entity, version+1)
 		}
 	}
 
@@ -280,9 +322,7 @@ internal const class DatastoreImpl : Datastore {
 	
 	// ---- Helper Methods ------------------------------------------------------------------------
 	
-	internal Type verifyEntityType(Type type) {
-		// try to use the ObjConverter hook to find property fields
-		fields := (Field[]?) (converters.get(Obj#) as ObjConverter)?.findPropertyFields(type)
+	internal Type verifyEntityType(Field[]? fields, Type type) {
 		
 		// if null, we can't be sure what fields are valid, so skip validation
 		if (fields == null)
@@ -306,6 +346,10 @@ internal const class DatastoreImpl : Datastore {
 			property := (Property) field.facet(Property#)
 			return property.name ?: field.name			
 		}
+	}
+	
+	override Str toStr() {
+		"MongoDB Datastore for ${type.qname}"
 	}
 }
 
