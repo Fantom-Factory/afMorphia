@@ -27,7 +27,11 @@ internal const mixin ErrMsgs {
 	}
 
 	static Str datastore_entityNotFound(Type entityType, Obj id) {
-		stripSys("Could not find entity ${entityType.qname} with Id: ${id}")
+		stripSys("Could not find entity ${entityType.qname} with ID: ${id}")
+	}
+
+	static Str datastore_optimisticLock(Type entityType, Obj id) {
+		stripSys("A newer version of ${entityType.qname} already exists, with ID ${id}")
 	}
 
 	static Str datastore_nothingUpdated(Str:Obj? query) {
@@ -36,6 +40,10 @@ internal const mixin ErrMsgs {
 
 	static Str datastore_idFieldNotFound(Type entityType) {
 		stripSys("Could not find property named '_id' on ${entityType.qname}.")
+	}
+
+	static Str datastore_versionFieldNotInt(Field field) {
+		stripSys("_version field must be of type Int - ${field.qname} -> ${field.type.qname}")
 	}
 
 	static Str datastore_idDoesNotFit(Obj id, Field idField) {

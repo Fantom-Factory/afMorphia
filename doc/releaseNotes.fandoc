@@ -1,5 +1,6 @@
 v1.2.2
 ======
+ - New: Support for optimistic locking via '_version' properties.
  - New: Mixed inheritance support via '_type' properties.
  - Chg: 'Queries' mixin is now non-const.
 

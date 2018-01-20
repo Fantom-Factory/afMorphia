@@ -1,9 +1,4 @@
 
-For 1.2.2
-=========
-_version -> auto optimistic locking
-
-
 For Future
 ==========
 Have a builder for update and find&update ops:
