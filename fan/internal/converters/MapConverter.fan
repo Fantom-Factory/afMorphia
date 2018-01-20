@@ -1,7 +1,7 @@
 using afBeanUtils::TypeCoercer
 using afBeanUtils::BeanFactory
-using afIoc
-using afBson
+using afIoc::Inject
+using afBson::BsonType
 
 @NoDoc
 const class MapConverter : Converter {

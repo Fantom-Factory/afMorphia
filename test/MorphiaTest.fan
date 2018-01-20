@@ -1,5 +1,8 @@
-using afIoc
-using afIocConfig
+using afIoc::RegistryBuilder
+using afIoc::Scope
+using afIoc::Contribute
+using afIoc::Configuration
+using afIocConfig::ApplicationDefaults
 
 abstract internal class MorphiaTest : Test {
 

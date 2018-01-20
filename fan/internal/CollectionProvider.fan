@@ -1,5 +1,8 @@
-using afIoc
-using afMongo
+using afIoc::DependencyProvider
+using afIoc::Inject
+using afIoc::InjectionCtx
+using afIoc::Scope
+using afMongo::Collection
 
 internal const class CollectionProvider : DependencyProvider {
 	

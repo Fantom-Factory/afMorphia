@@ -1,5 +1,6 @@
-using afIoc
-using afBson
+using afIoc::Inject
+using afBson::ObjectId
+using afBson::Code
 using afMongo::Index
 
 internal class TestQuery : MorphiaDbTest {

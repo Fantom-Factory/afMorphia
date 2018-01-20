@@ -1,4 +1,4 @@
-using afIoc
+using afIoc::IocErr
 
 internal class TestDatastore : MorphiaTest {
 	

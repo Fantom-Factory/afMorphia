@@ -1,6 +1,6 @@
-using afIoc
-using afIocConfig
-using afMongo
+using afIocConfig::Config
+using afMongo::Collection
+using afMongo::Database
 
 ** (Service) - 
 ** Creates sequential sequences of 'Ints' as an alternative to using BSON 'ObjectIds'.

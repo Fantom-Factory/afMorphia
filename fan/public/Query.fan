@@ -1,4 +1,4 @@
-using afBson
+using afBson::Code
 using afMongo::PrettyPrinter
 
 ** A means to build Mongo queries with sane objects and methods. (And not some incomprehensible mess of nested maps and lists!)

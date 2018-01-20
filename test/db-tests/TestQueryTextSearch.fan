@@ -1,5 +1,4 @@
-using afIoc
-using afBson
+using afIoc::Inject
 using afMongo::Index
 
 internal class TestQueryTextSearch : MorphiaDbTest {

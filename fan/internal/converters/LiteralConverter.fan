@@ -1,4 +1,4 @@
-using afBson
+using afBson::Binary
 
 ** Mongo literals pass straight through, as they're understood by the MongoDB driver.
 internal const class LiteralConverter : Converter {

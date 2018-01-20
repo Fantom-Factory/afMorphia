@@ -1,6 +1,6 @@
-using afIoc
-using afIocConfig
-using afMongo
+using afIoc::Inject
+using afIoc::Scope
+using afMongo::Database
 
 ** (Service) - 
 ** The main entry point into Morphia.

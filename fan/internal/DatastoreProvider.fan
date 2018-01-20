@@ -1,4 +1,7 @@
-using afIoc
+using afIoc::DependencyProvider
+using afIoc::Inject
+using afIoc::InjectionCtx
+using afIoc::Scope
 
 internal const class DatastoreProvider : DependencyProvider {
 	

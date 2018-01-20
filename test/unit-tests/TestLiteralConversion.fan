@@ -1,4 +1,4 @@
-using afIoc
+using afIoc::Inject
 using afBson
 
 internal class TestLiteralConversion : MorphiaTest {

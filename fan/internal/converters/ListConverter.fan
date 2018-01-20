@@ -1,5 +1,5 @@
-using afIoc
-using afBson
+using afIoc::Inject
+using afBson::BsonType
 
 @NoDoc
 const class ListConverter : Converter {

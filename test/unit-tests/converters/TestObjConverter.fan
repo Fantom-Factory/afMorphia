@@ -1,4 +1,3 @@
-using afIoc
 
 internal class TestDocumentConverter : MorphiaTest {
 	
