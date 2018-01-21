@@ -1,37 +1,42 @@
-#Morphia v1.2.0
+#Morphia v1.2.2
 ---
-[![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom.org/)
-[![pod: v1.2.0](http://img.shields.io/badge/pod-v1.2.0-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
-![Licence: MIT](http://img.shields.io/badge/licence-MIT-blue.svg)
 
-## Overview
-
-Morphia is a Fantom to MongoDB object mapping library.
-
-Morphia is an extension to the [Mongo](http://pods.fantomfactory.org/pods/afMongo) library that maps Fantom objects and their fields to and from MongoDB collections and documents.
-
-Morphia features include:
-
-- All Fantom literals and [BSON](http://pods.fantomfactory.org/pods/afBson) types supported by default,
-- Support for embedded / nested Fantom objects,
-- Extensible mapping - add custom Fantom <-> Mongo converters,
-- Query Builder API.
-
-Note: Morphia has no association with [Morphia - the Java to MongoDB mapping library](https://github.com/mongodb/morphia/wiki). Well, except for the name of course!
+[![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](http://fantom-lang.org/)
+[![pod: v1.2.2](http://img.shields.io/badge/pod-v1.2.2-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
+![Licence: ISC Licence](http://img.shields.io/badge/licence-ISC Licence-blue.svg)
 
 ## Install
 
-Install `Morphia` with the Fantom Repository Manager ( [fanr](http://fantom.org/doc/docFanr/Tool.html#install) ):
+Install `Morphia` with the Fantom Pod Manager ( [FPM](http://eggbox.fantomfactory.org/pods/afFpm) ):
 
-    C:\> fanr install -r http://pods.fantomfactory.org/fanr/ afMorphia
+    C:\> fpm install afMorphia
 
-To use in a [Fantom](http://fantom.org/) project, add a dependency to `build.fan`:
+Or install `Morphia` with [fanr](http://fantom.org/doc/docFanr/Tool.html#install):
+
+    C:\> fanr install -r http://eggbox.fantomfactory.org/fanr/ afMorphia
+
+To use in a [Fantom](http://fantom-lang.org/) project, add a dependency to `build.fan`:
 
     depends = ["sys 1.0", ..., "afMorphia 1.2"]
 
 ## Documentation
 
-Full API & fandocs are available on the [Fantom Pod Repository](http://pods.fantomfactory.org/pods/afMorphia/).
+Full API & fandocs are available on the [Eggbox](http://eggbox.fantomfactory.org/pods/afMorphia/) - the Fantom Pod Repository.
+
+## _Overview
+
+Morphia is a Fantom to MongoDB object mapping library.
+
+Morphia is an extension to the [Mongo](http://eggbox.fantomfactory.org/pods/afMongo) library that maps Fantom objects and their fields to and from MongoDB collections and documents.
+
+Morphia features include:
+
+- All Fantom literals and [BSON](http://eggbox.fantomfactory.org/pods/afBson) types supported by default,
+- Support for embedded / nested Fantom objects,
+- Extensible mapping - add custom Fantom <-> Mongo converters,
+- Query Builder API.
+
+Note: Morphia has no association with [Morphia - the Java to MongoDB mapping library](https://github.com/mongodb/morphia/wiki). Well, except for the name of course!
 
 ## Quick Start
 
@@ -157,20 +162,20 @@ static Void contributeAppDefaults(Configuration config) {
 }
 ```
 
-`Morphia` uses the connection URL to create a pooled [ConnectionManager](http://pods.fantomfactory.org/pods/afMongo/api/ConnectionManagerPooled). The `ConnectionManager`, and all of its connections, are gracefully closed when IoC / BedSheet is shutdown.
+`Morphia` uses the connection URL to create a pooled [ConnectionManager](http://eggbox.fantomfactory.org/pods/afMongo/api/ConnectionManagerPooled). The `ConnectionManager`, and all of its connections, are gracefully closed when IoC / BedSheet is shutdown.
 
 Some connection URL options are supported:
 
 - `mongodb://username:password@example1.com/database?maxPoolSize=50`
 - `mongodb://example2.com?minPoolSize=10&maxPoolSize=25`
 
-See [ConnectionManagerPooled](http://pods.fantomfactory.org/pods/afMongo/api/ConnectionManagerPooled) for more details.
+See [ConnectionManagerPooled](http://eggbox.fantomfactory.org/pods/afMongo/api/ConnectionManagerPooled) for more details.
 
 ### Entities
 
 An entity is a top level domain object that is persisted in a MongoDB collection.
 
-Entity objects must be annotated with the [@Entity](http://pods.fantomfactory.org/pods/afMorphia/api/Entity) facet. By default the MongoDB collection name is the same as the (unqualified) entity type name. Example, if your entity type is `acmeExample::User` then it maps to a Mongo collection named `User`. This may be overriden by providing a value for the `@Entity.name` attribute.
+Entity objects must be annotated with the [@Entity](http://eggbox.fantomfactory.org/pods/afMorphia/api/Entity) facet. By default the MongoDB collection name is the same as the (unqualified) entity type name. Example, if your entity type is `acmeExample::User` then it maps to a Mongo collection named `User`. This may be overriden by providing a value for the `@Entity.name` attribute.
 
 Entity fields are mapped to properties in a MongoDB document. Use the `@Property` facet to mark fields that should be mapped to / from a Mongo property. Again, the default is to take the property name and type from the field, but it may be overridden by facet values.
 
@@ -196,7 +201,7 @@ Note that a Mongo Id *does not* need to be an `ObjectId`. Any object may be used
 
 ### Datastore
 
-A [Datastore](http://pods.fantomfactory.org/pods/afMorphia/api/Datastore) wraps a [Mongo Collection](http://pods.fantomfactory.org/pods/afMongo/api/Collection) and is your gateway to saving and reading Fantom objects to / from the MongoDB.
+A [Datastore](http://eggbox.fantomfactory.org/pods/afMorphia/api/Datastore) wraps a [Mongo Collection](http://eggbox.fantomfactory.org/pods/afMongo/api/Collection) and is your gateway to saving and reading Fantom objects to / from the MongoDB.
 
 Each `Datastore` instance is specific to an Entity type, so to inject a `Datastore` you need to specify which Entity it is associated with. Use the `@Inject.type` attribute to do this. Example:
 
@@ -210,17 +215,22 @@ You may also inject Mongo `Collections` in the same manner:
 
 ## Mapping
 
-At the core of `Morphia` is a suite of [Converters](http://pods.fantomfactory.org/pods/afMorphia/api/Converter) that map Fantom objects to Mongo documents.
+At the core of `Morphia` is a suite of [Converters](http://eggbox.fantomfactory.org/pods/afMorphia/api/Converter) that map Fantom objects to Mongo documents.
 
 ### Standard Converters
 
 By default, `Morphia` provides support and converters for the following Fantom types:
 
 ```
+        null
 afBson::Binary
+afBson::Code
+afBson::MaxKey
+afBson::MinKey
+afBson::ObjectId
+afBson::Timestamp
    sys::Bool
    sys::Buf
-afBson::Code
    sys::Date
    sys::DateTime
    sys::Decimal
@@ -233,19 +243,14 @@ afBson::Code
    sys::List
    sys::Locale
    sys::Map
-afBson::MaxKey
    sys::Method
    sys::MimeType
-afBson::MinKey
-        null
-afBson::ObjectId
    sys::Regex
    sys::Range
    sys::Slot
    sys::Str
    sys::Time
    sys::TimeZone
-afBson::Timestamp
    sys::Type
    sys::Unit
    sys::Uri
@@ -355,6 +360,33 @@ mongoDoc := datastore.toMongoDoc(micky)
 echo(mongoDoc) // --> [_id:xxxx, age:42, name:Micky-Mouse]
 ```
 
+### Mixed Inheritance
+
+Sometimes you want to store a list of mixed embedded classes. Often the list is a mix of different implementations of a common superclass:
+
+```
+@Property
+SuperClass[] allMixedUp
+
+...
+
+allMixedUp := SuperClass[
+    SubClass1(),
+    SubClass2()
+]
+```
+
+This works fine when saving to MongoDb, but when reading the list back Morphia doesn't know which implementation class to create for each item.
+
+To get round this, you could create your own converter class for `SuperClass` which determines which implementation to create.
+
+Or, you could add a `@Property` to the items called `_type` that stores the implementation type. Morphia will then use this to determine which implementation type to create. The easiest way to do this is to just add the following to `SuperClass`:
+
+```
+@Property
+Type _type := typeof
+```
+
 ### Storing Nulls in Mongo
 
 When converting Fantom objects *to* Mongo, the `ObjConverter` decides what to do if a Fantom field has the value `null`. Should it store a key in the MongoDb with a `null` value, or should it not store the key at all?
@@ -389,11 +421,11 @@ query := [
 ]
 ```
 
-For that reason Morphia provides a means to build and execute [Query](http://pods.fantomfactory.org/pods/afMorphia/api/Query) objects that rely on more meaningful method names. The simple example may be re-written as:
+For that reason Morphia provides a means to build and execute [Query](http://eggbox.fantomfactory.org/pods/afMorphia/api/Query) objects that rely on more meaningful method names. The simple example may be re-written as:
 
     query := Query().field("age").eq(42)
 
-Use a [QueryExecutor](http://pods.fantomfactory.org/pods/afMorphia/api/QueryExecutor) as returned from the `Datastore.query(...)` method to run the query.
+Use a [QueryExecutor](http://eggbox.fantomfactory.org/pods/afMorphia/api/QueryExecutor) as returned from the `Datastore.query(...)` method to run the query.
 
     datastore.query(query).findAll
 
@@ -412,7 +444,7 @@ query := Query().and([
 ])
 ```
 
-The [Queries](http://pods.fantomfactory.org/pods/afMorphia/api/Queries) mixin squirrels away common Query constructors into their own methods. Tip: Create a simple `q()` method to minimise code:
+The [Queries](http://eggbox.fantomfactory.org/pods/afMorphia/api/Queries) mixin squirrels away common Query constructors into their own methods. Tip: Create a simple `q()` method to minimise code:
 
 ```
 Queries q() { Queries() }
@@ -426,6 +458,28 @@ query := q.and([
 ```
 
 Which is much easier to construct, understand, and debug. Plus the autocomplete nature of IDEs such as [F4](http://www.xored.com/products/f4/) means you don't have to constantly consult the [Mongo documentation](http://docs.mongodb.org/manual/reference/method/db.collection.find/)!
+
+## Optimistic Locking
+
+Think of the following scenario:
+
+1. User A reads an entity
+2. User B reads the same entity
+3. User B saves their entity
+4. User A saves their entity
+
+Here, User A has just overwritten all User B's changes. To prevent this, Morphia supports optimistic locking.
+
+Optimistic locking is where an entity has a special `_version` integer property which is incremented everytime an entity is saved. If you attempt to save an entity that has a different `_version` property to what's in the database (presumably because your entity is out of date) then Morphia throws an `OptimisticLockErr`.
+
+To use, just define an `Int _version` field property on your top level entity:
+
+```
+@Property
+Int _version
+```
+
+On a successful save. and if the field is non-const, `Datastore.update()` will increment the `_version` field on the entity so you may re-save it again without having to re-read it from the database.
 
 ## Testing
 
