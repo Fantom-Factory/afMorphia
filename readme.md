@@ -5,6 +5,21 @@
 [![pod: v1.2.2](http://img.shields.io/badge/pod-v1.2.2-yellow.svg)](http://www.fantomfactory.org/pods/afMorphia)
 ![Licence: ISC Licence](http://img.shields.io/badge/licence-ISC Licence-blue.svg)
 
+## Overview
+
+Morphia is a Fantom to MongoDB object mapping library.
+
+Morphia is an extension to the [Mongo](http://eggbox.fantomfactory.org/pods/afMongo) library that maps Fantom objects and their fields to and from MongoDB collections and documents.
+
+Morphia features include:
+
+- All Fantom literals and [BSON](http://eggbox.fantomfactory.org/pods/afBson) types supported by default,
+- Support for embedded / nested Fantom objects,
+- Extensible mapping - add custom Fantom <-> Mongo converters,
+- Query Builder API.
+
+Note: Morphia has no association with [Morphia - the Java to MongoDB mapping library](https://github.com/mongodb/morphia/wiki). Well, except for the name of course!
+
 ## Install
 
 Install `Morphia` with the Fantom Pod Manager ( [FPM](http://eggbox.fantomfactory.org/pods/afFpm) ):
@@ -22,21 +37,6 @@ To use in a [Fantom](http://fantom-lang.org/) project, add a dependency to `buil
 ## Documentation
 
 Full API & fandocs are available on the [Eggbox](http://eggbox.fantomfactory.org/pods/afMorphia/) - the Fantom Pod Repository.
-
-## _Overview
-
-Morphia is a Fantom to MongoDB object mapping library.
-
-Morphia is an extension to the [Mongo](http://eggbox.fantomfactory.org/pods/afMongo) library that maps Fantom objects and their fields to and from MongoDB collections and documents.
-
-Morphia features include:
-
-- All Fantom literals and [BSON](http://eggbox.fantomfactory.org/pods/afBson) types supported by default,
-- Support for embedded / nested Fantom objects,
-- Extensible mapping - add custom Fantom <-> Mongo converters,
-- Query Builder API.
-
-Note: Morphia has no association with [Morphia - the Java to MongoDB mapping library](https://github.com/mongodb/morphia/wiki). Well, except for the name of course!
 
 ## Quick Start
 
