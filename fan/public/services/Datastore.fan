@@ -267,13 +267,10 @@ internal const class DatastoreImpl : Datastore {
 				throw MorphiaErr(ErrMsgs.datastore_entityNotFound(type, mongId))
 			
 		} else {
-			// use the $inc command as oppose to setting the _version field in Fantom
-			// because the entity may be const
+			// don't user $inc & $set because then we have to $unset all the null fields!
 			version	:= (Int) versionField.get(entity)
-			result	:= collection.update(["_id" : mongId, "_version" : version], [
-				"\$set" : toMongoDoc(entity) { remove("_version") },
-				"\$inc" : ["_version" : 1]
-			], false, upsert)
+			toMongo := toMongoDoc(entity).set("_version", version + 1)
+			result	:= collection.update(["_id" : mongId, "_version" : version], toMongo, false, upsert)
 			noOfMatches := result["n"]
 	
 			if (noOfMatches == 0) {
