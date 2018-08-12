@@ -1,3 +1,7 @@
+v1.2.4
+======
+ - Chg: Removed internal references to 'DatastoreImpl' so 'Datastore' may be decoratored. (See upcoming *Dirty Cash*!)
+
 v1.2.2
 ======
  - New: Support for optimistic locking via '_version' properties.
