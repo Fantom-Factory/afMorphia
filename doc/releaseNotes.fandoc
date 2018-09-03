@@ -1,5 +1,6 @@
 v1.2.4
 ======
+ - New: 'Datastore.deleteAll()' convenience method.
  - Chg: Removed internal references to 'DatastoreImpl' so 'Datastore' may be decoratored. (See upcoming *Dirty Cash*!)
 
 v1.2.2

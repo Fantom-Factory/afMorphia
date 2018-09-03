@@ -50,6 +50,8 @@ const mixin Datastore {
 
 	** Drops the underlying MongoDB collection.
 	**
+	** Note that deleting all documents is MUCH quicker than dropping the Collection. See `deleteAll` for details.
+	** 
 	** @see `afMongo::Collection.drop`
 	abstract This drop(Bool force := false)
 
@@ -112,6 +114,11 @@ const mixin Datastore {
 	** @see `afMongo::Collection.delete`
 	abstract Void deleteById(Obj id, Bool checked := true)
 
+	** Deletes all entities in the Datastore. Returns the number of entities deleted.
+	** 
+	** Note this is MUCH quicker than dropping the Collection.
+	abstract Int deleteAll()
+	
 	** Updates the given entity.
 	** Throws 'MorphiaErr' if 'checked' and nothing was updated.
 	**
@@ -256,6 +263,10 @@ internal const class DatastoreImpl : Datastore {
 		n := collection.delete(["_id" : mongId], false)
 		if (checked && n != 1)
 			throw MorphiaErr(ErrMsgs.datastore_entityNotFound(type, id))
+	}
+	
+	override Int deleteAll() {
+		collection.deleteAll
 	}
 
 	override Void update(Obj entity, Bool? upsert := false, Bool checked := true) {
