@@ -1,3 +1,4 @@
+using afBeanUtils::ReflectUtils
 
 ** Marks a type to be mapped as a top level document in a MongoDB collection.
 @FacetMeta { inherited = true }
@@ -30,4 +31,62 @@ facet class Property {
 	** 
 	** This is most useful for saving marker booleans and to avoid saving empty lists and maps.
 	const Obj? defVal
+}
+
+** Holds resolved '@Property' values.
+@NoDoc
+const mixin PropertyData {
+	
+	** The backing storage field.
+	abstract	Field	field()
+	
+	** Name of the MongoDB object key this field maps to.
+	abstract	Str 	name()
+	
+	** The implementation 'Type' to be instantiated.
+	abstract	Type	type()
+	
+	** The default values that maps to 'null'.
+	abstract	Obj?	defVal()
+
+	** Returns the field's value on the given instance.
+	virtual Obj? val(Obj obj) {
+		field.get(obj)
+	}
+	
+	** Creates a 'PropertyData' instance from a 'Field' - must have the '@Property' facet.
+	static new make(Field propertyField) {
+		PropertyDataField(propertyField)
+	}
+}
+
+internal const class PropertyDataField : PropertyData {
+	override const Field	field
+	override const Str		name
+	override const Type		type
+	override const Obj?		defVal
+	
+	new make(Field field) {
+		property := (Property) field.facet(Property#, true)
+		this.field	= field
+		this.name	= property.name		?: field.name
+		this.type	= property.implType	?: field.type
+		this.defVal	= property.defVal
+		
+		if (!ReflectUtils.fits(type, field.type))
+			throw MorphiaErr(ErrMsgs.datastore_facetTypeDoesNotFitField(type, field))
+
+		// ReflectUtils.fits is too lenient for our purposes here 
+		if (defVal is List && ((List) defVal).isEmpty && !defVal.typeof.fits(field.type))
+			defVal = field.type.params["V"].emptyList
+
+		// ReflectUtils.fits is too lenient for our purposes here 
+		if (defVal is Map && ((Map) defVal).isEmpty && !defVal.typeof.fits(field.type))
+			defVal = Map.make(field.type)
+		
+		if (defVal != null && !ReflectUtils.fits(defVal.typeof, field.type))
+			throw MorphiaErr(ErrMsgs.datastore_facetDefValDoesNotFitField(defVal.typeof, field))
+	}
+	
+	override Str toStr() { name }
 }

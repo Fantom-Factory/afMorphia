@@ -8,16 +8,19 @@ const mixin Utils {
 		return entity?.name ?: entityType.name
 	}
 
+	@Deprecated
 	static Str propertyName(Field propertyField) {
 		property := (Property?) propertyField.facet(Property#, false)
 		return property?.name ?: propertyField.name
 	}
 
+	@Deprecated
 	static Type propertyType(Field propertyField) {
 		property := (Property?) propertyField.facet(Property#, false)
 		return property?.implType ?: propertyField.type
 	}
 
+	@Deprecated
 	static Obj? propertyDefVal(Field propertyField) {
 		property := (Property?) propertyField.facet(Property#, false)
 		return property?.defVal
@@ -29,7 +32,8 @@ const mixin Utils {
 		if (name is Field) {
 			// we can't check if the field belongs to an entity (think nested objects)
 			// and if the user overrides ObjConverter.findPropertyFields() then it need not been annotated with @Property either
-			fieldName = Utils.propertyName(name)
+			property := (Property?) ((Field) name).facet(Property#, false)
+			fieldName = property?.name ?: ((Field) name).name
 		} else
 
 		if (name is Str)

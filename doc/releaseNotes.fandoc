@@ -4,6 +4,7 @@ v1.2
 v1.2.6
 ======
  - New: '@Property.defVal' feature - default values are not saved to MongoDB.
+ - Chg: Added advanced ('@NoDoc') 'PropertyCache' class to centralise and speed up '@Property' searching on entities.
 
 v1.2.4
 ======

@@ -55,7 +55,11 @@ internal const mixin ErrMsgs {
 	}
 
 	static Str datastore_facetTypeDoesNotFitField(Type facetType, Field field) {
-		stripSys("Property Facet type '${facetType.signature}' does not fit field type '${field.qname} ${field.signature}'")
+		stripSys("@Property.implType of type '${facetType.signature}' does not fit field '${field.type.qname} ${field.qname}'")
+	}
+
+	static Str datastore_facetDefValDoesNotFitField(Type facetType, Field field) {
+		stripSys("@Property.defVal of type '${facetType.signature}' does not fit field '${field.type.qname} ${field.qname}'")
 	}
 
 	static Str datastore_duplicatePropertyName(Str name, Field field1, Field field2) {

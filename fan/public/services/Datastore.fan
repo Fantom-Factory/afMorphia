@@ -170,29 +170,20 @@ internal const class DatastoreImpl : Datastore {
 	private const Field 		idField
 	private const Field? 		versionField
 
-	// database is an inject service
-	internal new make(Type type, Database database, |This|in) {
+	// database is an injected service
+	internal new make(Type type, Database database, PropertyCache propCache, |This|in) {
 		in(this)
 
 		// try to use the ObjConverter hook to find property fields
-		fields := (Field[]?) (converters.get(Obj#) as ObjConverter)?.findPropertyFields(type)
-		if (fields == null)
-			fields = type.fields.findAll { it.hasFacet(Property#) }
+		props := propCache.getOrFindProperties(type)
 
-		this.collection	= Collection(database, Utils.entityName(type))
-		this.type		= verifyEntityType(fields, type)
-		this.qname		= collection.qname
-		this.name		= collection.name
-
-		this.idField	= fields.find |field->Bool| {
-			property := (Property) field.facet(Property#)
-			return field.name == "_id" || property.name == "_id"
-		} ?: throw IdNotFoundErr(ErrMsgs.datastore_idFieldNotFound(type), propertyNames(type))
-
-		this.versionField = fields.find |field->Bool| {
-			property := (Property) field.facet(Property#)
-			return field.name == "_version" || property.name == "_version"
-		}
+		this.collection		= Collection(database, Utils.entityName(type))
+		this.type			= type
+		this.qname			= collection.qname
+		this.name			= collection.name
+		this.idField		= props.find |prop->Bool| { prop.name == "_id" 		}?.field ?: throw IdNotFoundErr(ErrMsgs.datastore_idFieldNotFound(type), props.map { it.name })
+		this.versionField	= props.find |prop->Bool| { prop.name == "_version"	}?.field
+		
 		if (versionField != null && !versionField.type.fits(Int#))
 			throw Err(ErrMsgs.datastore_versionFieldNotInt(versionField))
 	}
@@ -333,32 +324,6 @@ internal const class DatastoreImpl : Datastore {
 	}
 
 	// ---- Helper Methods ------------------------------------------------------------------------
-
-	internal Type verifyEntityType(Field[]? fields, Type type) {
-
-		// if null, we can't be sure what fields are valid, so skip validation
-		if (fields == null)
-			return type
-
-		names := Str:Field[:]
-		fields.each |field| {
-			pName := Utils.propertyName(field)
-			pType := Utils.propertyType(field)
-			if (!ReflectUtils.fits(pType, field.type))
-				throw MorphiaErr(ErrMsgs.datastore_facetTypeDoesNotFitField(pType, field))
-			if (names.containsKey(pName))
-				throw MorphiaErr(ErrMsgs.datastore_duplicatePropertyName(pName, names[pName], field))
-			names[pName] = field
-		}
-		return type
-	}
-
-	private static Str[] propertyNames(Type type) {
-		type.fields.findAll { it.hasFacet(Property#) }.map |field->Str| {
-			property := (Property) field.facet(Property#)
-			return property.name ?: field.name
-		}
-	}
 
 	override Str toStr() {
 		"MongoDB Datastore for ${type.qname}"

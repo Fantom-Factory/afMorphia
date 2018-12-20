@@ -72,7 +72,7 @@ internal class TestDefValConversion : MorphiaTest {
 	}
 	
 	Void testBadFitDefVal() {
-		verifyErrMsg(MorphiaErr#, "MongoDB document property 'marker' of type 'Str' does not fit field afMorphia::T_Entity29.marker of type 'Bool' : [:]") {
+		verifyErrMsg(MorphiaErr#, "@Property.defVal of type 'Str' does not fit field 'Bool afMorphia::T_Entity29.marker'") {
 			converters.toFantom(T_Entity29#, [:])
 		}
 	}

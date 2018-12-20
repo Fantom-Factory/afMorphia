@@ -12,8 +12,9 @@ const class ObjConverter : Converter {
 	** If 'false' then properties with 'null' values are not stored in the database.
 					const Bool				storeNullFields
 	@Inject private const |->Scope|			activeScope
-	@Inject private const |->Converters|	converters
-	
+	@Inject private const |->Converters|	converters	// avoid circular dependencies
+	@Inject private const PropertyCache		propertyCache
+
 	** Creates a new 'ObjConverter' with the given 'null' strategy.
 	** 
 	** If 'storeNullFields' is 'false' then properties with 'null' values are not stored in the database.
@@ -38,37 +39,30 @@ const class ObjConverter : Converter {
 
 		// TODO optionally throw an Err if we have unmapped Mongo data 
 		
-		findPropertyFields(fantomType).each |field| {
-			propName := Utils.propertyName(field)
-			implType := Utils.propertyType(field)
+		findPropertyData(fantomType).each |field| {
+			propName := field.name
+			implType := field.type
 			propVal  := mongoDoc.get(propName, null)
 			fieldVal := converters().toFantom(implType, propVal)
 			
 			if (fieldVal == null && !field.type.isNullable) {
-				defVal := Utils.propertyDefVal(field)
+				defVal := field.defVal
 
 				// if a value *is* required then decide which Err msg to throw 
 				if (defVal == null)				
 					if (mongoDoc.containsKey(propName))
-						throw MorphiaErr(ErrMsgs.documentConv_propertyIsNull(propName, field, logDoc(mongoDoc)))
+						throw MorphiaErr(ErrMsgs.documentConv_propertyIsNull(propName, field.field, logDoc(mongoDoc)))
 					else 
-						throw MorphiaErr(ErrMsgs.documentConv_propertyNotFound(field, logDoc(mongoDoc)))
+						throw MorphiaErr(ErrMsgs.documentConv_propertyNotFound(field.field, logDoc(mongoDoc)))
 
 				fieldVal = defVal
-
-				if (defVal is List && ((List) defVal).isEmpty)
-					fieldVal = field.type.params["V"].emptyList
-
-				if (defVal is Map && ((Map) defVal).isEmpty && !fieldVal.typeof.fits(field.type))
-					fieldVal = Map.make(field.type)
-
 			}
 	
 			// sanity check we're about to set the correct instance 
 			if (fieldVal != null && !ReflectUtils.fits(fieldVal.typeof, field.type))
-				throw MorphiaErr(ErrMsgs.documentConv_propertyDoesNotFitField(propName, fieldVal.typeof, field, logDoc(mongoDoc)))
+				throw MorphiaErr(ErrMsgs.documentConv_propertyDoesNotFitField(propName, fieldVal.typeof, field.field, logDoc(mongoDoc)))
 
-			fieldVals[field] = fieldVal
+			fieldVals[field.field] = fieldVal
 		}
 		
 		return createEntity(fantomType, fieldVals)
@@ -79,27 +73,18 @@ const class ObjConverter : Converter {
 		if (fantomObj == null) return null
 		mongoDoc := createMongoDoc
 		
-		findPropertyFields(fantomObj.typeof).each |field| {
-			fieldVal := field.get(fantomObj)
-			propName := Utils.propertyName(field)			
-			implType := Utils.propertyType(field)
-			defVal	 := Utils.propertyDefVal(field)
+		findPropertyData(fantomObj.typeof).each |field| {
+			fieldVal := field.val(fantomObj)
+			propName := field.name			
+			implType := field.type
+			defVal	 := field.defVal
 
 			if (defVal == fieldVal)
 				fieldVal = null
 			
-			if (defVal is List)
-				if (((List) defVal).isEmpty && (fieldVal as List)?.isEmpty == true)
-					fieldVal = null
-
-			if (defVal is Map)
-				if (((Map) defVal).isEmpty && (fieldVal as Map)?.isEmpty == true)
-					fieldVal = null
-			
 			// should we recursively convert...? 
 			// note this should NOT use Utils.propertyType
-			propVal	 := converters().toMongo(fieldVal?.typeof ?: field.type, fieldVal)
-			
+			propVal	 := converters().toMongo(fieldVal?.typeof ?: field.type, fieldVal)			
 			
 			if (propVal == null && !storeNullFields)
 				return
@@ -112,12 +97,8 @@ const class ObjConverter : Converter {
 		return mongoDoc
 	}
 
-	** Hook for finding all fields that relate to MongoDB properties.
-	** 
-	** By default this returns all fields annotated with '@Property'.
-	virtual Field[] findPropertyFields(Type entityType) {
-		// FIXME findPropertyFields - cache type data to optimise speed, no need to re-compute?
-		entityType.fields.findAll { it.hasFacet(Property#) }
+	private PropertyData[] findPropertyData(Type entityType) {
+		propertyCache.getOrFindProperties(entityType)
 	}
 	
 	** Creates an Entity instance using IoC. 

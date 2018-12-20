@@ -16,6 +16,7 @@ const class MorphiaModule {
 		defs.addService(Morphia#)
 		defs.addService(Converters#)
 		defs.addService(IntSequences#)
+		defs.addService(PropertyCache#)
 	}
 	
 	@Build { serviceId="afMongo::ConnectionManager" }
