@@ -1,3 +1,10 @@
+v1.2
+****
+
+v1.2.6
+======
+ - New: '@Property.defVal' feature - default values are not saved to MongoDB.
+
 v1.2.4
 ======
  - New: 'Datastore.deleteAll()' convenience method.
@@ -15,6 +22,11 @@ v1.2.0
  - New: 'Query.toStr()' returns something useful.
  - Bug: Passing 'null' to 'QueryCriterion.eq()' or 'QueryCriterion.notEq()' resulted in an NPE.
 
+
+
+v1.1
+****
+
 v1.1.2
 ======
  - Chg: 'Query.field()' & 'QueryExecutor.orderBy()' may now take an actual entity field instance.
@@ -30,6 +42,11 @@ v1.1.0
  - Chg: Renamed '@Property.type -> @Property.implType'. (Breaking change.)
  - Chg: Select methods on 'Datastore' may take a 'null' ID (handy for inlining reads) - as long as 'checked' is 'false'!
  - Chg: Updated to use [IoC 3.0]`pod:afIoc`.
+
+
+
+v1.0
+****
 
 v1.0.10
 =======
@@ -62,6 +79,11 @@ v1.0.0
  - New: Introduced the Query Builder API.
  - New: 'IntSequences' service provides an alternative to unique ObjectIDs.
  - New: Mongo 'Collections' maybe injected in the same manner as 'Datastore' objects, using the '@Inject.type' attribute.
+
+
+
+v0.0
+****
 
 v0.0.10
 =======

@@ -17,6 +17,11 @@ const mixin Utils {
 		property := (Property?) propertyField.facet(Property#, false)
 		return property?.implType ?: propertyField.type
 	}
+
+	static Obj? propertyDefVal(Field propertyField) {
+		property := (Property?) propertyField.facet(Property#, false)
+		return property?.defVal
+	}
 	
 	static Str objToPropertyName(Obj name) {
 		fieldName := null as Str

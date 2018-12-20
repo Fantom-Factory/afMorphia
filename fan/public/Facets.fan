@@ -22,4 +22,12 @@ facet class Property {
 	** 
 	** Defaults to the field type.
 	const Type? implType
+	
+	** When saving to MongoDB, any Fantom value that equals this 'defVal' will be treated as if 
+	** it were 'null' and (depending on 'ObjConverter') will *not* be saved.
+	** 
+	** When loaded from MongoDB, any 'null' value will be converted to this 'defVal'.
+	** 
+	** This is most useful for saving marker booleans and to avoid saving empty lists and maps.
+	const Obj? defVal
 }

@@ -45,11 +45,23 @@ const class ObjConverter : Converter {
 			fieldVal := converters().toFantom(implType, propVal)
 			
 			if (fieldVal == null && !field.type.isNullable) {
-				// a value *is* required so decide which Err msg to throw 
-				if (mongoDoc.containsKey(propName))
-					throw MorphiaErr(ErrMsgs.documentConv_propertyIsNull(propName, field, logDoc(mongoDoc)))
-				else 
-					throw MorphiaErr(ErrMsgs.documentConv_propertyNotFound(field, logDoc(mongoDoc)))
+				defVal := Utils.propertyDefVal(field)
+
+				// if a value *is* required then decide which Err msg to throw 
+				if (defVal == null)				
+					if (mongoDoc.containsKey(propName))
+						throw MorphiaErr(ErrMsgs.documentConv_propertyIsNull(propName, field, logDoc(mongoDoc)))
+					else 
+						throw MorphiaErr(ErrMsgs.documentConv_propertyNotFound(field, logDoc(mongoDoc)))
+
+				fieldVal = defVal
+
+				if (defVal is List && ((List) defVal).isEmpty)
+					fieldVal = field.type.params["V"].emptyList
+
+				if (defVal is Map && ((Map) defVal).isEmpty && !fieldVal.typeof.fits(field.type))
+					fieldVal = Map.make(field.type)
+
 			}
 	
 			// sanity check we're about to set the correct instance 
@@ -71,10 +83,23 @@ const class ObjConverter : Converter {
 			fieldVal := field.get(fantomObj)
 			propName := Utils.propertyName(field)			
 			implType := Utils.propertyType(field)
+			defVal	 := Utils.propertyDefVal(field)
 
+			if (defVal == fieldVal)
+				fieldVal = null
+			
+			if (defVal is List)
+				if (((List) defVal).isEmpty && (fieldVal as List)?.isEmpty == true)
+					fieldVal = null
+
+			if (defVal is Map)
+				if (((Map) defVal).isEmpty && (fieldVal as Map)?.isEmpty == true)
+					fieldVal = null
+			
 			// should we recursively convert...? 
 			// note this should NOT use Utils.propertyType
-			propVal	 := converters().toMongo(fieldVal?.typeof ?: field.type, fieldVal)			
+			propVal	 := converters().toMongo(fieldVal?.typeof ?: field.type, fieldVal)
+			
 			
 			if (propVal == null && !storeNullFields)
 				return
@@ -91,6 +116,7 @@ const class ObjConverter : Converter {
 	** 
 	** By default this returns all fields annotated with '@Property'.
 	virtual Field[] findPropertyFields(Type entityType) {
+		// FIXME findPropertyFields - cache type data to optimise speed, no need to re-compute?
 		entityType.fields.findAll { it.hasFacet(Property#) }
 	}
 	
