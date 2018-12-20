@@ -148,7 +148,20 @@ internal class TestLiteralConversion : MorphiaTest {
 		verifyEq(mongoDoc["range"],			"2..<4")
 		verifyEq(mongoDoc["map"],			Str:Obj?["3":"ever"])
 	}
+	
+//	Void testLiteralTypeCoercion() {
+//		conv := (Converters) scope.serviceById(Converters#.qname)
+//		ent  := (T_Entity26) conv.toFantom(T_Entity26#, ["_id" : "566a97a47662cd074eb82d51"])
+//		verifyEq(ObjectId("566a97a47662cd074eb82d51"), ent.obj1)
+//	}
 }
+
+//@Entity 
+//internal class T_Entity26 {
+//	@Property { name="_id" } ObjectId obj1
+//	
+//	new make(|This|in) { in(this) }
+//}
 
 @Entity
 internal class T_Entity01 {
