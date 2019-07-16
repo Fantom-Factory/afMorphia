@@ -5,15 +5,6 @@ Have a builder for update and find&update ops:
  - http://docs.mongodb.org/manual/reference/operator/update/#id1
  - https://rawgit.com/wiki/mongodb/morphia/javadoc/0.108/apidocs/org/mongodb/morphia/query/UpdateOperations.html
 
-Config option:
-Optimise MongoDB Storage by inspecting literal values and NOT storing default values (if the type is not-nullable).
-e.g. Bool -> false
-	 Int  -> 0
-	 List -> [,]
-	 Map  -> [:]
-Turn off by default -> It is too finicky, and unexpected behaviour. (But I'm sure I saved that total of 0!!!)
-Needs to be handled both *to* and *from* Mongo.
-
 
 
 Naa - Can't be arsed!
