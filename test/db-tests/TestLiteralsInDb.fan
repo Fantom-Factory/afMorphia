@@ -30,8 +30,8 @@ internal class TestLiteralsInDb : MorphiaDbTest {
 			codeScope	= Code("func() { ... }", Str:Obj?["wot":"ever"])
 			timestamp	= Timestamp(500, 69)
 			int 		= 999
-			minKey		= MinKey()
-			maxKey		= MaxKey()
+			minKey		= MinKey.defVal
+			maxKey		= MaxKey.defVal
 			
 			// Fantom literals
 			date		= Date.today
@@ -84,8 +84,8 @@ internal class TestLiteralsInDb : MorphiaDbTest {
 		verifyEq(entity.codeScope.scope,	Str:Obj?["wot":"ever"])
 		verifyEq(entity.timestamp,	Timestamp(500, 69))
 		verifyEq(entity.int,		999)
-		verifyEq(entity.minKey,		MinKey())
-		verifyEq(entity.maxKey,		MaxKey())
+		verifyEq(entity.minKey,		MinKey.defVal)
+		verifyEq(entity.maxKey,		MaxKey.defVal)
 		
 		// Fantom types
 		verifyEq(entity.date, 		Date.today)	

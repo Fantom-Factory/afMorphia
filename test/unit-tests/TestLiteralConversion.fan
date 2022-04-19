@@ -29,8 +29,8 @@ internal class TestLiteralConversion : MorphiaTest {
 			"codeScope"		: Code("func() { ... }", ["wot":"ever"]),
 			"timestamp"		: Timestamp(500, 69),
 			"int"			: 666,
-			"minKey"		: MinKey(),
-			"maxKey"		: MaxKey(),
+			"minKey"		: MinKey.defVal,
+			"maxKey"		: MaxKey.defVal,
 			
 			// Fantom literals
 			"date"			: Date.today.toDateTime(Time.defVal),
@@ -101,8 +101,8 @@ internal class TestLiteralConversion : MorphiaTest {
 			codeScope	= Code("func() { ... }", ["wot":"ever"])
 			timestamp	= Timestamp(500, 69)
 			int 		= 69
-			minKey		= MinKey()
-			maxKey		= MaxKey()
+			minKey		= MinKey.defVal
+			maxKey		= MaxKey.defVal
 			
 			// Fantom literals
 			date		= Date.today
