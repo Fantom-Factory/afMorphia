@@ -14,24 +14,24 @@ class Build : BuildPod {
 			"repo.public"	: "true"
 		]
 
-		index	= [	"afIoc.module"	: "afMorphia::MorphiaModule" ]
+//		index	= [	"afIoc.module"	: "afMorphia::MorphiaModule" ]
 
 		depends = [
-			"sys        1.0.69 - 1.0", 
-			"concurrent 1.0.69 - 1.0",	// for contributing an ActorPool 
+			"sys        1.0.71 - 1.0", 
+			"concurrent 1.0.71 - 1.0",	// for contributing an ActorPool 
 			
 			// ---- Core ------------------------
 			"afBeanUtils  1.0.8  - 1.0",
 			"afConcurrent 1.0.18 - 1.0",
-			"afIoc        3.0.0  - 3.0",
-			"afIocConfig  1.1.0  - 1.1",
+//			"afIoc        3.0.0  - 3.0",
+//			"afIocConfig  1.1.0  - 1.1",
 
 			// ---- Mongo -----------------------
-			"afBson  1.1.0 - 1.1",
-			"afMongo 1.1.8 - 1.1",
+			"afBson  2.0.0 - 2.0",
+			"afMongo 1.2.0 - 1.2",
 		]
 		
-		srcDirs = [`fan/`, `fan/db/`, `fan/orm/`, `fan/orm/advanced/`, `fan/orm/internal/`, `fan/orm/internal/converters/`, `test/`, `test/mor/`, `test/orm/`]
+		srcDirs = [`fan/`, `fan/db/`, `fan/orm/`, `fan/orm/advanced/`, `fan/orm/internal/`, `fan/orm/internal/converters/`, `test/`, `test/orm/`]
 		resDirs = [`doc/`]
 	}
 }

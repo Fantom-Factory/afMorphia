@@ -94,47 +94,41 @@ class BsonConverterCtx {
 	// ---- Option Functions ----
 	
 	** Creates an empty *ordered* bson object. 
-	@NoDoc Str:Obj? fnMakeBsonObj() {
-		((|BsonConverterCtx->Str:Obj?|) options["afBson.makeBsonObj"])(this)
+	@NoDoc Str:Obj? makeBsonObjFn() {
+		((|BsonConverterCtx->Str:Obj?|) options["makeBsonObjFn"])(this)
 	}
 
 	** Creates an Entity instance. 
-	@NoDoc Obj? fnMakeEntity(Field:Obj? fieldVals) {
-		((|Type, Field:Obj?, BsonConverterCtx->Obj?|) options["afBson.makeEntity"])(this.type, fieldVals, this)
+	@NoDoc Obj? makeEntityFn(Field:Obj? fieldVals) {
+		((|Type, Field:Obj?, BsonConverterCtx->Obj?|) options["makeEntityFn"])(this.type, fieldVals, this)
 	}
 
 	** Creates an empty map for Fantom.
-	@NoDoc Obj:Obj? fnMakeMap() {
-		((|Type,BsonConverterCtx->Obj:Obj?|) options["afBson.makeMap"])(this.type, this)
+	@NoDoc Obj:Obj? makeMapFn() {
+		((|Type,BsonConverterCtx->Obj:Obj?|) options["makeMapFn"])(this.type, this)
 	}
 	
 	** This is called *before* any 'bsonVal' is converted. 
-	@NoDoc Obj? fnFromBsonHook(Obj? bsonVal) {
-		((|Obj?, BsonConverterCtx->Obj?|?) options["afBson.fromBsonHook"])?.call(bsonVal, this) ?: bsonVal
+	@NoDoc Obj? fromBsonHookFn(Obj? bsonVal) {
+		((|Obj?, BsonConverterCtx->Obj?|?) options["fromBsonHookFn"])?.call(bsonVal, this) ?: bsonVal
 	}
 	
 	** This is called *before* any 'fantomObj' is converted. 
-	@NoDoc Obj? fnToBsonHook(Obj? fantomObj) {
-		((|Obj?, BsonConverterCtx->Obj?|?) options["afBson.toBsonHook"])?.call(fantomObj, this) ?: fantomObj
+	@NoDoc Obj? toBsonHookFn(Obj? fantomObj) {
+		((|Obj?, BsonConverterCtx->Obj?|?) options["toBsonHookFn"])?.call(fantomObj, this) ?: fantomObj
 	}
 	
 	** Returns the 'BsonPropertyCache'.
 	@NoDoc BsonPropertyCache optBsonPropertyCache() {
-		options["afBson.propertyCache"]
+		options["propertyCache"]
 	}
 	
 	** Returns strict mode.
 	@NoDoc Bool optStrictMode() {
-		options.get("afBson.strictMode", false)
+		options.get("strictMode", false)
 	}
 	
-	** Returns the Date format, with an ISO default if unspecified.
-	@NoDoc Str optDateFormat() {
-		options.get("afBson.dateFormat", "YYYY-MM-DD")
-	}
-
-	** Returns the DateTime format, with an ISO default if unspecified.
-	@NoDoc Str optDateTimeFormat() {
-		options.get("afBson.dateTimeFormat", "YYYY-MM-DD'T'hh:mm:ss.FFFz zzzz")
+	@NoDoc Bool optStoreNullFields() {
+		options.get("storeNullFields", false)
 	}
 }
