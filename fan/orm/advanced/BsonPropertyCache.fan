@@ -9,13 +9,16 @@ const class BsonPropertyCache {
 		this.serializableMode = serializableMode
 	}
 
+	** The main public method to return field props.
+	** 
 	** 'ctx' isn't used, but gives subclasses more context to adjust dynamically.
-	virtual BsonPropertyData[] getOrFindTags(Type type, BsonConverterCtx ctx) {
+	virtual BsonPropertyData[] getOrFindProps(Type type, BsonConverterCtx? ctx := null) {
 		// try get() first to avoid creating the func - method.func binding doesn't work in JS
-		cache.get(type) ?: cache.getOrAdd(type) { findProperties(type).toImmutable }
+		cache.get(type) ?: cache.getOrAdd(type) { findProps(type).toImmutable }
 	}
 
-	virtual BsonPropertyData[] findProperties(Type entityType) {
+	** An internal method that does the *actual* propery finding.
+	virtual BsonPropertyData[] findProps(Type entityType) {
 		// I dunno wot synthetic fields are but I'm guessing I dun-wan-dem!
 		frops := entityType.fields.exclude { it.isStatic || it.isSynthetic }
 		if (serializableMode == false)

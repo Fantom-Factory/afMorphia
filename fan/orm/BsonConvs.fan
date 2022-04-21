@@ -72,12 +72,16 @@ const mixin BsonConverters {
 	** 
 	** Convenience for calling 'fromBsonVal()' with a cast.
 	abstract Obj? fromBsonDoc([Str:Obj?]? bsonObj, Type? fantomType)
+	
+	
+	** Returns the 'BsonPropertyCache'.
+	abstract BsonPropertyCache propertyCache()
 }
 
 internal const class BsonConvertersImpl : BsonConverters {
-	const BsonTypeLookup	typeLookup
-	const BsonPropertyCache	propertyCache
-	const Unsafe			optionsRef	// use Unsafe because JS can't handle immutable functions
+	override const BsonPropertyCache	propertyCache
+	 		 const BsonTypeLookup		typeLookup
+			 const Unsafe				optionsRef	// use Unsafe because JS can't handle immutable functions
 
 	new make(|This| f) { f(this) }
 	

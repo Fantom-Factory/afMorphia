@@ -8,7 +8,7 @@ internal const class BsonObjConverter : BsonConverter {
 		if (fantomObj == null) return null
 		bsonObj := ctx.makeBsonObjFn
 		
-		ctx.optBsonPropertyCache.getOrFindTags(fantomObj.typeof, ctx).each |field| {
+		ctx.optBsonPropertyCache.getOrFindProps(fantomObj.typeof, ctx).each |field| {
 			fieldVal := field.val(fantomObj)
 			propName := field.name			
 			defVal	 := field.defVal
@@ -53,7 +53,7 @@ internal const class BsonObjConverter : BsonConverter {
 			// we *should* set _type if we can, it's expected behaviour and there's no reason not to
 			ctx.replaceType(Type.find(bsonObj.get("_type")))	
 			
-		tagData := ctx.optBsonPropertyCache.getOrFindTags(ctx.type, ctx)
+		tagData := ctx.optBsonPropertyCache.getOrFindProps(ctx.type, ctx)
 		
 		if (ctx.optStrictMode) {
 			tagNames := tagData.map { it.name }
