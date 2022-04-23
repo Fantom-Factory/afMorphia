@@ -47,7 +47,7 @@ internal const class BsonMapConv : BsonConv {
 			jVal := bsonObj[jKey]
 			
 			// Map keys are special and have to be converted <=> Str
-			fKey := decodeKey(typeCoercer.coerce(jKey, fanKeyType))
+			fKey := typeCoercer.coerce(decodeKey(jKey), fanKeyType)
 			fVal := ctx.makeMap(fanValType, bsonObj, jKey, jVal).fromBsonVal
 			fanMap[fKey] = fVal
 		}
