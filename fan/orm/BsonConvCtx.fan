@@ -1,12 +1,12 @@
 
-** Passed to 'BsonConverters' to give context on what they're converting.
-class BsonConverterCtx {
-	BsonConverterCtx?	parent	{ private set }
+** Passed to 'BsonConvs' to give context on what they're converting.
+class BsonConvCtx {
+	BsonConvCtx?		parent	{ private set }
 		  Type			type	{ private set }
 	
 	const Bool			isField
 	const Field?		field
-	const BsonProperty?	bsonProperty
+	const BsonProp?		bsonProperty
 		  Obj?			obj		{ private set }
 	
 	const Bool			isMap
@@ -19,20 +19,20 @@ class BsonConverterCtx {
 
 		  Str:Obj?		options
 	
-	private BsonConverters	converters
+	private BsonConvs	converters
 
 	private new make(|This| f) { f(this) }
 
-	internal new makeTop(BsonConverters converters, Type type, Obj? obj, Str:Obj? options) {
+	internal new makeTop(BsonConvs converters, Type type, Obj? obj, Str:Obj? options) {
 		this.converters = converters
 		this.type		= type
 		this.obj		= obj
 		this.options	= options
 	}
 
-	This makeField(Type type, Field field, BsonProperty? bsonProperty, Obj? obj) {
+	This makeField(Type type, Field field, BsonProp? bsonProperty, Obj? obj) {
 		// pass type, because the impl type may be different to the defined field.type
-		BsonConverterCtx {
+		BsonConvCtx {
 			it.parent		= this
 			it.type			= type
 			it.isField		= true
@@ -45,7 +45,7 @@ class BsonConverterCtx {
 	}
 
 	This makeMap(Type type, Map map, Obj key, Obj? obj) {
-		BsonConverterCtx {
+		BsonConvCtx {
 			it.parent		= this
 			it.type			= type
 			it.isMap		= true
@@ -58,7 +58,7 @@ class BsonConverterCtx {
 	}
 
 	This makeList(Type type, List list, Int idx, Obj? obj) {
-		BsonConverterCtx {
+		BsonConvCtx {
 			it.parent		= this
 			it.type			= type
 			it.isList		= true
@@ -95,31 +95,31 @@ class BsonConverterCtx {
 	
 	** Creates an empty *ordered* bson object. 
 	@NoDoc Str:Obj? makeBsonObjFn() {
-		((|BsonConverterCtx->Str:Obj?|) options["makeBsonObjFn"])(this)
+		((|BsonConvCtx->Str:Obj?|) options["makeBsonObjFn"])(this)
 	}
 
 	** Creates an Entity instance. 
 	@NoDoc Obj? makeEntityFn(Field:Obj? fieldVals) {
-		((|Type, Field:Obj?, BsonConverterCtx->Obj?|) options["makeEntityFn"])(this.type, fieldVals, this)
+		((|Type, Field:Obj?, BsonConvCtx->Obj?|) options["makeEntityFn"])(this.type, fieldVals, this)
 	}
 
 	** Creates an empty map for Fantom.
 	@NoDoc Obj:Obj? makeMapFn() {
-		((|Type,BsonConverterCtx->Obj:Obj?|) options["makeMapFn"])(this.type, this)
+		((|Type,BsonConvCtx->Obj:Obj?|) options["makeMapFn"])(this.type, this)
 	}
 	
 	** This is called *before* any 'bsonVal' is converted. 
 	@NoDoc Obj? fromBsonHookFn(Obj? bsonVal) {
-		((|Obj?, BsonConverterCtx->Obj?|?) options["fromBsonHookFn"])?.call(bsonVal, this) ?: bsonVal
+		((|Obj?, BsonConvCtx->Obj?|?) options["fromBsonHookFn"])?.call(bsonVal, this) ?: bsonVal
 	}
 	
 	** This is called *before* any 'fantomObj' is converted. 
 	@NoDoc Obj? toBsonHookFn(Obj? fantomObj) {
-		((|Obj?, BsonConverterCtx->Obj?|?) options["toBsonHookFn"])?.call(fantomObj, this) ?: fantomObj
+		((|Obj?, BsonConvCtx->Obj?|?) options["toBsonHookFn"])?.call(fantomObj, this) ?: fantomObj
 	}
 	
-	** Returns the 'BsonPropertyCache'.
-	@NoDoc BsonPropertyCache optBsonPropertyCache() {
+	** Returns the 'BsonPropCache'.
+	@NoDoc BsonPropCache optBsonPropCache() {
 		options["propertyCache"]
 	}
 	

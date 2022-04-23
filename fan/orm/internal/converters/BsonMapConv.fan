@@ -1,6 +1,6 @@
 using afBeanUtils::TypeCoercer
 
-internal const class BsonMapConverter : BsonConverter {
+internal const class BsonMapConv : BsonConv {
 	private static const Regex			unicodeRegex	:= "\\\\u+[0-9a-fA-F]{4}".toRegex
 	private static const Regex			unicodeRegex2	:= "\\\\u{2,}[0-9a-fA-F]{4}".toRegex
 	private		   const TypeCoercer	typeCoercer
@@ -9,7 +9,7 @@ internal const class BsonMapConverter : BsonConverter {
 		this.typeCoercer = BsonTypeCoercer()
 	}
 
-	override Obj? toBsonVal(Obj? fantomObj, BsonConverterCtx ctx) {
+	override Obj? toBsonVal(Obj? fantomObj, BsonConvCtx ctx) {
 		if (fantomObj == null) return null
 		fanMap		:= (Obj:Obj?) fantomObj		// https://fantom.org/forum/topic/2768
 		mapType		:= fanMap.typeof
@@ -32,7 +32,7 @@ internal const class BsonMapConverter : BsonConverter {
 		return bsonObj
 	}
 	
-	override Obj? fromBsonVal(Obj? bsonVal, BsonConverterCtx ctx) {
+	override Obj? fromBsonVal(Obj? bsonVal, BsonConvCtx ctx) {
 		if (bsonVal == null) return null
 
 		fanKeyType 	:= ctx.type.params["K"]

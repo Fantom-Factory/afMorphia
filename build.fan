@@ -23,8 +23,6 @@ class Build : BuildPod {
 			// ---- Core ------------------------
 			"afBeanUtils  1.0.8  - 1.0",
 			"afConcurrent 1.0.18 - 1.0",
-//			"afIoc        3.0.0  - 3.0",
-//			"afIocConfig  1.1.0  - 1.1",
 
 			// ---- Mongo -----------------------
 			"afBson  2.0.0 - 2.0",

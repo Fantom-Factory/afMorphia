@@ -6,7 +6,7 @@ internal class TestOrmPropertyName : Test {
 			"judge"	: "dude"
 		]
 		
-		entity := (T_Entity09) BsonConverters().fromBsonDoc(bsonObj, T_Entity09#)
+		entity := (T_Entity09) BsonConvs().fromBsonDoc(bsonObj, T_Entity09#)
 		
 		verifyEq(entity.wotever, 	"dude")
 	}
@@ -16,14 +16,14 @@ internal class TestOrmPropertyName : Test {
 			wotever		= "dude"
 		}
 		
-		bsonObj := BsonConverters().toBsonDoc(entity)
+		bsonObj := BsonConvs().toBsonDoc(entity)
 		
 		verifyEq(bsonObj["judge"],		"dude")
 	}
 }
 
 internal class T_Entity09 {
-	@BsonProperty { name="judge" }
+	@BsonProp { name="judge" }
 			Str			wotever
 
 	new make(|This|in) { in(this) }

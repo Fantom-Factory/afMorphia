@@ -1,8 +1,8 @@
 using afBson::BsonType
 
-internal const class BsonListConverter : BsonConverter {
+internal const class BsonListConv : BsonConv {
 	
-	override Obj? toBsonVal(Obj? fantomObj, BsonConverterCtx ctx) {
+	override Obj? toBsonVal(Obj? fantomObj, BsonConvCtx ctx) {
 		if (fantomObj == null) return null
 
 		fanList	 := (List) fantomObj
@@ -19,7 +19,7 @@ internal const class BsonListConverter : BsonConverter {
 		}
 	}
 	
-	override Obj? fromBsonVal(Obj? bsonVal, BsonConverterCtx ctx) {
+	override Obj? fromBsonVal(Obj? bsonVal, BsonConvCtx ctx) {
 		if (bsonVal == null) return null
 
 		fanValType	:= ctx.type.params["V"]

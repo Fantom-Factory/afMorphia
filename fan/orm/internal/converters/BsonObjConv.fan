@@ -1,14 +1,14 @@
 using afBeanUtils::ReflectUtils
 
-** The main converter for JSON objects. 
-internal const class BsonObjConverter : BsonConverter {
+** The main converter for BSON objects. 
+internal const class BsonObjConv : BsonConv {
 
 	@NoDoc
-	override Obj? toBsonVal(Obj? fantomObj, BsonConverterCtx ctx) {
+	override Obj? toBsonVal(Obj? fantomObj, BsonConvCtx ctx) {
 		if (fantomObj == null) return null
 		bsonObj := ctx.makeBsonObjFn
 		
-		ctx.optBsonPropertyCache.getOrFindProps(fantomObj.typeof, ctx).each |field| {
+		ctx.optBsonPropCache.getOrFindProps(fantomObj.typeof, ctx).each |field| {
 			fieldVal := field.val(fantomObj)
 			propName := field.name			
 			defVal	 := field.defVal
@@ -33,7 +33,7 @@ internal const class BsonObjConverter : BsonConverter {
 	}
 
 	@NoDoc
-	override Obj? fromBsonVal(Obj? bsonVal, BsonConverterCtx ctx) {
+	override Obj? fromBsonVal(Obj? bsonVal, BsonConvCtx ctx) {
 		if (bsonVal == null) return null
 
 		// because ObjConverter is a catch-all Obj converter, we sometimes get sent here when a specific converter can't be found
@@ -53,7 +53,7 @@ internal const class BsonObjConverter : BsonConverter {
 			// we *should* set _type if we can, it's expected behaviour and there's no reason not to
 			ctx.replaceType(Type.find(bsonObj.get("_type")))	
 			
-		tagData := ctx.optBsonPropertyCache.getOrFindProps(ctx.type, ctx)
+		tagData := ctx.optBsonPropCache.getOrFindProps(ctx.type, ctx)
 		
 		if (ctx.optStrictMode) {
 			tagNames := tagData.map { it.name }

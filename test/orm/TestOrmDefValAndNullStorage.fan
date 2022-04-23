@@ -1,7 +1,7 @@
 
 internal class TestOrmDefValConversion : Test {
 
-	BsonConverters? converters := BsonConverters()
+	BsonConvs? converters := BsonConvs()
 	
 	Void testDefValToMongo() {
 
@@ -69,30 +69,30 @@ internal class TestOrmDefValConversion : Test {
 	}
 	
 	Void testBadFitDefVal() {
-		verifyErrMsg(Err#, "@BsonProperty.defVal of type 'Str' does not fit field 'Bool afMorphia::T_Entity29.marker'") {
+		verifyErrMsg(Err#, "@BsonProp.defVal of type 'Str' does not fit field 'Bool afMorphia::T_Entity29.marker'") {
 			converters.fromBsonDoc([:], T_Entity29#)
 		}
 	}
 }
 
 internal class T_Entity28 {
-	@BsonProperty { defVal=false		}	Bool	markerFalse
-	@BsonProperty { defVal=true			}	Bool	markerTrue
-	@BsonProperty { defVal=0			}	Int		intZero
-	@BsonProperty { defVal=1			}	Int		intOne
-	@BsonProperty { defVal=Str[,]		}	Str[]	emptyStrList
-	@BsonProperty { defVal=[,]			}	Int[]	emptyIntList
-	@BsonProperty { defVal=Str:Str[:]	}	Str:Str	emptyStrMap
-	@BsonProperty { defVal=[:]			}	Int:Int	emptyIntMap
+	@BsonProp { defVal=false		}	Bool	markerFalse
+	@BsonProp { defVal=true			}	Bool	markerTrue
+	@BsonProp { defVal=0			}	Int		intZero
+	@BsonProp { defVal=1			}	Int		intOne
+	@BsonProp { defVal=Str[,]		}	Str[]	emptyStrList
+	@BsonProp { defVal=[,]			}	Int[]	emptyIntList
+	@BsonProp { defVal=Str:Str[:]	}	Str:Str	emptyStrMap
+	@BsonProp { defVal=[:]			}	Int:Int	emptyIntMap
 
-	@BsonProperty { defVal=["wot", "ever"]		}	Str[]	strList
-	@BsonProperty { defVal=["wot": "ever"]		}	Str:Str	strMap
-	@BsonProperty { defVal=T_Entity13_Enum.wot	}	T_Entity13_Enum enumDef
+	@BsonProp { defVal=["wot", "ever"]		}	Str[]	strList
+	@BsonProp { defVal=["wot": "ever"]		}	Str:Str	strMap
+	@BsonProp { defVal=T_Entity13_Enum.wot	}	T_Entity13_Enum enumDef
 
 	new make(|This| in) { in(this) }
 }
 
 internal class T_Entity29 {
-	@BsonProperty { defVal="badfit"		}	Bool	marker
+	@BsonProp { defVal="badfit"		}	Bool	marker
 	new make(|This| in) { in(this) }
 }

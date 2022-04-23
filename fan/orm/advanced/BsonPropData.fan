@@ -1,14 +1,14 @@
 using afBeanUtils::ReflectUtils
 
-** Holds resolved '@BsonProperty' values.
+** Holds resolved '@BsonProp' values.
 @NoDoc
-const class BsonPropertyData {
+const class BsonPropData {
 	
 	** The backing storage field.
 	const	Field field
 	
-	** The 'BsonProperty' facet on the field (if any).
-	const	BsonProperty? bsonProperty
+	** The 'BsonProp' facet on the field (if any).
+	const	BsonProp? bsonProperty
 	
 	** Name of the JSON property name this field maps to.
 	const	Str	name
@@ -22,10 +22,10 @@ const class BsonPropertyData {
 	** Standard it-block ctor.
 	new make(|This| f) { f(this) }
 	
-	** Creates a 'BsonPropertyData' instance from a 'Field' - may have the '@BsonProperty' facet.
+	** Creates a 'BsonPropData' instance from a 'Field' - may have the '@BsonProp' facet.
 	new fromField(Field field, |This|? fn := null) {
 		this.field			= field
-		this.bsonProperty	= field.facet(BsonProperty#, false)
+		this.bsonProperty	= field.facet(BsonProp#, false)
 		this.name			= bsonProperty?.name		?: field.name
 		this.type			= bsonProperty?.implType	?: field.type
 		this.defVal			= bsonProperty?.defVal
@@ -48,11 +48,11 @@ const class BsonPropertyData {
 	}
 	
 	private static Str msgFacetTypeDoesNotFitField(Type facetType, Field field) {
-		stripSys("@BsonProperty.implType of type '${facetType.signature}' does not fit field '${field.type.qname} ${field.qname}'")
+		stripSys("@BsonProp.implType of type '${facetType.signature}' does not fit field '${field.type.qname} ${field.qname}'")
 	}
 
 	static Str msgFacetDefValDoesNotFitField(Type facetType, Field field) {
-		stripSys("@BsonProperty.defVal of type '${facetType.signature}' does not fit field '${field.type.qname} ${field.qname}'")
+		stripSys("@BsonProp.defVal of type '${facetType.signature}' does not fit field '${field.type.qname} ${field.qname}'")
 	}
 
 	private static Str stripSys(Str str) {

@@ -1,7 +1,7 @@
 using afConcurrent::AtomicMap
 
 @NoDoc
-const class BsonPropertyCache {
+const class BsonPropCache {
 	private const AtomicMap cache := AtomicMap()
 	private const Bool serializableMode
 
@@ -12,20 +12,20 @@ const class BsonPropertyCache {
 	** The main public method to return field props.
 	** 
 	** 'ctx' isn't used, but gives subclasses more context to adjust dynamically.
-	virtual BsonPropertyData[] getOrFindProps(Type type, BsonConverterCtx? ctx := null) {
+	virtual BsonPropData[] getOrFindProps(Type type, BsonConvCtx? ctx := null) {
 		// try get() first to avoid creating the func - method.func binding doesn't work in JS
 		cache.get(type) ?: cache.getOrAdd(type) { findProps(type).toImmutable }
 	}
 
 	** An internal method that does the *actual* propery finding.
-	virtual BsonPropertyData[] findProps(Type entityType) {
+	virtual BsonPropData[] findProps(Type entityType) {
 		// I dunno wot synthetic fields are but I'm guessing I dun-wan-dem!
 		frops := entityType.fields.exclude { it.isStatic || it.isSynthetic }
 		if (serializableMode == false)
-			frops = frops.findAll { it.hasFacet(BsonProperty#) }
+			frops = frops.findAll { it.hasFacet(BsonProp#) }
 		else
 			frops = frops.exclude { it.hasFacet(Transient#) }
-		props := (BsonPropertyData[]) frops.map { makeBsonPropertyData(it) }
+		props := (BsonPropData[]) frops.map { makeBsonPropData(it) }
 		names := props.map { it.name }.unique
 
 		if (props.size != names.size) {
@@ -44,9 +44,9 @@ const class BsonPropertyCache {
 		cache.clear
 	}
 
-	** Override hook for creating your own BsonPropertyData.
-	virtual BsonPropertyData makeBsonPropertyData(Field field) {
-		BsonPropertyData(field)
+	** Override hook for creating your own BsonPropData.
+	virtual BsonPropData makeBsonPropData(Field field) {
+		BsonPropData(field)
 	}
 
 	private static Str msgDuplicatePropertyName(Str name, Field field1, Field field2) {

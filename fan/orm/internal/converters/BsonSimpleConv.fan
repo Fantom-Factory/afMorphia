@@ -1,6 +1,6 @@
 
-** A utility `BsonConverter` that handles simple serializable types. 
-internal const class BsonSimpleConverter : BsonConverter {
+** A utility `BsonConv` that handles simple serializable types. 
+internal const class BsonSimpleConv : BsonConv {
 	private const Type type
 
 	** Creates a converter for the given type. The type must be annotated with:
@@ -17,12 +17,12 @@ internal const class BsonSimpleConverter : BsonConverter {
 	}
 
 	@NoDoc
-	override Obj? toBsonVal(Obj? fantomObj, BsonConverterCtx ctx) {
+	override Obj? toBsonVal(Obj? fantomObj, BsonConvCtx ctx) {
 		fantomObj?.toStr
 	}
 
 	@NoDoc
-	override Obj? fromBsonVal(Obj? bsonVal, BsonConverterCtx ctx) {
+	override Obj? fromBsonVal(Obj? bsonVal, BsonConvCtx ctx) {
 		if (bsonVal == null) return null
 		// use 'type' not 'this.type' incase we're passed a subclass
 		fromStr := type.method("fromStr", true)

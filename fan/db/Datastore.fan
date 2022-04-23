@@ -1,7 +1,9 @@
-using afBeanUtils::NotFoundErr
 using afBeanUtils::ReflectUtils
+using afMongo::MongoConnMgr
 using afMongo::MongoColl
+using afMongo::MongoCmd
 using afMongo::MongoDb
+using afMongo::MongoQ
 
 ** (Service) -
 ** Wraps a MongoDB [Collection]`afMongo::MongoColl`, converting Fantom entities to / from BSON documents.
@@ -19,27 +21,23 @@ using afMongo::MongoDb
 **
 **   scope.build(Datastore#, [MyEntity#])
 const mixin Datastore {
-
+	
 	** The underlying MongoDB collection this Datastore wraps.
 	abstract MongoColl collection()
 
 	** The Fantom entity type this Datastore associates with.
 	abstract Type	type()
 
-	** The qualified name of the MongoDB collection.
-	** It takes the form of:
-	**
-	**   <database>.<collection>
-	abstract Str qname()
+	** Create a new Datastore instance.
+	static new make(MongoConnMgr connMgr, BsonConvs bsonConvs, Str dbName, Type entityType) {
+		DatastoreImpl(connMgr, bsonConvs, dbName, entityType)
+	}
 
-	** The simple name of the MongoDB collection.
-	abstract Str name()
+	
 
 	// ---- Collection ----------------------------------------------------------------------------
 
 	** Returns 'true' if the underlying MongoDB collection exists.
-	**
-	** @see `afMongo::Collection.exists`
 	abstract Bool exists()
 
 	** Returns 'true' if the collection has no documents.
@@ -50,20 +48,18 @@ const mixin Datastore {
 	** Drops the underlying MongoDB collection.
 	**
 	** Note that deleting all documents is MUCH quicker than dropping the Collection. See `deleteAll` for details.
-	** 
-	** @see `afMongo::Collection.drop`
 	abstract This drop(Bool force := false)
-
+	
+	
+	
 	// ---- Cursor Queries ------------------------------------------------------------------------
 
 	** An (optimised) method to return one document from the given 'query'.
 	**
 	** Note: This method requires you to be familiar with Mongo query notation. If not, use the `Query` builder instead.
 	**
-	** Throws 'MongoErr' if no documents are found and 'checked' is 'true', returns 'null' otherwise.
-	** Always throws 'MongoErr' if the query returns more than one document.
-	**
-	** @see `afMongo::Collection.findOne`
+	** Throws an 'Err' if no documents are found and 'checked' is 'true'.
+	** Always throws an 'Err' if the query returns more than one document.
 	abstract Obj? findOne([Str:Obj?]? query := null, Bool checked := true)
 
 	** Returns a list of entities that match the given 'query'.
@@ -73,44 +69,35 @@ const mixin Datastore {
 	** If 'sort' is a Str it should the name of an index to use as a hint.
 	**
 	** If 'sort' is a '[Str:Obj?]' map, it should be a sort document with field names as keys.
-	** Values may either be the standard Mongo '1' and '-1' for ascending / descending or the
-	** strings 'ASC' / 'DESC'.
+	** Values may either be the standard Mongo '1' and '-1' for ascending / descending.
 	**
 	** The 'sort' map, should it contain more than 1 entry, must be ordered.
-	**
-	** @see `afMongo::Collection.findAll`
-	abstract Obj[] findAll([Str:Obj?]? query := null, Obj? sort := null, Int skip := 0, Int? limit := null, [Str:Obj?]? projection := null)
+	abstract Obj[] find([Str:Obj?]? query := null, Obj? sort := null, |MongoCmd cmd|? optsFn := null)
 
 	** Returns the number of documents that would be returned by the given 'query'.
 	**
 	** Note: This method requires you to be familiar with Mongo query notation. If not, use the `Query` builder instead.
-	**
-	** @see `afMongo::Collection.findCount`
-	abstract Int findCount([Str:Obj?]? query := null)
+	abstract Int count([Str:Obj?]? query := null)
 
 	** Returns the document with the given Id.
 	** Convenience / shorthand notation for 'findOne(["_id": id], checked)'
 	@Operator
 	abstract Obj? get(Obj? id, Bool checked := true)
+	
+	
 
 	// ---- Write Operations ----------------------------------------------------------------------
 
 	** Inserts the given entity.
 	** Returns the entity.
-	**
-	** @see `afMongo::Collection.insert`
 	abstract Obj insert(Obj entity)
 
 	** Deletes the given entity from the MongoDB.
-	** Throws 'MorphiaErr' if 'checked' and nothing was deleted.
-	**
-	** @see `afMongo::Collection.delete`
+	** Throws an 'Err' if 'checked' and nothing was deleted.
 	abstract Void delete(Obj entity, Bool checked := true)
 
 	** Deletes entity with the given Id.
-	** Throws 'MorphiaErr' if 'checked' and nothing was deleted.
-	**
-	** @see `afMongo::Collection.delete`
+	** Throws an 'Err' if 'checked' and nothing was deleted.
 	abstract Void deleteById(Obj id, Bool checked := true)
 
 	** Deletes all entities in the Datastore. Returns the number of entities deleted.
@@ -119,23 +106,26 @@ const mixin Datastore {
 	abstract Int deleteAll()
 	
 	** Updates the given entity.
-	** Throws 'MorphiaErr' if 'checked' and nothing was updated.
+	** Throws an 'Err' if 'checked' and nothing was updated.
 	**
-	** Will always throw 'OptimisticLockErr' if the entity contains a '_version' field which doesn't match what's in the
+	** Will always throw 'OptimisticLockErr' if the entity contains a '_version' field which does not match what's in the
 	** database. On a successful save, this will increment the '_version' field on the entity.
-	**
-	** @see `afMongo::Collection.update`
 	abstract Void update(Obj entity, Bool checked := true)
 
+	
+	
 	// ---- Aggregation Commands ------------------------------------------------------------------
 
 	** Returns the number of documents in the collection.
-	**
-	** @see `afMongo::Collection.size`
 	abstract Int size()
 
+	
+	
 	// ---- Conversion Methods --------------------------------------------------------------------
-
+	
+	** Returns a 'MongoQ' that accepts fields as keys, and converts all values to BSON.
+	abstract MongoQ query()
+	
 	** Converts the Mongo document to an entity instance.
 	**
 	** The returned object is not guaranteed to be of any particular object,
@@ -156,31 +146,32 @@ internal const class DatastoreImpl : Datastore {
 
 	override const MongoColl	collection
 	override const Type			type
-	override const Str			qname
-	override const Str			name
 
-	private const BsonConverters	converters
+	private const BsonConvs		bsonConvs
 	private const Field 		idField
 	private const Field? 		versionField
+	private const Func			nameHookFn
+	private const Func			valueHookFn
 
-	// database is an injected service
-	internal new make(Type type, MongoDb database, BsonConverters converters) {
+	internal new make(MongoConnMgr connMgr, BsonConvs bsonConvs, Str dbName, Type type) {
 		entity		:= (Entity?) type.facet(Entity#, false)
 		collName	:= entity?.name ?: type.name
-		props		:= converters.propertyCache.getOrFindProps(type)
+		props		:= bsonConvs.propertyCache.getOrFindProps(type)
 
-		this.converters		= converters
-		this.collection		= database.collection(collName)
+		this.bsonConvs		= bsonConvs
+		this.collection		= MongoColl(connMgr, dbName, collName)
 		this.type			= type
-		this.qname			= collection.qname
-		this.name			= collection.name
-		this.idField		= props.find { it.name == "_id" 	 }?.field ?: throw IdNotFoundErr("Could not find property named '_id' on ${type.qname}.", props.map { it.name })
+		this.idField		= props.find { it.name == "_id" 	 }?.field ?: throw Err("Could not find BSON property named '_id' on ${type.qname}")
 		this.versionField	= props.find { it.name == "_version" }?.field
+		this.nameHookFn		= #nameHook.func.bind([this])
+		this.valueHookFn	= #toBson.func.bind([this])
 
 		if (versionField != null && !versionField.type.fits(Int#))
 			throw Err(stripSys("_version field must be of type Int - ${versionField.qname} -> ${versionField.type.qname}"))
 	}
 
+	
+	
 	// ---- Collection ----------------------------------------------------------------------------
 
 	override Bool exists() {
@@ -196,6 +187,8 @@ internal const class DatastoreImpl : Datastore {
 		return this
 	}
 
+	
+
 	// ---- Cursor Queries ------------------------------------------------------------------------
 
 	override Obj? findOne([Str:Obj?]? query := null, Bool checked := true) {
@@ -203,25 +196,20 @@ internal const class DatastoreImpl : Datastore {
 		return (entity == null) ? null : fromBsonDoc(entity)
 	}
 
-	override Obj[] findAll([Str:Obj?]? query := null, Obj? sort := null, Int skip := 0, Int? limit := null, [Str:Obj?]? projection := null) {
+	override Obj[] find([Str:Obj?]? query := null, Obj? sort := null, |MongoCmd cmd|? optsFn := null) {
 		// ensure empty lists are correctly typed
 		list := List.make(type, 16)
 		collection.find(query) {
-			it->sort		= sort
-			// FIXME
-//			if (sort is Str)	cursor.hint 	= sort
-//			if (sort is Map)	cursor.orderBy  = sort
-//			it->hint		= hint
-			it->skip		= skip
-			it->limit		= limit
-			it->projection	= projection
+			if (sort is Str) it->hint = sort
+			if (sort is Map) it->sort = sort
+			optsFn(it)
 		}.each |doc| {
 			list.add(fromBsonDoc(doc))
 		}
 		return list
 	}
 
-	override Int findCount([Str:Obj?]? query := null) {
+	override Int count([Str:Obj?]? query := null) {
 		collection.count(query)
 	}
 
@@ -234,6 +222,8 @@ internal const class DatastoreImpl : Datastore {
 		return fromBsonDoc(entity)
 	}
 
+	
+	
 	// ---- Write Operations ----------------------------------------------------------------------
 
 	override Obj insert(Obj entity) {
@@ -255,7 +245,7 @@ internal const class DatastoreImpl : Datastore {
 			throw ArgErr(stripSys("ID does not fit ${idField.qname} ${idField.type.signature}# - ${id.typeof.signature} ${id}"))
 		mongId := toBson(id)
 		n := collection.delete(["_id" : mongId])
-		if (checked && n != 1)
+		if (checked && n == 0)
 			throw Err("Could not find Morphia entity ${type.qname} with ID: ${id}")
 	}
 	
@@ -298,27 +288,53 @@ internal const class DatastoreImpl : Datastore {
 				versionField.set(entity, version+1)
 		}
 	}
+	
+	
 
 	// ---- Aggregation Commands ------------------------------------------------------------------
 
 	override Int size() {
 		collection.size
 	}
+	
+	
 
 	// ---- Conversion Methods --------------------------------------------------------------------
 
 	override Obj? fromBsonDoc([Str:Obj?]? doc) {
-		converters.fromBsonDoc(doc, type)
+		bsonConvs.fromBsonDoc(doc, type)
 	}
 
 	override [Str:Obj?]? toBsonDoc(Obj? entity) {
-		converters.toBsonDoc(entity)
+		bsonConvs.toBsonDoc(entity)
 	}
 
-	override Obj? toBson(Obj? entity) {
-		converters.toBsonVal(entity, entity?.typeof)
+	override Obj? toBson(Obj? value) {
+		bsonConvs.toBsonVal(value, value?.typeof)
+	}
+	
+	override MongoQ query() {
+		return MongoQ(nameHookFn, valueHookFn)
 	}
 
+	private Str nameHook(Obj name) {
+		fieldName := name as Str
+
+		if (name is Field) {
+			field := (Field) name
+			// we can't check if the field belongs to an Entity (think nested objects)
+			property := (BsonProp?) field.facet(BsonProp#, false)
+			fieldName = property?.name ?: field.name
+		}
+
+		if (fieldName == null)
+			throw ArgErr("Key must be a Field or Str: ${name.typeof.qname} - ${name}")
+		
+		return fieldName
+	}
+
+	
+	
 	// ---- Helper Methods ------------------------------------------------------------------------
 
 	override Str toStr() {
@@ -327,18 +343,5 @@ internal const class DatastoreImpl : Datastore {
 
 	static Str stripSys(Str str) {
 		str.replace("sys::", "")
-	}
-}
-
-@NoDoc
-const class IdNotFoundErr : Err, NotFoundErr {
-	override const Str?[] availableValues
-
-	new make(Str msg, Obj?[] availableValues, Err? cause := null) : super(msg, cause) {
-		this.availableValues = availableValues.map { it?.toStr }.sort
-	}
-
-	override Str toStr() {
-		NotFoundErr.super.toStr
 	}
 }

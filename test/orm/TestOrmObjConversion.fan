@@ -2,7 +2,7 @@
 internal class TestOrmObjConversion : Test {
 	
 	Void testConversion() {
-		ent := BsonConverters().fromBsonDoc([
+		ent := BsonConvs().fromBsonDoc([
 			"obj1"	: 68,
 			"obj2"	: "judge",
 			"obj3"	: 68.9f,
@@ -16,21 +16,21 @@ internal class TestOrmObjConversion : Test {
 
 	Void testNoConversion() {
 		verifyErrMsg(Err#, "BSON property obj2 of type Str does not fit field afMorphia::T_Entity02.obj2 of type Buf? : [obj1:68, obj2:judge]") {
-			BsonConverters().fromBsonDoc([:]{ordered=true}.add("obj1",68).add("obj2","judge"), T_Entity02#)
+			BsonConvs().fromBsonDoc([:]{ordered=true}.add("obj1",68).add("obj2","judge"), T_Entity02#)
 		}
 	}
 }
 
 internal class T_Entity04 {
-	@BsonProperty	Obj? obj1
-	@BsonProperty	Obj? obj2
-	@BsonProperty	Obj? obj3
-	@BsonProperty	Obj? obj4
+	@BsonProp	Obj? obj1
+	@BsonProp	Obj? obj2
+	@BsonProp	Obj? obj3
+	@BsonProp	Obj? obj4
 
 	// T_Entity04 also tests that entities can be created *without* an it-block ctor - which requires afBeanUtils::BeanBuilder
 }
 
 internal class T_Entity02 {
-	@BsonProperty	Obj? obj1
-	@BsonProperty	Buf? obj2
+	@BsonProp	Obj? obj1
+	@BsonProp	Buf? obj2
 }

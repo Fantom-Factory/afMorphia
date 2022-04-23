@@ -7,45 +7,45 @@ using afBeanUtils::BeanBuilder
 
 ** (Service) - 
 ** Converts Fantom objects to and from their JSON representation.
-const mixin BsonConverters {
+const mixin BsonConvs {
 
-	** Returns a new 'BsonConverters' instance.
+	** Returns a new 'BsonConvs' instance.
 	** 
 	** If 'converters' is 'null' then 'defConvs' is used. Common options are:
 	** 
 	**   makeEntityFn      : |Type type, Field:Obj? fieldVals->Obj?| { BeanBuilder.build(type, vals) }
 	**   storeNullFields   : false
 	**   strictMode        : false
-	**   propertyCache     : BsonPropertyCache()
+	**   propertyCache     : BsonPropCache()
 	** 
 	** Override 'makeEntity' to have IoC create entity instances.
 	** Set 'strictMode' to 'true' to Err if the JSON contains unmapped data.
 	** 
-	** *Serializable Mode* is where all non-transient fields are converted, regardless of any '@BsonProperty' facets. 
-	** Data from '@BsonProperty' facets, however, is still honoured if defined.
-	static new make([Type:BsonConverter]? converters := null, [Str:Obj?]? options := null) {
-		BsonConvertersImpl(converters ?: defConvs, options)
+	** *Serializable Mode* is where all non-transient fields are converted, regardless of any '@BsonProp' facets. 
+	** Data from '@BsonProp' facets, however, is still honoured if defined.
+	static new make([Type:BsonConv]? converters := null, [Str:Obj?]? options := null) {
+		BsonConvsImpl(converters ?: defConvs, options)
 	}
 
-	** Returns a new 'BsonConverters' whose options are overridden with the given ones.
-	abstract BsonConverters withOptions(Str:Obj? newOptions)
+	** Returns a new 'BsonConvs' whose options are overridden with the given ones.
+	abstract BsonConvs withOptions(Str:Obj? newOptions)
 	
 	** Returns the 'Converter' instance used to convert the given type. 
 	@Operator
-	abstract BsonConverter get(Type type)
+	abstract BsonConv get(Type type)
 
 	** The default set of JSON <-> Fantom converters.
-	static Type:BsonConverter defConvs() {
-		BsonConvertersImpl._defConvs
+	static Type:BsonConv defConvs() {
+		BsonConvsImpl._defConvs
 	}
 
 
 
 	@NoDoc	// not sure why we'd want these to be pubic?
-	internal abstract Obj? _toBsonCtx(Obj? fantomObj, BsonConverterCtx ctx)
+	internal abstract Obj? _toBsonCtx(Obj? fantomObj, BsonConvCtx ctx)
 
 	@NoDoc	// not sure why we'd want these to be pubic?
-	internal abstract Obj? _fromBsonCtx(Obj? bsonVal, BsonConverterCtx ctx)
+	internal abstract Obj? _fromBsonCtx(Obj? bsonVal, BsonConvCtx ctx)
 	
 	
 
@@ -74,18 +74,18 @@ const mixin BsonConverters {
 	abstract Obj? fromBsonDoc([Str:Obj?]? bsonObj, Type? fantomType)
 	
 	
-	** Returns the 'BsonPropertyCache'.
-	abstract BsonPropertyCache propertyCache()
+	** Returns the 'BsonPropCache'.
+	abstract BsonPropCache propertyCache()
 }
 
-internal const class BsonConvertersImpl : BsonConverters {
-	override const BsonPropertyCache	propertyCache
-	 		 const BsonTypeLookup		typeLookup
-			 const Unsafe				optionsRef	// use Unsafe because JS can't handle immutable functions
+internal const class BsonConvsImpl : BsonConvs {
+	override const BsonPropCache	propertyCache
+	 		 const BsonTypeLookup	typeLookup
+			 const Unsafe			optionsRef	// use Unsafe because JS can't handle immutable functions
 
 	new make(|This| f) { f(this) }
 	
-	new makeArgs(Type:BsonConverter converters, [Str:Obj?]? options) {
+	new makeArgs(Type:BsonConv converters, [Str:Obj?]? options) {
 		serializableMode := options?.get("serializableMode", false) == true
 		this.typeLookup = BsonTypeLookup(converters)
 		this.optionsRef	= Unsafe(Str:Obj?[
@@ -93,7 +93,7 @@ internal const class BsonConvertersImpl : BsonConverters {
 			"makeBsonObjFn"	: |->Str:Obj? | { Str:Obj?[:] { ordered = true } },
 			"makeMapFn"		: |Type t->Map| { Map((t.isGeneric ? Obj:Obj?# : t).toNonNullable) { it.ordered = true } },
 			"strictMode"	: false,
-			"propertyCache"	: BsonPropertyCache(serializableMode),
+			"propertyCache"	: BsonPropCache(serializableMode),
 		])
 		
 		if (options != null)
@@ -108,24 +108,24 @@ internal const class BsonConvertersImpl : BsonConverters {
 
 	Str:Obj? options() { optionsRef.val }
 	
-	override BsonConverters withOptions(Str:Obj? newOptions) {
+	override BsonConvs withOptions(Str:Obj? newOptions) {
 		if (newOptions.containsKey("serializableMode")) {
 			serializableMode := newOptions.get("serializableMode", false) == true
-			newOptions["propertyCache"] = BsonPropertyCache(serializableMode)
+			newOptions["propertyCache"] = BsonPropCache(serializableMode)
 		}
-		return BsonConvertersImpl {
+		return BsonConvsImpl {
 			it.optionsRef		= Unsafe(this.options.rw.setAll(newOptions))
 			it.propertyCache	= it.options["propertyCache"] ?: this.propertyCache
 			it.typeLookup		= this.typeLookup
 		}
 	}
 	
-	override Obj? _toBsonCtx(Obj? fantomObj, BsonConverterCtx ctx) {
+	override Obj? _toBsonCtx(Obj? fantomObj, BsonConvCtx ctx) {
 		hookVal := ctx.toBsonHookFn(fantomObj)		
 		return get(ctx.type).toBsonVal(fantomObj, ctx)
 	}
 
-	override Obj? _fromBsonCtx(Obj? bsonVal, BsonConverterCtx ctx) {
+	override Obj? _fromBsonCtx(Obj? bsonVal, BsonConvCtx ctx) {
 		hookVal := ctx.fromBsonHookFn(bsonVal)
 		return get(ctx.type).fromBsonVal(hookVal, ctx)
 	}
@@ -133,13 +133,13 @@ internal const class BsonConvertersImpl : BsonConverters {
 	override Obj? toBsonVal(Obj? fantomObj, Type? fantomType := null) {
 		if (fantomType == null) fantomType = fantomObj?.typeof
 		if (fantomType == null) return null	// this null is just convenience to allow [args].map { it?.typeof }
-		ctx := BsonConverterCtx.makeTop(this, fantomType, fantomObj, options)
+		ctx := BsonConvCtx.makeTop(this, fantomType, fantomObj, options)
 		return _toBsonCtx(fantomObj, ctx)
 	}
 
 	override Obj? fromBsonVal(Obj? bsonVal, Type? fantomType) {
 		if (fantomType == null) return null	// this null is just convenience to allow [args].map { it?.typeof }
-		ctx := BsonConverterCtx.makeTop(this, fantomType, bsonVal, options)
+		ctx := BsonConvCtx.makeTop(this, fantomType, bsonVal, options)
 		return _fromBsonCtx(bsonVal, ctx)
 	}
 
@@ -153,14 +153,14 @@ internal const class BsonConvertersImpl : BsonConverters {
 		fromBsonVal(bsonVal, fantomType)
 	}
 
-	override BsonConverter get(Type type) {
+	override BsonConv get(Type type) {
 		// if a specific converter can't be found then embed a record
 		typeLookup.findParent(type)
 	}
 	
-	static Type:BsonConverter _defConvs() {
-		config				:= Type:BsonConverter[:]
-		bsonLiteral			:= BsonLiteralConverter()
+	static Type:BsonConv _defConvs() {
+		config				:= Type:BsonConv[:]
+		bsonLiteral			:= BsonLiteralConv()
 
 		// BSON Literals - https://bson.org/
 		config[Bool#]		= bsonLiteral
@@ -177,27 +177,27 @@ internal const class BsonConvertersImpl : BsonConverters {
 		config[Timestamp#]	= bsonLiteral
 		
 		// Containers
-		config[Obj#]		= BsonObjConverter()
-		config[Map#]		= BsonMapConverter()
-		config[List#]		= BsonListConverter()
+		config[Obj#]		= BsonObjConv()
+		config[Map#]		= BsonMapConv()
+		config[List#]		= BsonListConv()
 
 		// Fantom Literals
-		config[Date#]		= BsonDateConverter()
-		config[Decimal#]	= BsonSimpleConverter(Decimal#)
-		config[Depend#]		= BsonSimpleConverter(Depend#)
-		config[Duration#]	= BsonSimpleConverter(Duration#)
-		config[Enum#]		= BsonEnumConverter()
-		config[Locale#]		= BsonSimpleConverter(Locale#)
-		config[MimeType#]	= BsonSimpleConverter(MimeType#)
-		config[Range#]		= BsonSimpleConverter(Range#)
-		config[Slot#]		= BsonSlotConverter()
-		config[Time#]		= BsonSimpleConverter(Time#)
-		config[TimeZone#]	= BsonSimpleConverter(TimeZone#)
-		config[Type#]		= BsonTypeConverter()
-		config[Unit#]		= BsonSimpleConverter(Unit#)
-		config[Uri#]		= BsonSimpleConverter(Uri#)
-		config[Uuid#]		= BsonSimpleConverter(Uuid#)
-		config[Version#]	= BsonSimpleConverter(Version#)
+		config[Date#]		= BsonDateConv()
+		config[Decimal#]	= BsonSimpleConv(Decimal#)
+		config[Depend#]		= BsonSimpleConv(Depend#)
+		config[Duration#]	= BsonSimpleConv(Duration#)
+		config[Enum#]		= BsonEnumConv()
+		config[Locale#]		= BsonSimpleConv(Locale#)
+		config[MimeType#]	= BsonSimpleConv(MimeType#)
+		config[Range#]		= BsonSimpleConv(Range#)
+		config[Slot#]		= BsonSlotConv()
+		config[Time#]		= BsonSimpleConv(Time#)
+		config[TimeZone#]	= BsonSimpleConv(TimeZone#)
+		config[Type#]		= BsonTypeConv()
+		config[Unit#]		= BsonSimpleConv(Unit#)
+		config[Uri#]		= BsonSimpleConv(Uri#)
+		config[Uuid#]		= BsonSimpleConv(Uuid#)
+		config[Version#]	= BsonSimpleConv(Version#)
 		
 		return config
 	}

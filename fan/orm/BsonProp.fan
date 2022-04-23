@@ -1,6 +1,6 @@
 
 ** Marks a field as a property of a BSON object.
-facet class BsonProperty {
+facet class BsonProp {
 
 	** Name of the BSON property name this field maps to. 
 	** 
@@ -12,7 +12,7 @@ facet class BsonProperty {
 	** 
 	** For dynamic typing evaluated at runtime, use a field named '_type':
 	** 
-	**   @BsonProperty Type _type := this.typeof
+	**   @BsonProp Type _type := this.typeof
 	** 
 	** Defaults to the field type.
 	const Type? implType

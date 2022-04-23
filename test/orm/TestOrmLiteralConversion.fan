@@ -52,7 +52,7 @@ internal class TestOrmLiteralConverters : Test {
 			version		= Version("1.2.3.4")
 		}
 		
-		bsonObj := BsonConverters().toBsonVal(entity) as Str:Obj?
+		bsonObj := BsonConvs().toBsonVal(entity) as Str:Obj?
 		
 		verifyEq	(bsonObj["float"],		entity.float)
 		verifySame	(bsonObj["str"],		entity.str)
@@ -132,7 +132,7 @@ internal class TestOrmLiteralConverters : Test {
 			"version"		: "1.2.3.4",
 		]
 
-		entity := (T_Entity08) BsonConverters().fromBsonVal(bsonObj, T_Entity08#)
+		entity := (T_Entity08) BsonConvs().fromBsonVal(bsonObj, T_Entity08#)
 
 		verifyEq	(entity.float,		bsonObj["float"])
 		verifySame	(entity.str, 		bsonObj["str"])
@@ -174,42 +174,42 @@ internal class TestOrmLiteralConverters : Test {
 
 internal class T_Entity08 {
 	// BSON Literals
-	@BsonProperty	Float		float
-	@BsonProperty	Str			str
-	@BsonProperty	Str:Str?	doc
-	@BsonProperty	Str?[]		list
-	@BsonProperty	Binary		binaryStd
-	@BsonProperty	Binary		binaryMd5
-	@BsonProperty	Binary		binaryOld
-	@BsonProperty	Buf			binaryBuf
-	@BsonProperty	ObjectId	objectId
-	@BsonProperty	Bool?		bool
-	@BsonProperty	DateTime?	dateTime
-	@BsonProperty	Obj?		nul
-	@BsonProperty	Regex		regex
-	@BsonProperty	Timestamp	timestamp
-	@BsonProperty	Int?		int
-	@BsonProperty	MinKey		minKey
-	@BsonProperty	MaxKey		maxKey
+	@BsonProp	Float		float
+	@BsonProp	Str			str
+	@BsonProp	Str:Str?	doc
+	@BsonProp	Str?[]		list
+	@BsonProp	Binary		binaryStd
+	@BsonProp	Binary		binaryMd5
+	@BsonProp	Binary		binaryOld
+	@BsonProp	Buf			binaryBuf
+	@BsonProp	ObjectId	objectId
+	@BsonProp	Bool?		bool
+	@BsonProp	DateTime?	dateTime
+	@BsonProp	Obj?		nul
+	@BsonProp	Regex		regex
+	@BsonProp	Timestamp	timestamp
+	@BsonProp	Int?		int
+	@BsonProp	MinKey		minKey
+	@BsonProp	MaxKey		maxKey
 	
 	// Fantom types
-	@BsonProperty	Date		date
-	@BsonProperty	Depend?		depend
-	@BsonProperty	Duration	duration
-	@BsonProperty	T_Entity08_Enum	enumm
-	@BsonProperty	Field?		field
-	@BsonProperty	Locale?		locale
-	@BsonProperty	Method?		method
-	@BsonProperty	MimeType?	mimeType
-	@BsonProperty	Range		range
-	@BsonProperty	Slot		slot
-	@BsonProperty	Time		time
-	@BsonProperty	TimeZone?	timeZone
-	@BsonProperty	Type		type
-	@BsonProperty	Unit?		unit
-	@BsonProperty	Uri			uri
-	@BsonProperty	Uuid?		uuid
-	@BsonProperty	Version?	version
+	@BsonProp	Date		date
+	@BsonProp	Depend?		depend
+	@BsonProp	Duration	duration
+	@BsonProp	T_Entity08_Enum	enumm
+	@BsonProp	Field?		field
+	@BsonProp	Locale?		locale
+	@BsonProp	Method?		method
+	@BsonProp	MimeType?	mimeType
+	@BsonProp	Range		range
+	@BsonProp	Slot		slot
+	@BsonProp	Time		time
+	@BsonProp	TimeZone?	timeZone
+	@BsonProp	Type		type
+	@BsonProp	Unit?		unit
+	@BsonProp	Uri			uri
+	@BsonProp	Uuid?		uuid
+	@BsonProp	Version?	version
 	
 	new make(|This|in) { in(this) }
 }
