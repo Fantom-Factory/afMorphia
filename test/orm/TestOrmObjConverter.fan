@@ -40,14 +40,14 @@ internal class TestOrmObjConverter : Test {
 	
 	Void testNullStrategy_nullProperty() {
 		docConv  := BsonConvs(null, ["storeNullFields":true])
-		mongoObj := docConv.toBsonDoc(T_Entity14())
+		mongoObj := docConv.toBsonDoc(T_Entity16())
 		verify    (mongoObj.containsKey("empty"))
 		verifyNull(mongoObj.getOrThrow("empty"))
 	}
 
 	Void testNullStrategy_noProperty() {
 		docConv  := BsonConvs(null, ["storeNullFields":false])
-		mongoObj := docConv.toBsonDoc(T_Entity14())
+		mongoObj := docConv.toBsonDoc(T_Entity16())
 		verifyFalse(mongoObj.containsKey("empty"))
 	}
 }
@@ -79,7 +79,7 @@ internal class T_Entity06_Impl2 : T_Entity06 {
 	new make(|This|? in := null) { in?.call(this) }
 }
 
-internal class T_Entity14 {
+internal class T_Entity16 {
 	@BsonProp Str? empty
 }
 

@@ -29,7 +29,7 @@ class Build : BuildPod {
 			"afMongo 1.2.0 - 1.2",
 		]
 		
-		srcDirs = [`fan/`, `fan/db/`, `fan/orm/`, `fan/orm/advanced/`, `fan/orm/internal/`, `fan/orm/internal/converters/`, `test/`, `test/orm/`]
+		srcDirs = [`fan/`, `fan/db/`, `fan/orm/`, `fan/orm/advanced/`, `fan/orm/internal/`, `fan/orm/internal/converters/`, `test/`, `test/db/`, `test/orm/`]
 		resDirs = [`doc/`]
 	}
 }

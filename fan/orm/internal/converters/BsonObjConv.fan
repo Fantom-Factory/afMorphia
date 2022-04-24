@@ -1,4 +1,5 @@
 using afBeanUtils::ReflectUtils
+using afBson::BsonType
 
 ** The main converter for BSON objects. 
 internal const class BsonObjConv : BsonConv {
@@ -108,7 +109,7 @@ internal const class BsonObjConv : BsonConv {
 		obj.map |val->Str| {
 			if (val == null)
 				return "null"
-			if (literals.contains(val.typeof.toNonNullable))
+			if (literals.contains(val.typeof.toNonNullable) || BsonType.isBsonLiteral(val.typeof))
 				return val.toStr
 			return "..." 
 		}

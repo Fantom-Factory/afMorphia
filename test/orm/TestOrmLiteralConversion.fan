@@ -16,7 +16,6 @@ internal class TestOrmLiteralConverters : Test {
 			str 		= "string"
 			doc			= Str:Str?["wot":"ever"]
 			list		= Str["wot","ever"]
-			binaryStd	= Binary("dragon".toBuf)
 			binaryMd5	= Binary("dragon".toBuf, Binary.BIN_MD5)
 			binaryOld	= Binary("dragon".toBuf, Binary.BIN_BINARY_OLD)
 			binaryBuf	= "vampire".toBuf
@@ -58,7 +57,6 @@ internal class TestOrmLiteralConverters : Test {
 		verifySame	(bsonObj["str"],		entity.str)
 		verifyEq	(bsonObj["doc"],		Str:Obj?["wot":"ever"])	// all mongo maps have the Str:Obj? signature
 		verifySame	(bsonObj["list"],		entity.list)
-		verifySame	(bsonObj["binaryStd"],	entity.binaryStd)
 		verifySame	(bsonObj["binaryMd5"],	entity.binaryMd5)
 		verifySame	(bsonObj["binaryOld"],	entity.binaryOld)
 		verifySame	(bsonObj["binaryBuf"],	entity.binaryBuf)
@@ -138,7 +136,6 @@ internal class TestOrmLiteralConverters : Test {
 		verifySame	(entity.str, 		bsonObj["str"])
 		verifyEq	(entity.doc.size,	bsonObj["doc"]->size)	// the two maps have diff sigs Str:Obj? vs Str:Str?
 		verifyEq	(entity.list.size,	bsonObj["list"]->size)	// again Obj? vs Str?
-		verifySame	(entity.binaryStd,	bsonObj["binaryStd"])
 		verifySame	(entity.binaryMd5,	bsonObj["binaryMd5"])
 		verifySame	(entity.binaryOld,	bsonObj["binaryOld"])
 		verifySame	(entity.binaryBuf,	bsonObj["binaryBuf"])
@@ -173,12 +170,13 @@ internal class TestOrmLiteralConverters : Test {
 }
 
 internal class T_Entity08 {
+	@BsonProp	ObjectId?	_id
+
 	// BSON Literals
 	@BsonProp	Float		float
 	@BsonProp	Str			str
 	@BsonProp	Str:Str?	doc
 	@BsonProp	Str?[]		list
-	@BsonProp	Binary		binaryStd
 	@BsonProp	Binary		binaryMd5
 	@BsonProp	Binary		binaryOld
 	@BsonProp	Buf			binaryBuf
@@ -210,6 +208,8 @@ internal class T_Entity08 {
 	@BsonProp	Uri			uri
 	@BsonProp	Uuid?		uuid
 	@BsonProp	Version?	version
+	@BsonProp
+	[Int:T_Entity08_Enum]?	map
 	
 	new make(|This|in) { in(this) }
 }
