@@ -56,6 +56,20 @@ const mixin Datastore {
 
 	** A general purpose 'find()' method whose cursor returns converted entity objects.
 	** 
+	** pre>
+	** syntax: fantom
+	** find(["rick":"morty"]) {
+	**   it->sort        = ["fieldName":1]
+	**   it->hint        = "_indexName_"
+	**   it->skip        = 50
+	**   it->limit       = 100
+	**   it->projection  = ["_id":1, "name":1]
+	**   it->batchSize   = 101
+	**   it->singleBatch = true
+	**   it->collation   = [...]
+	** }.toList
+	** <pre
+	** 
 	** The given query may generated from 'query()'.
 	abstract MorphiaCur find([Str:Obj?]? query := null, |MongoCmd cmd|? optsFn := null)
 
@@ -73,7 +87,7 @@ const mixin Datastore {
 	** Values may either be the standard Mongo '1' and '-1' for ascending / descending.
 	**
 	** The 'sort' map, should it contain more than 1 entry, must be ordered.
-	abstract Obj[] findAll(|MongoQ|? queryFn := null, Obj? sort := null)
+	abstract Obj[] findAll(Obj? sort := null, |MongoQ|? queryFn := null)
 
 	** Returns the number of documents that would be returned by the given 'query'.
 	**
@@ -201,7 +215,7 @@ internal const class DatastoreImpl : Datastore {
 		return (entity == null) ? null : fromBsonDoc(entity)
 	}
 
-	override Obj[] findAll(|MongoQ|? queryFn := null, Obj? sort := null) {
+	override Obj[] findAll(Obj? sort := null, |MongoQ|? queryFn := null) {
 		query := this.query
 		queryFn?.call(query)
 		return find(query.query) {
