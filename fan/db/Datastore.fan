@@ -29,8 +29,8 @@ const mixin Datastore {
 	abstract Type	type()
 
 	** Create a new Datastore instance.
-	static new make(MongoConnMgr connMgr, BsonConvs bsonConvs, Str dbName, Type entityType) {
-		DatastoreImpl(connMgr, bsonConvs, dbName, entityType)
+	static new make(MongoConnMgr connMgr, Type entityType, BsonConvs? bsonConvs := null, Str? dbName := null) {
+		DatastoreImpl(connMgr, entityType, bsonConvs, dbName)
 	}
 
 	
@@ -54,9 +54,12 @@ const mixin Datastore {
 	
 	// ---- Cursor Queries ------------------------------------------------------------------------
 
+	** A general purpose 'find()' method whose cursor returns converted entity objects.
+	** 
+	** The given query may generated from 'query()'.
+	abstract MorphiaCur find([Str:Obj?]? query := null, |MongoCmd cmd|? optsFn := null)
+
 	** An (optimised) method to return one document from the given 'query'.
-	**
-	** Note: This method requires you to be familiar with Mongo query notation. If not, use the `Query` builder instead.
 	**
 	** Throws an 'Err' if no documents are found and 'checked' is 'true'.
 	** Always throws an 'Err' if the query returns more than one document.
@@ -64,15 +67,13 @@ const mixin Datastore {
 
 	** Returns a list of entities that match the given 'query'.
 	**
-	** Note: This method requires you to be familiar with Mongo query notation. If not, use the `Query` builder instead.
-	**
 	** If 'sort' is a Str it should the name of an index to use as a hint.
 	**
 	** If 'sort' is a '[Str:Obj?]' map, it should be a sort document with field names as keys.
 	** Values may either be the standard Mongo '1' and '-1' for ascending / descending.
 	**
 	** The 'sort' map, should it contain more than 1 entry, must be ordered.
-	abstract Obj[] find([Str:Obj?]? query := null, Obj? sort := null, |MongoCmd cmd|? optsFn := null)
+	abstract Obj[] findAll(|MongoQ|? queryFn := null, Obj? sort := null)
 
 	** Returns the number of documents that would be returned by the given 'query'.
 	**
@@ -150,20 +151,19 @@ internal const class DatastoreImpl : Datastore {
 	private const BsonConvs		bsonConvs
 	private const Field 		idField
 	private const Field? 		versionField
-	private const Func			nameHookFn
 	private const Func			valueHookFn
 
-	internal new make(MongoConnMgr connMgr, BsonConvs bsonConvs, Str dbName, Type type) {
+	internal new make(MongoConnMgr connMgr, Type type, BsonConvs? bsonConvs, Str? dbName) {
+		bsonConvs	 = bsonConvs ?: BsonConvs()
 		entity		:= (Entity?) type.facet(Entity#, false)
 		collName	:= entity?.name ?: type.name
 		props		:= bsonConvs.propertyCache.getOrFindProps(type)
 
-		this.bsonConvs		= bsonConvs
-		this.collection		= MongoColl(connMgr, dbName, collName)
+		this.bsonConvs		= bsonConvs 
+		this.collection		= MongoColl(connMgr, collName, dbName)
 		this.type			= type
 		this.idField		= props.find { it.name == "_id" 	 }?.field ?: throw Err("Could not find BSON property named '_id' on ${type.qname}")
 		this.versionField	= props.find { it.name == "_version" }?.field
-		this.nameHookFn		= #nameHook.func.bind([this])
 		this.valueHookFn	= #toBson.func.bind([this])
 
 		if (versionField != null && !versionField.type.fits(Int#))
@@ -191,22 +191,23 @@ internal const class DatastoreImpl : Datastore {
 
 	// ---- Cursor Queries ------------------------------------------------------------------------
 
+	override MorphiaCur find([Str:Obj?]? query := null, |MongoCmd cmd|? optsFn := null) {
+		mongoCur := collection.find(query, optsFn)
+		return MorphiaCur(mongoCur, type, bsonConvs)
+	}
+	
 	override Obj? findOne([Str:Obj?]? query := null, Bool checked := true) {
 		entity := collection.findOne(query, checked)
 		return (entity == null) ? null : fromBsonDoc(entity)
 	}
 
-	override Obj[] find([Str:Obj?]? query := null, Obj? sort := null, |MongoCmd cmd|? optsFn := null) {
-		// ensure empty lists are correctly typed
-		list := List.make(type, 16)
-		collection.find(query) {
+	override Obj[] findAll(|MongoQ|? queryFn := null, Obj? sort := null) {
+		query := this.query
+		queryFn?.call(query)
+		return find(query.query) {
 			if (sort is Str) it->hint = sort
 			if (sort is Map) it->sort = sort
-			optsFn(it)
-		}.each |doc| {
-			list.add(fromBsonDoc(doc))
-		}
-		return list
+		}.toList
 	}
 
 	override Int count([Str:Obj?]? query := null) {
@@ -260,7 +261,7 @@ internal const class DatastoreImpl : Datastore {
 		mongId	:= toBson(id)
 
 		if (versionField == null) {
-			result := collection.update(["_id" : mongId], toBsonDoc(entity))
+			result := collection.replace(["_id" : mongId], toBsonDoc(entity))
 			noOfMatches := result["n"]
 			if (noOfMatches == 0 && checked)
 				throw Err("Could not find Morphia entity ${type.qname} with ID: ${mongId}")
@@ -269,7 +270,7 @@ internal const class DatastoreImpl : Datastore {
 			// don't user $inc & $set because then we have to $unset all the null fields!
 			version	:= (Int) versionField.get(entity)
 			toMongo := toBsonDoc(entity).set("_version", version + 1)
-			result	:= collection.update(["_id" : mongId, "_version" : version], toMongo)
+			result	:= collection.replace(["_id" : mongId, "_version" : version], toMongo)
 			noOfMatches := result["n"]
 
 			if (noOfMatches == 0) {
@@ -314,10 +315,10 @@ internal const class DatastoreImpl : Datastore {
 	}
 	
 	override MongoQ query() {
-		return MongoQ(nameHookFn, valueHookFn)
+		MongoQ(#nameHook.func, valueHookFn)
 	}
 
-	private Str nameHook(Obj name) {
+	private static Str nameHook(Obj name) {
 		fieldName := name as Str
 
 		if (name is Field) {
