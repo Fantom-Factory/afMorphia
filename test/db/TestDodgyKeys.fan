@@ -5,7 +5,7 @@ internal class TestDodgyKeys : MorphiaDbTest {
 	
 	override Void setup() {
 		super.setup
-		this.ds = Datastore(mc.connMgr, T_Entity20#)
+		this.ds = morphia[T_Entity20#]
 	}
 
 	Void testDodgyMapKeys() {		

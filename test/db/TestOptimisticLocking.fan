@@ -6,7 +6,7 @@ internal class TestOptimisticLocking : MorphiaDbTest {
 	
 	override Void setup() {
 		super.setup
-		this.ds = Datastore(mc.connMgr, T_Entity23#)
+		this.ds = morphia[T_Entity23#]
 	}
 
 //	Void testVersionIsInt() {

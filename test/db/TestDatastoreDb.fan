@@ -5,7 +5,7 @@ internal class TestDatastoreDb : MorphiaDbTest {
 	
 	override Void setup() {
 		super.setup
-		this.ds = Datastore(mc.connMgr, T_Entity14#)
+		this.ds = morphia[T_Entity14#]
 	}
 
 	Void testBasicDatastore() {		

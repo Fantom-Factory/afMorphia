@@ -13,7 +13,7 @@ internal class TestLiteralsInDb : MorphiaDbTest {
 	
 	override Void setup() {
 		super.setup
-		this.ds = Datastore(mc.connMgr, T_Entity08#)
+		this.ds = morphia[T_Entity08#]
 	}
 	
 	Void testStoringLiterals() {

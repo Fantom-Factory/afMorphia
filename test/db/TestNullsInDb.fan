@@ -6,7 +6,7 @@ internal class TestNullsInDb : MorphiaDbTest {
 	
 	override Void setup() {
 		super.setup
-		this.ds = Datastore(mc.connMgr, T_Entity25#)
+		this.ds = morphia[T_Entity25#]
 	}
 	
 	Void testNull() {

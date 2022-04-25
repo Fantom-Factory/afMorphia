@@ -10,8 +10,8 @@ internal class TestQueryTextSearch : MorphiaDbTest {
 	override Void setup() {
 		super.setup
 		
-		this.ds  = Datastore(mc.connMgr, T_Entity18#)
-		this.ds2 = Datastore(mc.connMgr, T_Entity27#)
+		this.ds  = morphia[T_Entity18#]
+		this.ds2 = morphia[T_Entity27#]
 		
 		ds.drop
 		ds.insert(T_Entity18("Dredd",		"Judges Dredd Anderson"))

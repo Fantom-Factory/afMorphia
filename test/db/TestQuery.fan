@@ -9,7 +9,7 @@ internal class TestQuery : MorphiaDbTest {
 	override Void setup() {
 		super.setup
 		
-		this.ds = Datastore(mc.connMgr, T_Entity18#)
+		this.ds = morphia[T_Entity18#]
 		
 		ds.drop(false)
 		ds.insert(T_Entity18("Judge",   16))
