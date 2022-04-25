@@ -4,7 +4,7 @@ using afMongo::MongoDb
 using afMongo::MongoQ
 using afBson::BsonIO
 
-class Morphia {
+const class Morphia {
 	
 	** The underlying connection manager.
 	const MongoConnMgr	connMgr
@@ -20,15 +20,29 @@ class Morphia {
 	
 	** Creates a new Morphia instance.
 	new make(Uri connectionUrl, BsonConvs? bsonConvs := null, Str? dbName := null, Log? log := null) {
-		this.connMgr	= MongoConnMgr(connectionUrl, log)	
+		this.connMgr	= MongoConnMgr(connectionUrl, log).startup	
 		this.bsonConvs	= bsonConvs ?: BsonConvs()
 		this.dbName		= dbName ?: connMgr.database
 		this.db			= this.dbName == null ? null : MongoDb(connMgr, this.dbName)
 	}
 	
+	@NoDoc
+	new makeWithConnMgr(MongoConnMgr connMgr, BsonConvs? bsonConvs := null, Str? dbName := null) {
+		this.connMgr	= connMgr.startup
+		this.bsonConvs	= bsonConvs ?: BsonConvs()
+		this.dbName		= dbName ?: connMgr.database
+		this.db			= this.dbName == null ? null : MongoDb(connMgr, this.dbName)
+	}
+	
+	** Convenience / shorthand notation for 'datastore(name)'
+	@Operator	
+	Datastore get(Type entityType) {
+		datastore(entityType)
+	}
+
 	** Creates a new 'Datastore' instance for the given entity type.
 	Datastore datastore(Type entityType) {
-		DatastoreImpl(connMgr, entityType, bsonConvs, dbName)
+		DatastoreImpl(entityType, connMgr, bsonConvs, dbName)
 	}
 	
 	** Converts the given Fantom object to its BSON object representation.
@@ -51,6 +65,11 @@ class Morphia {
 		BsonIO().print(bsonConvs.toBsonVal(entity), maxWidth, indent)
 	}
 	
+	** Convenience for 'MongoConnMgr.shutdown()'.
+	Void shutdown() {
+		connMgr.shutdown
+	}
+
 	private static Str nameHook(Obj name) {
 		fieldName := name as Str
 

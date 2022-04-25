@@ -1,25 +1,25 @@
 
 ** Passed to 'BsonConvs' to give context on what they're converting.
 class BsonConvCtx {
-	BsonConvCtx?		parent	{ private set }
-		  Type			type	{ private set }
+	BsonConvCtx?		parent		{ private set }
+		  Type			type		{ private set }
 	
 	const Bool			isField
 	const Field?		field
 	const BsonProp?		bsonProperty
-		  Obj?			obj		{ private set }
+		  Obj?			obj			{ private set }
 	
 	const Bool			isMap
 	const Obj?			mapKey
-		  Map?			map		{ private set }
+		  Map?			map			{ private set }
 	
 	const Bool			isList
 	const Int?			listIdx
-		  List?			list	{ private set }
+		  List?			list		{ private set }
 
 		  Str:Obj?		options
 	
-	private BsonConvs	converters
+		  BsonConvs		converters	{ private set }
 
 	private new make(|This| f) { f(this) }
 

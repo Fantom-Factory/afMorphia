@@ -28,9 +28,12 @@ const mixin Datastore {
 	** The Fantom entity type this Datastore associates with.
 	abstract Type	type()
 
+	** The name of the associated Mongo Collection.
+	abstract Str	name()
+
 	** Create a new Datastore instance.
-	static new make(MongoConnMgr connMgr, Type entityType, BsonConvs? bsonConvs := null, Str? dbName := null) {
-		DatastoreImpl(connMgr, entityType, bsonConvs, dbName)
+	static new make(Type entityType, MongoConnMgr connMgr, BsonConvs? bsonConvs := null, Str? dbName := null) {
+		DatastoreImpl(entityType, connMgr, bsonConvs, dbName)
 	}
 
 	
@@ -81,12 +84,10 @@ const mixin Datastore {
 
 	** Returns a list of entities that match the given 'query'.
 	**
-	** If 'sort' is a Str it should the name of an index to use as a hint.
-	**
-	** If 'sort' is a '[Str:Obj?]' map, it should be a sort document with field names as keys.
-	** Values may either be the standard Mongo '1' and '-1' for ascending / descending.
-	**
-	** The 'sort' map, should it contain more than 1 entry, must be ordered.
+	** 'sort' may one of:
+	**  - 'Str'      - the name an index to be used as a hint
+	**  - 'Str:Obj?' - a ordered sort document of field names with the standard Mongo '1' and '-1' values for ascending / descending
+	**  - 'Field'    - the field to use for an (ascending) sort, use 'reverse()' on the returned list for descending sorts
 	abstract Obj[] findAll(Obj? sort := null, |MongoQ|? queryFn := null)
 
 	** Returns the number of documents that would be returned by the given 'query'.
@@ -139,6 +140,8 @@ const mixin Datastore {
 	// ---- Conversion Methods --------------------------------------------------------------------
 	
 	** Returns a 'MongoQ' that accepts fields as keys, and converts all values to BSON.
+	** 
+	** Use the result of query with 'find()'.
 	abstract MongoQ query()
 	
 	** Converts the Mongo document to an entity instance.
@@ -161,13 +164,15 @@ internal const class DatastoreImpl : Datastore {
 
 	override const MongoColl	collection
 	override const Type			type
+	override const Str			name
 
 	private const BsonConvs		bsonConvs
 	private const Field 		idField
 	private const Field? 		versionField
 	private const Func			valueHookFn
 
-	internal new make(MongoConnMgr connMgr, Type type, BsonConvs? bsonConvs, Str? dbName) {
+	** Special order for IoC
+	internal new make(Type type, MongoConnMgr connMgr, BsonConvs? bsonConvs, Str? dbName) {
 		bsonConvs	 = bsonConvs ?: BsonConvs()
 		entity		:= (Entity?) type.facet(Entity#, false)
 		collName	:= entity?.name ?: type.name
@@ -176,6 +181,7 @@ internal const class DatastoreImpl : Datastore {
 		this.bsonConvs		= bsonConvs 
 		this.collection		= MongoColl(connMgr, collName, dbName)
 		this.type			= type
+		this.name			= collection.name
 		this.idField		= props.find { it.name == "_id" 	 }?.field ?: throw Err("Could not find BSON property named '_id' on ${type.qname}")
 		this.versionField	= props.find { it.name == "_version" }?.field
 		this.valueHookFn	= #toBson.func.bind([this])

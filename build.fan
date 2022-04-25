@@ -1,4 +1,4 @@
-using build
+using build::BuildPod
 
 class Build : BuildPod {
 
@@ -9,24 +9,21 @@ class Build : BuildPod {
 
 		meta = [
 			"pod.dis"		: "Morphia",
-			"afIoc.module"	: "afMorphia::MorphiaModule",
 			"repo.tags"		: "database",
 			"repo.public"	: "true"
 		]
 
-//		index	= [	"afIoc.module"	: "afMorphia::MorphiaModule" ]
-
 		depends = [
-			"sys        1.0.71 - 1.0", 
-			"concurrent 1.0.71 - 1.0",	// for contributing an ActorPool 
+			"sys          1.0.71 - 1.0", 
+			"concurrent   1.0.71 - 1.0",	// ActorPool for ConnMgr 
 			
 			// ---- Core ------------------------
 			"afBeanUtils  1.0.8  - 1.0",
 			"afConcurrent 1.0.18 - 1.0",
 
 			// ---- Mongo -----------------------
-			"afBson  2.0.0 - 2.0",
-			"afMongo 1.2.0 - 1.2",
+			"afBson       2.0.0  - 2.0",
+			"afMongo      1.2.0  - 1.2",
 		]
 		
 		srcDirs = [`fan/`, `fan/db/`, `fan/orm/`, `fan/orm/advanced/`, `fan/orm/internal/`, `fan/orm/internal/converters/`, `test/`, `test/db/`, `test/orm/`]
