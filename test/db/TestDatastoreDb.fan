@@ -33,12 +33,12 @@ internal class TestDatastoreDb : MorphiaDbTest {
 		verifyEq(ds.exists, true)
 		verifyEq(ds.size, 2)
 		
-		ent1 := (T_Entity14) ds.findOne(["name":"Micky Mouse"])
+		ent1 := (T_Entity14) ds.findOne(true) { eq("name", "Micky Mouse") }
 		verifyEq(ent1.name, 	"Micky Mouse")
 		verifyEq(ent1.email,	`micky.mouse@disney.com`)
 		verifyEq(ent1.age, 		42)
 
-		verifyEq(ds.count(["age":36]), 	1)
+		verifyEq(ds.count { it->age = 36 }, 1)
 
 		ents := ds.find(["age":36]).toList
 		verifyEq(ents.size, 	1)
@@ -49,8 +49,8 @@ internal class TestDatastoreDb : MorphiaDbTest {
 
 		ent2.age = 34
 		ds.update(ent2)
-		verifyEq(ds.count(["age":36]), 	0)
-		verifyEq(ds.count(["age":34]), 	1)
+		verifyEq(ds.count{ it->age = 36 }, 	0)
+		verifyEq(ds.count{ it->age = 34 }, 	1)
 
 		verifyEq(ds.findAll.size,	2)
 
@@ -66,7 +66,7 @@ internal class TestDatastoreDb : MorphiaDbTest {
 	}
 	
 	Void testDatastoreCheckedMethodsReturnNull() {
-		minny := ds.findOne(["_id":69], false)
+		minny := ds.findOne(false) { it->_id = 69 }
 		verifyNull(minny)
 
 		minny = ds.get(69, false)

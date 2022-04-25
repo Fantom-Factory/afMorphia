@@ -1,5 +1,6 @@
 using afMongo::MongoConnMgr
 using afMongo::MongoConnUrl
+using afMongo::MongoDb
 using afMongo::MongoQ
 using afBson::BsonIO
 
@@ -11,14 +12,18 @@ class Morphia {
 	** The Object-Relational-Mapping converters.
 	const BsonConvs	bsonConvs
 
-	** The name of the database.
-	const Str dbName
+	** The name of the database (if defined).
+	const Str? dbName
+	
+	** The referenced database (if defined).
+	const MongoDb? db
 	
 	** Creates a new Morphia instance.
 	new make(Uri connectionUrl, BsonConvs? bsonConvs := null, Str? dbName := null, Log? log := null) {
 		this.connMgr	= MongoConnMgr(connectionUrl, log)	
 		this.bsonConvs	= bsonConvs ?: BsonConvs()
 		this.dbName		= dbName ?: connMgr.database
+		this.db			= this.dbName == null ? null : MongoDb(connMgr, this.dbName)
 	}
 	
 	** Creates a new 'Datastore' instance for the given entity type.

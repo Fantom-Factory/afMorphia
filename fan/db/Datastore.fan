@@ -77,7 +77,7 @@ const mixin Datastore {
 	**
 	** Throws an 'Err' if no documents are found and 'checked' is 'true'.
 	** Always throws an 'Err' if the query returns more than one document.
-	abstract Obj? findOne([Str:Obj?]? query := null, Bool checked := true)
+	abstract Obj? findOne(Bool checked, |MongoQ| queryFn)
 
 	** Returns a list of entities that match the given 'query'.
 	**
@@ -92,7 +92,7 @@ const mixin Datastore {
 	** Returns the number of documents that would be returned by the given 'query'.
 	**
 	** Note: This method requires you to be familiar with Mongo query notation. If not, use the `Query` builder instead.
-	abstract Int count([Str:Obj?]? query := null)
+	abstract Int count(|MongoQ| queryFn)
 
 	** Returns the document with the given Id.
 	** Convenience / shorthand notation for 'findOne(["_id": id], checked)'
@@ -201,7 +201,7 @@ internal const class DatastoreImpl : Datastore {
 		return this
 	}
 
-	
+
 
 	// ---- Cursor Queries ------------------------------------------------------------------------
 
@@ -210,8 +210,10 @@ internal const class DatastoreImpl : Datastore {
 		return MorphiaCur(mongoCur, type, bsonConvs)
 	}
 	
-	override Obj? findOne([Str:Obj?]? query := null, Bool checked := true) {
-		entity := collection.findOne(query, checked)
+	override Obj? findOne(Bool checked, |MongoQ| queryFn) {
+		query := this.query
+		queryFn.call(query)
+		entity := collection.findOne(query.query, checked)
 		return (entity == null) ? null : fromBsonDoc(entity)
 	}
 
@@ -224,8 +226,10 @@ internal const class DatastoreImpl : Datastore {
 		}.toList
 	}
 
-	override Int count([Str:Obj?]? query := null) {
-		collection.count(query)
+	override Int count(|MongoQ| queryFn) {
+		query := this.query
+		queryFn.call(query)
+		return collection.count(query.query)
 	}
 
 	@Operator

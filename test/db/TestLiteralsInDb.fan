@@ -61,7 +61,7 @@ internal class TestLiteralsInDb : MorphiaDbTest {
 		}
 		
 		ds.insert(entity)
-		entity = ds.findOne([:])
+		entity = ds.findAll.first
 		
 		// Mongo types
 		verifyEq(entity.float, 		69f)
