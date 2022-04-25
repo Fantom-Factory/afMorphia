@@ -23,7 +23,7 @@ class Build : BuildPod {
 
 			// ---- Mongo -----------------------
 			"afBson       2.0.0  - 2.0",
-			"afMongo      1.2.0  - 1.2",
+			"afMongo      2.0.0  - 2.0",
 		]
 		
 		srcDirs = [`fan/`, `fan/db/`, `fan/orm/`, `fan/orm/advanced/`, `fan/orm/internal/`, `fan/orm/internal/converters/`, `test/`, `test/db/`, `test/orm/`]
