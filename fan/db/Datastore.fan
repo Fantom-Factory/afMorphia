@@ -93,7 +93,7 @@ const mixin Datastore {
 	** Returns the number of documents that would be returned by the given 'query'.
 	**
 	** Note: This method requires you to be familiar with Mongo query notation. If not, use the `Query` builder instead.
-	abstract Int count(|MongoQ| queryFn)
+	abstract Int count(|MongoQ|? queryFn := null)
 
 	** Returns the document with the given Id.
 	** Convenience / shorthand notation for 'findOne(["_id": id], checked)'
@@ -121,12 +121,12 @@ const mixin Datastore {
 	** Note this is MUCH quicker than dropping the Collection.
 	abstract Int deleteAll()
 	
-	** Updates the given entity.
+	** Updates (and returns) the given entity.
 	** Throws an 'Err' if 'checked' and nothing was updated.
 	**
 	** Will always throw 'OptimisticLockErr' if the entity contains a '_version' field which does not match what's in the
 	** database. On a successful save, this will increment the '_version' field on the entity.
-	abstract Void update(Obj entity, Bool checked := true)
+	abstract Obj update(Obj entity, Bool checked := true)
 
 	
 	
@@ -232,7 +232,9 @@ internal const class DatastoreImpl : Datastore {
 		}.toList
 	}
 
-	override Int count(|MongoQ| queryFn) {
+	override Int count(|MongoQ|? queryFn := null) {
+		if (queryFn == null)
+			return size
 		query := this.query
 		queryFn.call(query)
 		return collection.count(query.query)
@@ -278,7 +280,7 @@ internal const class DatastoreImpl : Datastore {
 		collection.deleteAll
 	}
 
-	override Void update(Obj entity, Bool checked := true) {
+	override Obj update(Obj entity, Bool checked := true) {
 		if (!entity.typeof.fits(type))
 			throw ArgErr("Entity of type ${entity.typeof.qname} does not fit Datastore type ${type.qname}")
 		id		:= idField.get(entity)
@@ -305,13 +307,14 @@ internal const class DatastoreImpl : Datastore {
 					throw OptimisticLockErr("A newer version of ${type.qname} already exists, with ID ${mongId}", type, version)
 				if (checked)
 					throw Err("Could not find Morphia entity ${type.qname} with ID: ${mongId}")
-				return
+				return entity
 			}
 
 			// if all okay, attempt to inc the _version in the entity
 			if (!versionField.isConst)
 				versionField.set(entity, version+1)
 		}
+		return entity
 	}
 	
 	
