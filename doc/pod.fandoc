@@ -2,57 +2,50 @@ Overview
 ********
 Morphia is a Fantom to MongoDB object mapping library.
 
-Morphia is an extension to the [Mongo]`pod:afMongo` library that maps Fantom objects and their fields to and from MongoDB collections and documents.
+Morphia is an extension to the [Mongo]`pod:afMongo` library that maps Fantom objects and their fields to and from MongoDB collections and BSON documents.
 
 Morphia features include:
  - All Fantom literals and [BSON]`pod:afBson` types supported by default,
  - Support for embedded / nested Fantom objects,
- - Extensible mapping - add custom Fantom <-> Mongo converters,
- - Query Builder API.
+ - Extensible mapping - add your own Fantom <-> Mongo converters,
+ - Optimistic locking support
+ - Cursor support
 
 Note: Morphia has no association with [Morphia - the Java to MongoDB mapping library]`https://github.com/mongodb/morphia/wiki`. Well, except for the name of course!
 
 
 
 Quick Start [#quickStart]
-*************************
+***********
 1. Start up an instance of MongoDB:
 
     C:\> mongod
 
     MongoDB starting
-    db version v3.2.10
+    db version v5.2.0
     waiting for connections on port 27017
 
 2. Create a text file called 'Example.fan'
 
     syntax: fantom
 
-    using afIocConfig::ApplicationDefaults
     using afBson::ObjectId
-    using afMorphia
-    using afIoc
+    using afMorphia::Morphia
 
     @Entity
     class User {
-        @Property ObjectId   _id
-        @Property Str        name
-        @Property Int        age
+        @BsonProp ObjectId   _id
+        @BsonProp Str        name
+        @BsonProp Int        age
 
         new make(|This|in) { in(this) }
     }
 
     class Example {
 
-        @Inject { type=User# }
-        Datastore? datastore
-
         Void main() {
-            reg := RegistryBuilder()
-                    .addModule(ExampleModule#)
-                    .addModulesFromPod("afMorphia")
-                    .build
-            reg.activeScope.inject(this)
+            morphia   := Morphia(`mongodb://localhost:27017/exampledb`)
+            datastore := morphia.datastore(User#)
 
             micky := User {
                 it._id  = ObjectId()
@@ -64,8 +57,9 @@ Quick Start [#quickStart]
             datastore.insert(micky)
 
             // ---- Read --------
-            q     := Query().field(User#age).eq(42)
-            mouse := (User) datastore.query(q).findOne
+            mouse := (User) datastore.findOne(true) {
+                it->age = 42
+            }
             echo(mouse.name)  // --> Micky Mouse
 
             // ---- Update -----
@@ -75,48 +69,23 @@ Quick Start [#quickStart]
             // ---- Delete ------
             datastore.delete(micky)
 
-            reg.shutdown
-        }
-    }
-
-    const class ExampleModule {
-        @Contribute { serviceType=ApplicationDefaults# }
-        static Void contributeAppDefaults(Configuration config) {
-            config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
+            morphia.shutdown
         }
     }
 
 
 3. Run 'Example.fan' as a Fantom script from the command line:
 
-    [afIoc] Adding module Example_0::ExampleModule
-    [afIoc] Adding module definitions from pod 'afMorphia'
-    [afIoc] Adding module afMorphia::MorphiaModule
-    [afIoc] Adding module afConcurrent::ConcurrentModule
-    [afIoc] Adding module afIocConfig::IocConfigModule
+    [afMongo] Found a new Master at mongodb://localhost:27017/exampledb
     [afMongo]
 
-         Alien-Factory
+         Fantom-Factory
      _____ ___ ___ ___ ___
     |     | . |   | . | . |
     |_|_|_|___|_|_|_  |___|
-                  |___|1.1.0
-
-    Connected to MongoDB v3.2.10 (at mongodb://localhost:27017)
-
-    [afIoc]
-       ___    __                 _____        _
-      / _ |  / /_____  _____    / ___/__  ___/ /_________  __ __
-     / _  | / // / -_|/ _  /===/ __// _ \/ _/ __/ _  / __|/ // /
-    /_/ |_|/_//_/\__|/_//_/   /_/   \_,_/__/\__/____/_/   \_, /
-                                Alien-Factory IoC v3.0.4 /___/
-
-    IoC Registry built in 81ms and started up in 205ms
+                  |___|2.0.0
 
     Micky Mouse
-
-    [afIoc] IoC shutdown in 12ms
-    [afIoc] "Goodbye!" from afIoc!
 
 
 
@@ -126,32 +95,15 @@ Usage
 
 MongoDB Connections
 ===================
-A [Mongo Connection URL]`http://docs.mongodb.org/manual/reference/connection-string/` should be contributed as an application default.
-This supplies the default database to connect to, along with any default user credentials.
+A [Mongo Connection URL]`http://docs.mongodb.org/manual/reference/connection-string/` supplies the default database to connect to, along with any user credentials.
 
-To do so, create a 'config.props' file in the root directory of your application:
-
-  afMorphia.mongoUrl = mongodb://username:password@localhost:27017/exampledb
-
-Or you can add the contribution in your 'AppModule':
-
-pre>
-syntax: fantom
-
-@Contribute { serviceType=ApplicationDefaults# }
-static Void contributeAppDefaults(Configuration config) {
-    config[MorphiaConfigIds.mongoUrl] = `mongodb://username:password@localhost:27017/exampledb`
-}
-<pre
-
-'Morphia' uses the connection URL to create a pooled [ConnectionManager]`afMongo::ConnectionManagerPooled`.
-The 'ConnectionManager', and all of its connections, are gracefully closed when IoC / BedSheet is shutdown.
+'Morphia' then uses the connection URL to create a pooled [MongoConnMgr]`afMongo::MongoConnMgr`.
 
 Some connection URL options are supported:
   - 'mongodb://username:password@example1.com/database?maxPoolSize=50'
   - 'mongodb://example2.com?minPoolSize=10&maxPoolSize=25'
 
-See [ConnectionManagerPooled]`afMongo::ConnectionManagerPooled` for more details.
+See [ConnectionManagerPooled]`afMongo::MongoConnMgr` for more details.
 
 
 
@@ -165,7 +117,7 @@ Example, if your entity type is 'acmeExample::User' then it maps to a Mongo coll
 This may be overriden by providing a value for the '@Entity.name' attribute.
 
 Entity fields are mapped to properties in a MongoDB document.
-Use the '@Property' facet to mark fields that should be mapped to / from a Mongo property.
+Use the '@BsonProp' facet to mark fields that should be mapped to / from a Mongo property.
 Again, the default is to take the property name and type from the field, but it may be overridden by facet values.
 
 As all MongoDB documents define a unique property named '_id', all entities must also define a unique property named '_id'.
@@ -175,7 +127,7 @@ Example:
 
   @Entity
   class MyEntity {
-      @Property
+      @BsonProp
       ObjectId _id
       ...
   }
@@ -186,7 +138,7 @@ or
 
   @Entity { name="AnotherEntity" }
   class MyEntity {
-      @Property { name="_id" }
+      @BsonProp { name="_id" }
       ObjectId wotever
       ...
   }
@@ -199,35 +151,26 @@ Datastore
 =========
 A `Datastore` wraps a [Mongo Collection]`afMongo::Collection` and is your gateway to saving and reading Fantom objects to / from the MongoDB.
 
-Each 'Datastore' instance is specific to an Entity type, so to inject a 'Datastore' you need to specify which Entity it is associated with.
-Use the '@Inject.type' attribute to do this. Example:
+Each 'Datastore' instance is specific to an Entity type, so to create a 'Datastore' you need to specify which Entity it is associated with.
 
-  syntax: fantom
-
-  @Inject { type=User# }
-  Datastore userDatastore
-
-You may also inject Mongo 'Collections' in the same manner:
-
-  syntax: fantom
-
-  @Inject { type=User# }
-  Collection userCollection
+pre>
+syntax: fantom
+datastore := morhphia.datastore(User#)
+<pre
 
 
 
 Mapping
 *******
-At the core of 'Morphia' is a suite of [Converters]`Converter` that map Fantom objects to Mongo documents.
+At the core of 'Morphia' is a suite of [Converters]`BsonConv` that map Fantom objects to BSON documents.
 
 Standard Converters
 ===================
-By default, 'Morphia' provides support and converters for the following Fantom types:
+'Morphia' provides support and converters for the following Fantom types:
 
 pre>
         null
 afBson::Binary
-afBson::Code
 afBson::MaxKey
 afBson::MinKey
 afBson::ObjectId
@@ -289,15 +232,15 @@ syntax: fantom
 
 @Entity
 class User {
-    @Property ObjectId _id
-    @Property Name     name
-    @Property Int      age
+    @BsonProp ObjectId _id
+    @BsonProp Name     name
+    @BsonProp Int      age
     new make(|This|in) { in(this) }
 }
 
 class Name {
-    @Property Str  firstName
-    @Property Str  lastName
+    @BsonProp Str  firstName
+    @BsonProp Str  lastName
     new make(|This|in) { in(this) }
 }
 
@@ -311,7 +254,7 @@ micky := User {
       lastName  = "Mouse"
     }
 }
-mongoDoc := datastore.toMongoDoc(micky)
+mongoDoc := datastore.toBsonDoc(micky)
 
 echo(mongoDoc) // --> [_id:xxxx, age:42, name:[lastName:Mouse, firstName:Micky]]
 <pre
@@ -324,15 +267,15 @@ Default Values
 ==============
 It is often desirable not to bloat out your database by storing common default values. Perhaps you have a 'boolean' values that is rarely set, or a list that is usually empty? In such situations it can be advantageous to *NOT* store such values in the database.
 
-To that end, you can set the 'defVal' value on a field's '@Property' facet.
+To that end, you can set the 'defVal' value on a field's '@BsonProp' facet.
 
 pre>
 syntax: fantom
 
-@Property { defVal=false }
+@BsonProp { defVal=false }
 Bool  marker
 
-@Property { defVal=[,] }
+@BsonProp { defVal=[,] }
 Str[] list
 <pre
 
@@ -349,12 +292,12 @@ Sometimes you want to store a list of mixed embedded classes. Often the list is 
 pre>
 syntax: fantom
 
-@Property
+@BsonProp
 SuperClass[] allMixedUp
 
 ...
 
-allMixedUp := SuperClass[
+this.allMixedUp := SuperClass[
     SubClass1(),
     SubClass2()
 ]
@@ -362,15 +305,17 @@ allMixedUp := SuperClass[
 
 This works fine when saving to MongoDb, but when reading the list back Morphia doesn't know which implementation class to create for each item.
 
-To get round this, you could create your own converter class for 'SuperClass' which determines which implementation to create.
-
-Or, you could add a '@Property' to the items called '_type' that stores the implementation type. Morphia will then use this to determine which implementation type to create. The easiest way to do this is to just add the following to 'SuperClass':
+To get round this, add a field called '_type' to 'SubClassX' that stores the implementation type. Morphia will use this to determine which implementation type to create. The easiest way to do this is to just add the following to 'SuperClass':
 
 pre>
 syntax: fantom
 
-@Property
-Type _type := typeof
+class SuperClass {
+    @BsonProp
+    Type _type := typeof
+
+    ...
+}
 <pre
 
 
@@ -378,41 +323,32 @@ Type _type := typeof
 Custom Converters
 =================
 If you want more control over how objects are mapped to and from Mongo, then contribute a custom converter.
-Do this by implementing 'Converter' and contributing an instance to the 'Converters' service.
+Do this by implementing 'BsonConv' and pass it to 'BsonConvs' when you constuct it.
 
 Example, to store the 'Name' object as a simple hyphenated string:
 
 pre>
 syntax: fantom
+using afMorphia::BsonConv
+using afMorphia::BsonConvCtx
 
-const class NameConverter : Converter {
+const class NameConverter : BsonConv {
 
-    override Obj? toFantom(Type fantomType, Obj? mongoObj) {
-        // decide how you want to handle null values
-        if (mongoObj == null) return null
-
-        mong := ((Str) mongoObj).split('-')
-        return Name { it.firstName = mong[0]; it.lastName = mong[1] }
-    }
-
-    override Obj? toMongo(Type fantomType, Obj? fantomObj) {
+    override Obj? toBsonVal(Obj? fantomObj, BsonConvCtx ctx) {
         // decide how you want to handle null values
         if (fantomObj == null) return null
 
         name := (Name) fantomObj
         return "${name.firstName}-${name.lastName}"
     }
-}
-<pre
 
-Then contribute it in your AppModule:
+    override Obj? fromBsonVal(Obj? bsonVal, BsonConvCtx ctx) {
+        // decide how you want to handle null values
+        if (bsonVal == null) return null
 
-pre>
-syntax: fantom
-
-@Contribute { serviceType=Converters# }
-Void contributeConverters(Configuration config) {
-    config[Name#] = NameConverter()
+        vals := ((Str) bsonVal).split('-')
+        return Name { it.firstName = vals[0]; it.lastName = vals[1] }
+    }
 }
 <pre
 
@@ -429,7 +365,13 @@ micky := User {
       it.lastName  = "Mouse"
     }
 }
-mongoDoc := datastore.toMongoDoc(micky)
+
+bsonConvs := BsonConvs(
+    BsonConvs.defConvs {
+        it[Name#] = NameConverter
+    }
+)
+bsonDoc  := bsonConvs.toBsonDoc(micky)
 
 echo(mongoDoc) // --> [_id:xxxx, age:42, name:Micky-Mouse]
 <pre
@@ -438,91 +380,22 @@ echo(mongoDoc) // --> [_id:xxxx, age:42, name:Micky-Mouse]
 
 Storing Nulls in Mongo [#storingNullsInMongo]
 ======================
-When converting Fantom objects *to* Mongo, the 'ObjConverter' decides what to do if a Fantom field has the value 'null'.
-Should it store a key in the MongoDb with a 'null' value, or should it not store the key at all?
+When converting Fantom objects *to* Mongo, if a Fantom field has the value 'null' should it store a key in the MongoDb with a 'null' value, or should it not store the key at all?
 
-To conserve storage space in MongoDB, by default 'ObjConverter' does not store the keys.
+To conserve storage space in MongoDB, by default, Morphia does not store the keys.
 
-If you want to store 'null' values, then create a new 'ObjConverter' passing 'true' into the ctor, and contribute it in your AppModule:
+If you want to store 'null' values, then pass an option to 'BsonConvs'.
 Example:
 
 pre>
 syntax: fantom
 
-@Contribute { serviceType=Converters# }
-Void contributeConverters(Configuration config) {
-    config.overrideValue(Obj#, config.build(ObjConverter#,  [true]), "MyObjConverter")
-}
-<pre
-
-See [Storing null vs not storing the key at all in MongoDB]`http://stackoverflow.com/questions/12403240/storing-null-vs-not-storing-the-key-at-all-in-mongodb` for more details.
-
-
-
-Query API
-*********
-Querying a MongoDB for documents requires knowledge of their [Query Operators]`http://docs.mongodb.org/manual/reference/operator/query/`.
-While simple for simple queries:
-
-  query := ["age": 42]
-
-It can quickly grow unmanagable and confusing for larger queries. For example, this tangled mess is from the official documentation for the [$and operator]`http://docs.mongodb.org/manual/reference/operator/query/and/`:
-
-pre>
-syntax: fantom
-
-query := [
-    "\$and" : [
-        ["\$or": [["price": 0.99f], ["price": 1.99f]]],
-        ["\$or": [["sale" : true ], ["qty"  : ["\$lt": 20]]]]
-    ]
-]
-<pre
-
-For that reason Morphia provides a means to build and execute `Query` objects that rely on more meaningful method names.
-The simple example may be re-written as:
-
-  syntax: fantom
-  query := Query().field("age").eq(42)
-
-Use a `QueryExecutor` as returned from the 'Datastore.query(...)' method to run the query.
-
-   datastore.query(query).findAll
-
-The more complicated '$and' example is then written as:
-
-pre>
-syntax: fantom
-
-query := Query().and([
-    Query().or([
-        Query().field("price").eq(0.99f),
-        Query().field("price").eq(1.99f)
-    ]),
-    Query().or([
-        Query().field("sale" ).eq(true),
-        Query().field("qty"  ).lessThan(20)
-    ])
+bsonConvs := BsonConvs(null, [
+    "storeNullFields" : true
 ])
 <pre
 
-The `Queries` mixin squirrels away common Query constructors into their own methods. Tip: Create a simple 'q()' method to minimise code:
-
-pre>
-syntax: fantom
-
-Queries q() { Queries() }
-
-...
-
-query := q.and([
-    q.or([ q.eq("price", 0.99f), q.eq("price", 1.99f)  ]),
-    q.or([ q.eq("sale", true),   q.lessThan("qty", 29) ])
-])
-<pre
-
-Which is much easier to construct, understand, and debug.
-Plus the autocomplete nature of IDEs such as [F4]`http://www.xored.com/products/f4/` means you don't have to constantly consult the [Mongo documentation]`http://docs.mongodb.org/manual/reference/method/db.collection.find/`!
+See the [BsonConvs ctor]`BsonConvs.make` and [Storing null vs not storing the key at all in MongoDB]`http://stackoverflow.com/questions/12403240/storing-null-vs-not-storing-the-key-at-all-in-mongodb` for more details.
 
 
 
@@ -543,113 +416,20 @@ To use, just define an 'Int _version' field property on your top level entity:
 
 pre>
 syntax: fantom
+class SomeEntity {
 
-@Property
-Int _version
+    @BsonProp
+    Int _version
+
+    ...
+}
 <pre
 
 On a successful save. and if the field is non-const, 'Datastore.update()' will increment the '_version' field on the entity so you may re-save it again without having to re-read it from the database.
 
 
 
-Testing
-*******
-To use Morphia in unit testing, lay out the test class in a similar way to the QuickStart example:
-
-pre>
-syntax: fantom
-
-using afMorphia::Datastore
-using afMorphia::MorphiaConfigIds
-using afIoc::Configuration
-using afIoc::Contribute
-using afIoc::Inject
-using afIoc::Registry
-using afIoc::RegistryBuilder
-using afIocConfig::ApplicationDefaults
-
-class TestExample : Test {
-    Registry? reg
-
-    @Inject { type=MyEntity# }
-    Datastore? datastore
-
-    override Void setup() {
-        reg = RegistryBuilder()
-                  .addModule(TestModule#)
-                  .addModulesFromPod("afMorphia")
-                  .build.startup
-        reg.activeScope.inject(this)
-    }
-
-    override Void teardown() {
-        // use elvis incase 'reg' was never set due to a startup Err
-        // we don't want an NullErr in teardown() to mask the real problem
-        reg?.shutdown
-    }
-
-    Void testStuff() {
-        ...
-        datastore.insert(...)
-        ...
-    }
-}
-
-const class TestModule {
-    @Contribute { serviceType=ApplicationDefaults# }
-    Void contributeAppDefaults(Configuration config) {
-        config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
-    }
-}
-<pre
-
-The 'setup()' method builds the IoC Registry, passing in a 'TestModule' that defines the mongo connection url.
-
-Note that because the registry is being built from scratch, you need to add modules from all the IoC libraries the test uses. Hence the example above adds modules for 'afMorphia' and 'afIocConfig'.
-
-Should you fail to add a required module / library, the test will fail with an 'IocErr':
-
-  TEST FAILED
-  afIoc::IocErr: No service matches type XXXX.
-
-Where 'XXXX' is a service in the library you forgot to add.
-
-Rather than create a specific 'TestModule' for testing, you could just use your application's 'AppModule' instead, subject to the BedSheet exception below.
-
-
-
-Testing in a BedSheet Web App
-=============================
-A standard 'AppModule' for a BedSheet application **can not** be used in a Morphia unit test. That is because the 'AppModule' will configure BedSheet and other web related services that aren't available in the Morphia unit test.
-
-The strategy here is to split the 'AppModule' into two, one that configures web services and another that just configures database services. Use IoC's '@SubModule' facet to reference one from the other.
-
-pre>
-syntax: fantom
-
-** Configure BedSheet and other web services here
-@SubModule { modules=[DatabaseModule#] }
-const class AppModule {
-    ....
-}
-
-** Configure Morphia and other database services here
-const class DatabaseModule {
-
-    @Contribute { serviceType=ApplicationDefaults# }
-    Void contributeAppDefaults(Configuration config) {
-        config[MorphiaConfigIds.mongoUrl] = `mongodb://localhost:27017/exampledb`
-    }
-
-    ...
-}
-<pre
-
-Now you can just use the 'DatabaseModule' in your Morphia tests. And when BedSheet loads 'AppModule', the '@SubModule' facet will ensure the 'DatabaseModule' gets loaded too.
-
-
-
 Remarks
 *******
-If you're looking for cross-platform MongoDB GUI client then look no further than [Robomongo]`http://robomongo.org/`!
+If you're looking for cross-platform MongoDB GUI client then look no further than [Robomongo]`http://robomongo.org/` / Robo 3T / Studio 3T Free!
 
