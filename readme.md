@@ -154,7 +154,7 @@ Note that a Mongo Id *does not* need to be an `ObjectId`. Any object may be used
 
 ### Datastore
 
-A [Datastore](http://eggbox.fantomfactory.org/pods/afMorphia/api/Datastore) wraps a [Mongo Collection](http://eggbox.fantomfactory.org/pods/afMongo/api/Collection) and is your gateway to saving and reading Fantom objects to / from the MongoDB.
+A [Datastore](http://eggbox.fantomfactory.org/pods/afMorphia/api/Datastore) wraps a [Mongo Collection](http://eggbox.fantomfactory.org/pods/afMongo/api/MongoColl) and is your gateway to saving and reading Fantom objects to / from the MongoDB.
 
 Each `Datastore` instance is specific to an Entity type, so to create a `Datastore` you need to specify which Entity it is associated with.
 
