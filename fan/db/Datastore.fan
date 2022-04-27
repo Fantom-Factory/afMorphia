@@ -50,7 +50,7 @@ const mixin Datastore {
 
 	** Drops the underlying MongoDB collection.
 	**
-	** Note that deleting all documents is MUCH quicker than dropping the Collection. See `deleteAll` for details.
+	** Note that deleting all documents is MUCH quicker than dropping the Collection.
 	abstract This drop(Bool force := false)
 	
 	
