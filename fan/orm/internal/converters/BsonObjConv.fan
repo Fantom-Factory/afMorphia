@@ -43,7 +43,7 @@ internal const class BsonObjConv : BsonConv {
 //		if (bsonVal isnot Map && !ReflectUtils.fits(bsonVal.typeof, fantomType))
 //			throw Err(documentConv_noConverter(fantomType, bsonVal))
 
-		// we get sent to ObjConverter when the field type is 'Obj?' - so just return the JSON literal
+		// we get sent to ObjConverter when the field type is 'Obj?' - so just return the BSON literal
 		if (bsonVal isnot Map)
 			return bsonVal
 

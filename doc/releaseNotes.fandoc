@@ -1,23 +1,36 @@
-v1.2
+v2.0 [#2.0]
+****
+A complete re-write from the ground up. ORM based on Fantom Factory's [afJson]`pod:afJson` library.
+
+
+
+v2.0.0 [#2.0.0]
+======
+ - New: Everything!
+ - Chg: [IoC]`pod:afIoc` support has moved to [afMorphiaIoc]`pod:afMorphiaIoc`.
+
+
+
+v1.2 [#1.2]
 ****
 
-v1.2.6
+v1.2.6 [#1.2.6]
 ======
  - New: '@Property.defVal' feature - default values are not saved to MongoDB.
  - Chg: Added advanced ('@NoDoc') 'PropertyCache' class to centralise and speed up '@Property' searching on entities.
 
-v1.2.4
+v1.2.4 [#1.2.4]
 ======
  - New: 'Datastore.deleteAll()' convenience method.
  - Chg: Removed internal references to 'DatastoreImpl' so 'Datastore' may be decoratored. (See upcoming *Dirty Cash*!)
 
-v1.2.2
+v1.2.2 [#1.2.2]
 ======
  - New: Support for optimistic locking via '_version' properties.
  - New: Mixed inheritance support via '_type' properties.
  - Chg: 'Queries' mixin is now non-const.
 
-v1.2.0
+v1.2.0 [#1.2.0]
 ======
  - New: Support for Text Searching!
  - New: 'Query.toStr()' returns something useful.
@@ -25,10 +38,10 @@ v1.2.0
 
 
 
-v1.1
+v1.1 [#1.1]
 ****
 
-v1.1.2
+v1.1.2 [#1.1.2]
 ======
  - Chg: 'Query.field()' & 'QueryExecutor.orderBy()' may now take an actual entity field instance.
  - Chg: Lists returned from 'Datastore.findAll()' are now *of* the datatype, not Obj.
@@ -36,7 +49,7 @@ v1.1.2
  - Chg: Added hook to 'ObjConverter' that collects all property fields.
  - Bug: If using a non-BSON type for ID fields, an Err was thrown after an update if the document hadn't changed.
 
-v1.1.0
+v1.1.0 [#1.1.0]
 ======
  - New: 'Queries' mixin to ease Query construction.
  - Chg: 'Converter.toMongo()' now takes a 'Type' param as the 'fantomObj' arg may now be nullable. This allows 'null' Fantom objects to be represented by non-null Mongo objects. (Breaking change.)
@@ -46,36 +59,36 @@ v1.1.0
 
 
 
-v1.0
+v1.0 [#1.0]
 ****
 
-v1.0.10
+v1.0.10 [#1.0.10]
 =======
  - Bug: 'QueryExecutor.orderByIndex()' always threw an Err.
  - Bug: 'QueryExecutor.limit()' may take 'null'.
 
-v1.0.8
+v1.0.8 [#1.0.8]
 ======
  - Chg: Map keys are automatically encoded / decoded as unicode escape sequences as MongoDB does not allow characters '$' and '.' in keys.
 
-v1.0.6
+v1.0.6 [#1.0.6]
 ======
  - New: Added 'Datastore.isEmpty()'.
  - Chg: 'MapConverter.makeMap()' now always creates an ordered map.
  - Bug: Only BSON types could be used for the '_id' field.
 
-v1.0.4
+v1.0.4 [#1.0.4]
 ======
  - New: 'SimpleConverter' utility class for converting simple serializable types to and from 'Str'.
  - New: Converters for 'Depend', 'Locale', 'MimeType', 'Time', 'TimeZone', 'Unit', 'Uuid', 'Version'.
  - Chg: Documented and made public the 'Converters' service.
  - Chg: 'Datastore.insert()' now returns the given entity.
 
-v1.0.2
+v1.0.2 [#1.0.2]
 ======
  - Bug: 'Binary' objects with a generic subtype could not be read from the database as BSON converted them to 'Buf' objects.
 
-v1.0.0
+v1.0.0 [#1.0.0]
 ======
  - New: Introduced the Query Builder API.
  - New: 'IntSequences' service provides an alternative to unique ObjectIDs.
@@ -83,28 +96,28 @@ v1.0.0
 
 
 
-v0.0
+v0.0 [#0.0]
 ****
 
-v0.0.10
+v0.0.10 [#0.0.10]
 =======
  - Chg: Deleted '@DatastoreType', use '@Inject' instead.
  - Chg: Updated to use [IoC 2.0.0]`pod:afIoc` and [IoC Config 1.0.16]`pod:afIocConfig`
 
-v0.0.8
+v0.0.8 [#0.0.8]
 ======
  - Chg: Updated to use [IoC 1.7.6]`pod:afIoc` and [IoC Config 1.0.14]`pod:afIocConfig`
 
-v0.0.6
+v0.0.6 [#0.0.6]
 ======
  - Chg: Updated to use [IoC 1.7.0]`pod:afIoc`.
 
-v0.0.4
+v0.0.4 [#0.0.4]
 ======
  - Chg: '@Entity' facet is now inherited.
  - Bug: 'Datastore.findOne()' and 'Datastore.get()' could throw a 'NullErr' if checked was false.
 
-v0.0.2
+v0.0.2 [#0.0.2]
 ======
  - New: Preview Release
 

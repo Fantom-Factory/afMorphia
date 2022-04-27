@@ -1,6 +1,6 @@
 using afConcurrent::AtomicMap
 
-@NoDoc
+@NoDoc	// Advanced use only
 const class BsonPropCache {
 	private const AtomicMap cache := AtomicMap()
 	private const Bool serializableMode

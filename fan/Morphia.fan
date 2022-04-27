@@ -2,8 +2,10 @@ using afMongo::MongoConnMgr
 using afMongo::MongoConnUrl
 using afMongo::MongoDb
 using afMongo::MongoQ
+using afMongo::MongoClient
 using afBson::BsonIO
 
+** Mongo to Fantom Object Mapping.
 const class Morphia {
 	
 	** The underlying connection manager.
@@ -24,6 +26,8 @@ const class Morphia {
 		this.bsonConvs	= bsonConvs ?: BsonConvs()
 		this.dbName		= dbName ?: connMgr.database
 		this.db			= this.dbName == null ? null : MongoDb(connMgr, this.dbName)
+		// print the logo
+		MongoClient(connMgr).toStr
 	}
 	
 	@NoDoc
@@ -32,6 +36,7 @@ const class Morphia {
 		this.bsonConvs	= bsonConvs ?: BsonConvs()
 		this.dbName		= dbName ?: connMgr.database
 		this.db			= this.dbName == null ? null : MongoDb(connMgr, this.dbName)
+		// given this is advanced us - no need for the logo
 	}
 	
 	** Convenience / shorthand notation for 'datastore(name)'

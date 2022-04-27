@@ -1,7 +1,7 @@
 using afBeanUtils::ReflectUtils
 
 ** Holds resolved '@BsonProp' values.
-@NoDoc
+@NoDoc	// Advanced use only
 const class BsonPropData {
 	
 	** The backing storage field.
@@ -10,7 +10,7 @@ const class BsonPropData {
 	** The 'BsonProp' facet on the field (if any).
 	const	BsonProp? bsonProperty
 	
-	** Name of the JSON property name this field maps to.
+	** Name of the BSON property name this field maps to.
 	const	Str	name
 	
 	** The implementation 'Type' to be instantiated.

@@ -6,7 +6,7 @@ using afBson::Timestamp
 using afBeanUtils::BeanBuilder
 
 ** (Service) - 
-** Converts Fantom objects to and from their JSON representation.
+** Converts Fantom objects to and from their BSON representation.
 const mixin BsonConvs {
 
 	** Returns a new 'BsonConvs' instance.
@@ -19,7 +19,7 @@ const mixin BsonConvs {
 	**   propertyCache     : BsonPropCache()
 	** 
 	** Override 'makeEntity' to have IoC create entity instances.
-	** Set 'strictMode' to 'true' to Err if the JSON contains unmapped data.
+	** Set 'strictMode' to 'true' to Err if the BSON contains unmapped data.
 	** 
 	** *Serializable Mode* is where all non-transient fields are converted, regardless of any '@BsonProp' facets. 
 	** Data from '@BsonProp' facets, however, is still honoured if defined.
@@ -34,7 +34,7 @@ const mixin BsonConvs {
 	@Operator
 	abstract BsonConv get(Type type)
 
-	** The default set of JSON <-> Fantom converters.
+	** The default set of BSON <-> Fantom converters.
 	static Type:BsonConv defConvs() {
 		BsonConvsImpl._defConvs
 	}
@@ -49,13 +49,13 @@ const mixin BsonConvs {
 	
 	
 
-	** Converts the given Fantom object to its JSON representation.
+	** Converts the given Fantom object to its BSON representation.
 	** 
 	** 'fantomObj' is nullable so converters can create empty / default objects.
 	** 'fantomType' in case 'fantomObj' is null, but defaults to 'fantomObj?.typeof'. 
 	abstract Obj? toBsonVal(Obj? fantomObj, Type? fantomType := null)
 	
-	** Converts a JSON value to the given Fantom type.
+	** Converts a BSON value to the given Fantom type.
 	** If 'fantomType' is 'null' then 'null' is always returned. 
 	** 
 	** 'bsonVal' is nullable so converters can choose whether or not to create empty lists and maps.
