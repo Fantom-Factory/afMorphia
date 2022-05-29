@@ -25,7 +25,7 @@ const class Morphia {
 	new make(Uri connectionUrl, BsonConvs? bsonConvs := null, Str? dbName := null, Log? log := null) {
 		this.connMgr	= MongoConnMgr(connectionUrl, log).startup	
 		this.bsonConvs	= bsonConvs ?: BsonConvs()
-		this.dbName		= dbName ?: connMgr.database
+		this.dbName		= dbName ?: connMgr.mongoConnUrl.dbName
 		this.db			= this.dbName == null ? null : MongoDb(connMgr, this.dbName)
 		// print the logo
 		MongoClient(connMgr).toStr
@@ -35,7 +35,7 @@ const class Morphia {
 	new makeWithConnMgr(MongoConnMgr connMgr, BsonConvs? bsonConvs := null, Str? dbName := null) {
 		this.connMgr	= connMgr.startup
 		this.bsonConvs	= bsonConvs ?: BsonConvs()
-		this.dbName		= dbName ?: connMgr.database
+		this.dbName		= dbName ?: connMgr.mongoConnUrl.dbName
 		this.db			= this.dbName == null ? null : MongoDb(connMgr, this.dbName)
 		// given this is advanced us - no need for the logo
 	}
