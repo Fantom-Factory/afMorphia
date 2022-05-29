@@ -3,6 +3,9 @@ v2.0 [#2.0]
 A complete re-write from the ground up. ORM based on Fantom Factory's [afJson]`pod:afJson` library.
 
 
+v2.0.2 [#2.0.2]
+======
+ - Chg: Updated to use [afMongo 2.1]`pod:afMongo`.
 
 v2.0.0 [#2.0.0]
 ======

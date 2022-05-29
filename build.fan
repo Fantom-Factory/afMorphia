@@ -5,7 +5,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afMorphia"
 		summary = "A Fantom to MongoDB object mapping library"
-		version = Version("2.0.1")
+		version = Version("2.0.2")
 
 		meta = [
 			"pod.dis"		: "Morphia",
@@ -22,10 +22,10 @@ class Build : BuildPod {
 			"afConcurrent 1.0.18 - 1.0",
 
 			// ---- Mongo -----------------------
-			"afBson       2.0.0  - 2.0",
-			"afMongo      2.0.0  - 2.0",
+			"afBson       2.0.2  - 2.0",
+			"afMongo      2.1.0  - 2.1",
 		]
-		
+	
 		srcDirs = [`fan/`, `fan/db/`, `fan/orm/`, `fan/orm/advanced/`, `fan/orm/internal/`, `fan/orm/internal/converters/`, `test/`, `test/db/`, `test/orm/`]
 		resDirs = [`doc/`]
 	}
