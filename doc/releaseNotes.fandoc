@@ -5,6 +5,7 @@ A complete re-write from the ground up. ORM based on Fantom Factory's [afJson]`p
 
 v2.0.2 [#2.0.2]
 ======
+ - New: Added 'connMgr()' and 'db()' convenience methods to 'Datastore'.
  - Chg: Updated to use [afMongo 2.1]`pod:afMongo`.
 
 v2.0.0 [#2.0.0]

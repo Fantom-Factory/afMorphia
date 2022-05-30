@@ -22,14 +22,20 @@ using afMongo::MongoQ
 **   scope.build(Datastore#, [MyEntity#])
 const mixin Datastore {
 	
+	** The backing connector manager instance.
+	abstract MongoConnMgr connMgr()
+	
+	** Creates an 'MongoDb' instance of the associated DB.
+	abstract MongoDb db()
+	
 	** The underlying MongoDB collection this Datastore wraps.
 	abstract MongoColl collection()
 
 	** The Fantom entity type this Datastore associates with.
-	abstract Type	type()
+	abstract Type type()
 
 	** The name of the associated Mongo Collection.
-	abstract Str	name()
+	abstract Str name()
 
 	** Create a new Datastore instance.
 	static new make(Type entityType, MongoConnMgr connMgr, BsonConvs? bsonConvs := null, Str? dbName := null) {
@@ -190,7 +196,15 @@ internal const class DatastoreImpl : Datastore {
 			throw Err(stripSys("_version field must be of type Int - ${versionField.qname} -> ${versionField.type.qname}"))
 	}
 
-	
+	override MongoConnMgr connMgr() {
+		collection.connMgr
+	}
+
+	override MongoDb db() {
+		collection.db
+	}
+
+
 	
 	// ---- Collection ----------------------------------------------------------------------------
 
