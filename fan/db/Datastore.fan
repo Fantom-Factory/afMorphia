@@ -89,6 +89,8 @@ const mixin Datastore {
 	abstract Obj? findOne(Bool checked, |MongoQ| queryFn)
 
 	** Returns a list of entities that match the given 'query'.
+	** 
+	** Use 'find()' if you need to set any options, like 'limit' or 'skip'.
 	**
 	** 'sort' may one of:
 	**  - 'Str'      - the name an index to be used as a hint
@@ -97,8 +99,6 @@ const mixin Datastore {
 	abstract Obj[] findAll(Obj? sort := null, |MongoQ|? queryFn := null)
 
 	** Returns the number of documents that would be returned by the given 'query'.
-	**
-	** Note: This method requires you to be familiar with Mongo query notation. If not, use the `Query` builder instead.
 	abstract Int count(|MongoQ|? queryFn := null)
 
 	** Returns the document with the given Id.
@@ -243,6 +243,12 @@ internal const class DatastoreImpl : Datastore {
 		return find(query.query) {
 			if (sort is Str) it->hint = sort
 			if (sort is Map) it->sort = sort
+			if (sort is Field) {
+				field := (Field) sort
+				prop  := (BsonProp?) field.facet(BsonProp#, false)
+				name  := prop.name ?: field.name
+				it->sort = [name:1]
+			}
 		}.toList
 	}
 
