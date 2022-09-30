@@ -19,6 +19,38 @@ internal class TestOrmObjConversion : Test {
 			BsonConvs().fromBsonDoc([:]{ordered=true}.add("obj1",68).add("obj2","judge"), T_Entity02#)
 		}
 	}
+	
+	Void testKnownTypeConverstion() {
+		convs := BsonConvs()
+		obj	  := [
+			"name"	: "Jeff",
+			"_type"	: T_Entity06_Impl1#.qname,
+		]
+		
+		// test null is null
+		verifyEq(convs.fromBsonVal(null), null)
+
+		// test Bson literals pass through
+		verifyEq(convs.fromBsonVal(69), 69)
+		verifyEq(convs.fromBsonVal([69]), [69])
+		verifyEq(convs.fromBsonVal(["num":69]), Str:Obj?["num":69])
+
+		// look Mum, no type arg!
+		verifyEq(convs.fromBsonVal(obj)?.typeof, T_Entity06_Impl1#)
+
+		// meh - MimeType is not BSON
+		verifyErrMsg(ArgErr#, "Do not know how to convert BSON val, please supply a fantomType arg - sys::MimeType") {
+			convs.fromBsonVal(MimeType("wot/ever"))
+		}
+		
+		// DANGER - now let's try nested Objs!
+		verifyEq(convs.fromBsonVal([ 69,  obj])->get(  -1 )->typeof, T_Entity06_Impl1#)
+		verifyEq(convs.fromBsonVal(["obj":obj])->get("obj")->typeof, T_Entity06_Impl1#)
+		
+		// this should work, even if we stipulate objects
+		verifyEq(convs.fromBsonVal([ 69,  obj], Obj[]#    )->get(  -1 )->typeof, T_Entity06_Impl1#)
+		verifyEq(convs.fromBsonVal(["obj":obj], [Str:Obj]#)->get("obj")->typeof, T_Entity06_Impl1#)
+	}
 }
 
 internal class T_Entity04 {

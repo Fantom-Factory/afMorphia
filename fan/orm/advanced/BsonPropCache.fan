@@ -17,7 +17,7 @@ const class BsonPropCache {
 		cache.get(type) ?: cache.getOrAdd(type) { findProps(type).toImmutable }
 	}
 
-	** An internal method that does the *actual* propery finding.
+	** An internal method that does the *actual* property finding.
 	virtual BsonPropData[] findProps(Type entityType) {
 		// I dunno wot synthetic fields are but I'm guessing I dun-wan-dem!
 		frops := entityType.fields.exclude { it.isStatic || it.isSynthetic }

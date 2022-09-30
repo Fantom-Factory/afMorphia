@@ -2,6 +2,9 @@ v2.0 [#2.0]
 ****
 A complete re-write from the ground up. ORM based on Fantom Factory's [afJson]`pod:afJson` library.
 
+v2.0.4 [#2.0.4]
+======
+ - Chg: Introduced lenient 'Obj' conversion where non-explicit BSON objects are introspected to work out what they should be converted to; see 'BsonConvs.fromBsonVal()'.
 
 v2.0.2 [#2.0.2]
 ======

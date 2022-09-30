@@ -3,6 +3,7 @@ using afBson::MaxKey
 using afBson::MinKey
 using afBson::ObjectId
 using afBson::Timestamp
+using afBson::BsonType
 using afBeanUtils::BeanBuilder
 
 ** (Service) - 
@@ -11,14 +12,19 @@ const mixin BsonConvs {
 
 	** Returns a new 'BsonConvs' instance.
 	** 
-	** If 'converters' is 'null' then 'defConvs' is used. Common options are:
+	** If 'converters' is 'null' then 'defConvs' is used. Some defaults are:
 	** 
 	**   makeEntityFn      : |Type type, Field:Obj? fieldVals->Obj?| { BeanBuilder.build(type, vals) }
+	**   makeBsonObjFn     : |->Str:Obj? |    { Str:Obj?[:] { ordered = true } }
+	**   makeMapFn         : |Type t->Map|    { Map((t.isGeneric ? Obj:Obj?# : t).toNonNullable) { it.ordered = true } }
+	**   docToTypeFn       : |Str:Obj?->Type| { null }
 	**   storeNullFields   : false
 	**   strictMode        : false
 	**   propertyCache     : BsonPropCache()
+	**   serializableMode  : false
 	** 
-	** Override 'makeEntity' to have IoC create entity instances.
+	** Override 'makeEntityFn' to have IoC create entity instances.
+	** 
 	** Set 'strictMode' to 'true' to Err if the BSON contains unmapped data.
 	** 
 	** *Serializable Mode* is where all non-transient fields are converted, regardless of any '@BsonProp' facets. 
@@ -56,10 +62,10 @@ const mixin BsonConvs {
 	abstract Obj? toBsonVal(Obj? fantomObj, Type? fantomType := null)
 	
 	** Converts a BSON value to the given Fantom type.
-	** If 'fantomType' is 'null' then 'null' is always returned. 
+	** If 'fantomType' is 'null' then a reasonable *guess* is made ('docToTypeFn' is called as a last resort.)
 	** 
 	** 'bsonVal' is nullable so converters can choose whether or not to create empty lists and maps.
-	abstract Obj? fromBsonVal(Obj? bsonVal, Type? fantomType)	
+	abstract Obj? fromBsonVal(Obj? bsonVal, Type? fantomType := null)	
 
 	
 	
@@ -71,10 +77,10 @@ const mixin BsonConvs {
 	** Converts a BSON object to the given Fantom type.
 	** 
 	** Convenience for calling 'fromBsonVal()' with a cast.
-	abstract Obj? fromBsonDoc([Str:Obj?]? bsonObj, Type? fantomType)
+	abstract Obj? fromBsonDoc([Str:Obj?]? bsonObj, Type? fantomType := null)
 	
 	
-	** Returns the 'BsonPropCache'.
+	** Returns the 'BsonPropCache' which stores '@BsonProp' meta for Types.
 	abstract BsonPropCache propertyCache()
 }
 
@@ -137,8 +143,45 @@ internal const class BsonConvsImpl : BsonConvs {
 		return _toBsonCtx(fantomObj, ctx)
 	}
 
-	override Obj? fromBsonVal(Obj? bsonVal, Type? fantomType) {
-		if (fantomType == null) return null	// this null is just convenience to allow [args].map { it?.typeof }
+	override Obj? fromBsonVal(Obj? bsonVal, Type? fantomType := null) {
+
+		// if type is not supplied, take our best guess!
+		if (fantomType == null) {
+			// convenience to allow [args].map { it?.typeof }
+			if (bsonVal == null)
+				return null
+
+			if (fantomType == null)
+				// convert BSON literals, don't just return them
+				// that way users can override conversions if need be
+				fantomType = BsonType.fromType(bsonVal.typeof, false)?.type
+
+			if (fantomType == null)
+				// convert lists so we may infer what the inner objects are
+				if (bsonVal is List)
+					fantomType = Obj?[]#
+
+			if (fantomType == null)
+				if (bsonVal is Map) {
+					_type := ((Obj:Obj?) bsonVal).get("_type")
+					if (_type is Str)
+						_type = Type.find(_type, false)	// "false" because _type may not exist in the calling application 
+					if (_type is Type)
+						fantomType = _type
+
+					if (fantomType == null) {
+						fn := options["docToTypeFn"] as |Str:Obj? -> Type|
+						fantomType = fn?.call(bsonVal)	
+					}
+					
+					if (fantomType == null)
+						fantomType = [Str:Obj?]#
+				}
+
+			if (fantomType == null)
+				throw ArgErr("Do not know how to convert BSON val, please supply a fantomType arg - ${bsonVal.typeof}")
+		}
+
 		ctx := BsonConvCtx.makeTop(this, fantomType, bsonVal, options)
 		return _fromBsonCtx(bsonVal, ctx)
 	}
@@ -149,7 +192,7 @@ internal const class BsonConvsImpl : BsonConvs {
 		return toBsonVal(fantomObj, fantomObj.typeof)
 	}
 	
-	override Obj? fromBsonDoc([Str:Obj?]? bsonVal, Type? fantomType) {
+	override Obj? fromBsonDoc([Str:Obj?]? bsonVal, Type? fantomType := null) {
 		fromBsonVal(bsonVal, fantomType)
 	}
 

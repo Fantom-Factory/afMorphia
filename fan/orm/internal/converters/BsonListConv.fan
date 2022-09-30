@@ -23,16 +23,17 @@ internal const class BsonListConv : BsonConv {
 		if (bsonVal == null) return null
 
 		fanValType	:= ctx.type.params["V"]
-		bsonList	:= (List) bsonVal
-		folListType	:= bsonList.typeof
+		folListType	:= bsonVal.typeof
 		folValType	:= folListType.params["V"]
-		
+	
 		// if the whole list is of the same type, return it as is
-		if (folValType.fits(fanValType))
-			return bsonList
+		// but make sure we still convert Objs
+		if (folValType.toNonNullable != Obj# && folValType.fits(fanValType))
+			return bsonVal
 		
 		// the cast to (Obj?[]) is NEEDED!
 		// see Nullable Generic Lists - https://fantom.org/forum/topic/2777
+		bsonList	:= (List) bsonVal
 		fanList		:= (Obj?[]) List(fanValType, bsonList.size)
 
 		// for-loop to cut down on func obj creation
