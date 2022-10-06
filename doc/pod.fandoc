@@ -14,6 +14,10 @@ Morphia features include:
 Note: Morphia has no association with [Morphia - the Java to MongoDB mapping library]`https://github.com/mongodb/morphia/wiki`. Well, except for the name of course!
 
 
+
+Contents
+********
+
  - [Quick Start]`#quickStart`
  - [Usage]`#usage`
    - [MongoDB Connections]`#mongoConns`
@@ -119,7 +123,7 @@ Some connection URL options are supported:
   - 'mongodb://username:password@example1.com/database?maxPoolSize=50'
   - 'mongodb://example2.com?minPoolSize=10&maxPoolSize=25'
 
-[Morphia]`afMorphia::Morhpia` then uses the connection URL to create a pooled [MongoConnMgr]`afMongo::MongoConnMgr`.
+[Morphia]`afMorphia::Morphia` then uses the connection URL to create a pooled [MongoConnMgr]`afMongo::MongoConnMgr`.
 
 pre>
 syntax: fantom

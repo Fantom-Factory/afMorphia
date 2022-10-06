@@ -1,8 +1,8 @@
-# Morphia v2.0.2
+# Morphia v2.0.4
 ---
 
 [![Written in: Fantom](http://img.shields.io/badge/written%20in-Fantom-lightgray.svg)](https://fantom-lang.org/)
-[![pod: v2.0.2](http://img.shields.io/badge/pod-v2.0.2-yellow.svg)](http://eggbox.fantomfactory.org/pods/afMorphia)
+[![pod: v2.0.4](http://img.shields.io/badge/pod-v2.0.4-yellow.svg)](http://eggbox.fantomfactory.org/pods/afMorphia)
 [![Licence: ISC](http://img.shields.io/badge/licence-ISC-blue.svg)](https://choosealicense.com/licenses/isc/)
 
 ## Overview
@@ -13,9 +13,9 @@ Morphia is an extension to the [Mongo](http://eggbox.fantomfactory.org/pods/afMo
 
 Morphia features include:
 
-* All Fantom literals and [BSON](http://eggbox.fantomfactory.org/pods/afBson) types supported by default,
-* Support for embedded / nested Fantom objects,
-* Extensible mapping - add your own Fantom <-> Mongo converters,
+* All Fantom literals and [BSON](http://eggbox.fantomfactory.org/pods/afBson) types supported by default
+* Support for embedded / nested Fantom objects
+* Extensible mapping - add your own Fantom <-> Mongo converters
 * Optimistic locking support
 * Cursor support
 
@@ -40,6 +40,29 @@ To use in a [Fantom](https://fantom-lang.org/) project, add a dependency to `bui
 
 Full API & fandocs are available on the [Eggbox](http://eggbox.fantomfactory.org/pods/afMorphia/) - the Fantom Pod Repository.
 
+## Contents
+
+* [Quick Start](#quickStart)
+* [Usage](#usage)    + [MongoDB Connections](#mongoConns)
+    + [Entities](#entities)
+    + [Datastore](#datastore)
+
+
+* [Mapping](#mapping)    + [Standard Converters](#stdConverters)        - [Map Key Restrictions](#mapKeyRestrictions)
+
+
+    + [Embedded Objects](#embeddedObjs)
+    + [Default Values](#defVals)
+    + [Mixed Inheritance](#mixedInheritance)
+    + [Custom Converters](#customCoverters)
+    + [Storing Nulls in Mongo](#storingNullsInMongo)
+    + [Pickle Mode](#pickleMode)
+
+
+* [Optimistic Locking](#optimisticLocking)
+* [Remarks](#remarks)
+
+
 ## <a name="quickStart"></a>Quick Start
 
 1. Start up an instance of MongoDB:    C:\> mongod
@@ -58,7 +81,7 @@ Full API & fandocs are available on the [Eggbox](http://eggbox.fantomfactory.org
         @BsonProp Str        name
         @BsonProp Int        age
     
-        new make(|This|in) { in(this) }
+        new make(|This| fn) { fn(this) }
     }
     
     class Example {
@@ -101,20 +124,18 @@ Full API & fandocs are available on the [Eggbox](http://eggbox.fantomfactory.org
      _____ ___ ___ ___ ___
     |     | . |   | . | . |
     |_|_|_|___|_|_|_  |___|
-                  |___|2.0.0
+                  |___|2.0.4
     
     Micky Mouse
 
 
 
 
-## Usage
+## <a name="usage"></a>Usage
 
-### MongoDB Connections
+### <a name="mongoConns"></a>MongoDB Connections
 
-A [Mongo Connection URL](http://docs.mongodb.org/manual/reference/connection-string/) supplies the default database to connect to, along with any user credentials.
-
-`Morphia` then uses the connection URL to create a pooled [MongoConnMgr](http://eggbox.fantomfactory.org/pods/afMongo/api/MongoConnMgr).
+A [Mongo Connection URL](http://eggbox.fantomfactory.org/pods/afMongo/api/MongoConnUrl) supplies the default database to connect to, along with any user credentials.
 
 Some connection URL options are supported:
 
@@ -122,13 +143,16 @@ Some connection URL options are supported:
 * `mongodb://example2.com?minPoolSize=10&maxPoolSize=25`
 
 
-See [ConnectionManagerPooled](http://eggbox.fantomfactory.org/pods/afMongo/api/MongoConnMgr) for more details.
+[Morphia](http://eggbox.fantomfactory.org/pods/afMorphia/api/Morphia) then uses the connection URL to create a pooled [MongoConnMgr](http://eggbox.fantomfactory.org/pods/afMongo/api/MongoConnMgr).
 
-### Entities
+    morphia := Morphia(`mongodb://localhost:27017/exampledb`)
+    
+
+### <a name="entities"></a>Entities
 
 An entity is a top level domain object that is persisted in a MongoDB collection.
 
-Entity objects must be annotated with the [@Entity](http://eggbox.fantomfactory.org/pods/afMorphia/api/Entity) facet. By default the MongoDB collection name is the same as the (unqualified) entity type name. Example, if your entity type is `acmeExample::User` then it maps to a Mongo collection named `User`. This may be overriden by providing a value for the `@Entity.name` attribute.
+Entity objects MUST be annotated with the [@Entity](http://eggbox.fantomfactory.org/pods/afMorphia/api/Entity) facet. By default the MongoDB collection name is the same as the (unqualified) entity type name. Example, if your entity type is `acmeExample::User` then it maps to a Mongo collection named `User`. This may be overriden by providing a value for the `@Entity.name` attribute.
 
 Entity fields are mapped to properties in a MongoDB document. Use the `@BsonProp` facet to mark fields that should be mapped to / from a Mongo property. Again, the default is to take the property name and type from the field, but it may be overridden by facet values.
 
@@ -152,7 +176,7 @@ or
 
 Note that a Mongo Id *does not* need to be an `ObjectId`. Any object may be used, it just needs to be unique.
 
-### Datastore
+### <a name="datastore"></a>Datastore
 
 A [Datastore](http://eggbox.fantomfactory.org/pods/afMorphia/api/Datastore) wraps a [Mongo Collection](http://eggbox.fantomfactory.org/pods/afMongo/api/MongoColl) and is your gateway to saving and reading Fantom objects to / from the MongoDB.
 
@@ -161,11 +185,11 @@ Each `Datastore` instance is specific to an Entity type, so to create a `Datasto
     datastore := morhphia.datastore(User#)
     
 
-## Mapping
+## <a name="mapping"></a>Mapping
 
-At the core of `Morphia` is a suite of [Converters](http://eggbox.fantomfactory.org/pods/afMorphia/api/BsonConv) that map Fantom objects to BSON documents.
+At the core of `Morphia` is a suite of [Converters](http://eggbox.fantomfactory.org/pods/afMorphia/api/BsonConvs) that map Fantom objects to BSON documents.
 
-### Standard Converters
+### <a name="stdConverters"></a>Standard Converters
 
 `Morphia` provides support and converters for the following Fantom types:
 
@@ -204,7 +228,7 @@ At the core of `Morphia` is a suite of [Converters](http://eggbox.fantomfactory.
        sys::Version
     
 
-#### Map Key Restrictions
+#### <a name="mapKeyRestrictions"></a>Map Key Restrictions
 
 As detailed in [Restrictions on Field Names](http://docs.mongodb.org/manual/reference/limits/#Restrictions-on-Field-Names) MongoDB does not allow the characters `$` (dollar) and `.` (full stop) to be stored in Map keys. To overcome this limitation Morphia automatically encodes keys as unicode escape sequences, similar to how Java works. More specifically, the following characters are escaped:
 
@@ -213,11 +237,11 @@ As detailed in [Restrictions on Field Names](http://docs.mongodb.org/manual/refe
     .       -->  \u002e
     
 
-Hence the key `pod.$name-Om\u2126` would be stored as `pod\u002e\u0024name-Om\uu2126`.
+Hence the key `"pod.$name-Om\u2126"` would be stored as `"pod\u002e\u0024name-Om\uu2126"`.
 
 Morphia automatically decodes Map keys when it reads them back from Mongo, so generally, the encoding / decoding process is of no concern. However, when constructing queries for such key values, it is something you need to be aware of.
 
-### Embedded Objects
+### <a name="embeddedObjs"></a>Embedded Objects
 
 Morphia is also able to convert embedded, or nested, Fantom objects. Extending the example in [Quick Start](#quickStart), here we substitute the `Str` name for an embedded `Name` object:
 
@@ -252,7 +276,7 @@ Morphia is also able to convert embedded, or nested, Fantom objects. Extending t
 
 Note that embedded Fantom types need *not* be annotated with `@Entity`. The Entity facet is reserved for top level objects only.
 
-### Default Values
+### <a name="defVals"></a>Default Values
 
 It is often desirable not to bloat out your database by storing common default values. Perhaps you have a `boolean` values that is rarely set, or a list that is usually empty? In such situations it can be advantageous to *NOT* store such values in the database.
 
@@ -269,7 +293,7 @@ Should the field value equal this `defVal` then it is treated as if it is `null`
 
 When read back from the MongoDB any missing or `null` values are replaced with `defVal`.
 
-### Mixed Inheritance
+### <a name="mixedInheritance"></a>Mixed Inheritance
 
 Sometimes you want to store a list of mixed embedded classes. Often the list is a mix of different implementations of a common superclass:
 
@@ -296,7 +320,7 @@ To get round this, add a field called `_type` to `SubClassX` that stores the imp
     }
     
 
-### Custom Converters
+### <a name="customCoverters"></a>Custom Converters
 
 If you want more control over how objects are mapped to and from Mongo, then contribute a custom converter. Do this by implementing `BsonConv` and pass it to `BsonConvs` when you constuct it.
 
@@ -361,7 +385,35 @@ If you want to store `null` values, then pass an option to `BsonConvs`. Example:
 
 See the [BsonConvs ctor](http://eggbox.fantomfactory.org/pods/afMorphia/api/BsonConvs.make) and [Storing null vs not storing the key at all in MongoDB](http://stackoverflow.com/questions/12403240/storing-null-vs-not-storing-the-key-at-all-in-mongodb) for more details.
 
-## Optimistic Locking
+## <a name="pickleMode"></a>Pickle Mode
+
+Sometimes you wish to read / write objects to Mongo that outside of your control, meaning their fields won't be annotated with `@BsonProp` facets. In this instance you can turn on *Pickle Mode* whereby all non `@Transient` fields are converted, regardless of any `@BsonProp` facets. Data from `@BsonProp` facets, however, will still honoured if defined.
+
+Pickle mode works by automatically writing out `_type` properties, which are them used when re-inflating objects back.
+
+*Pickle Mode* may be turned on globally as an option in `BsonConvs`, or locally as an argument on the `@BsonProp` facets.
+
+    // turn on pickleMode for everything
+    bsonConvs := BsonConvs(null, [
+        "pickleMode" : true
+    ])
+    
+    @Entity
+    class User {
+        @BsonProp ObjectId _id
+        @BsonProp Name     name
+        @BsonProp Int      age
+    
+        ** Turn on pickleMode just for this field
+        ** meta values may be *any* object
+        @BsonProp { pickleMode=true }
+                  Str:Obj? meta
+    
+        new make(|This|in) { in(this) }
+    }
+    
+
+## <a name="optimisticLocking"></a>Optimistic Locking
 
 Think of the following scenario:
 
@@ -388,7 +440,7 @@ To use, just define an `Int _version` field property on your top level entity:
 
 On a successful save. and if the field is non-const, `Datastore.update()` will increment the `_version` field on the entity so you may re-save it again without having to re-read it from the database.
 
-## Remarks
+## <a name="remarks"></a>Remarks
 
 If you're looking for cross-platform MongoDB GUI client then look no further than [Robomongo](http://robomongo.org/) / Robo 3T / Studio 3T Free!
 

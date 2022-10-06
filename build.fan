@@ -5,7 +5,7 @@ class Build : BuildPod {
 	new make() {
 		podName = "afMorphia"
 		summary = "A Fantom to MongoDB object mapping library"
-		version = Version("2.0.3")
+		version = Version("2.0.4")
 
 		meta = [
 			"pod.dis"		: "Morphia",
