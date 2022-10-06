@@ -50,6 +50,29 @@ internal class TestOrmObjConverter : Test {
 		mongoObj := docConv.toBsonDoc(T_Entity16())
 		verifyFalse(mongoObj.containsKey("empty"))
 	}
+	
+	Void testSerializableMode() {
+		convs	:= BsonConvs(null, ["serializableMode":true])
+		
+		// check that _type info is auto generated
+		bsonObj1 := convs.toBsonDoc(T_Entity11_Name())
+		verifyEq(bsonObj1["_type"], "afMorphia::T_Entity11_Name")
+
+		// note how we don't pass in the Type
+		fantObj1 := convs.fromBsonVal(bsonObj1) as T_Entity11_Name
+		verifyEq(fantObj1.name, "Dredd")
+		
+		// check embedded objs
+		bsonObj2 := convs.toBsonDoc(T_Entity11())
+		verifyEq(bsonObj2["_type"], "afMorphia::T_Entity11")
+		verifyEq(bsonObj2["name"]->get("_type"), "afMorphia::T_Entity11_Name")
+		verifyEq(bsonObj2["name"]->get("name"), "Dredd")
+
+		// note how we don't pass in the Type
+		bsonObj2["name"]->set("name", "Death")
+		fantObj2 := convs.fromBsonVal(bsonObj2) as T_Entity11
+		verifyEq(fantObj2.name.name, "Death")
+	}
 }
 
 internal class T_Entity11 {

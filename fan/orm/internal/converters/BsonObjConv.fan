@@ -29,6 +29,10 @@ internal const class BsonObjConv : BsonConv {
 			// same name twice (from using the Property@name facet)
 			bsonObj.add(propName, propVal)
 		}
+		
+		// make sure we store the _type in serializable mode, so we can re-inflate the obj
+		if (bsonObj.containsKey("_type") == false && ctx.optSerializableMode == true)
+			bsonObj["_type"] = fantomObj.typeof.qname
 
 		return bsonObj
 	}
