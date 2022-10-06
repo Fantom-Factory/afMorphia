@@ -129,7 +129,13 @@ class BsonConvCtx {
 	}
 	
 	@NoDoc Bool optPickleMode() {
-		options.get("pickleMode", false)
+		if (options.get("pickleMode", false) == true)
+			return true
+		if (bsonProperty?.pickleMode == true)
+			return true
+		if (parent != null)
+			return parent.optPickleMode
+		return false
 	}
 	
 	** Do we store null fields in the DB?

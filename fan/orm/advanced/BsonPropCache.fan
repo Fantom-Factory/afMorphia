@@ -3,28 +3,27 @@ using afConcurrent::AtomicMap
 @NoDoc	// Advanced use only
 const class BsonPropCache {
 	private const AtomicMap cache := AtomicMap()
-	private const Bool pickleMode
-
-	new make(Bool pickleMode := false) {
-		this.pickleMode = pickleMode
-	}
 
 	** The main public method to return field props.
 	** 
 	** 'ctx' isn't used, but gives subclasses more context to adjust dynamically.
 	virtual BsonPropData[] getOrFindProps(Type type, BsonConvCtx? ctx := null) {
 		// try get() first to avoid creating the func - method.func binding doesn't work in JS
-		cache.get(type) ?: cache.getOrAdd(type) { findProps(type).toImmutable }
+		cache.get(type) ?: cache.getOrAdd(type) { findProps(type, ctx).toImmutable }
 	}
 
 	** An internal method that does the *actual* property finding.
-	virtual BsonPropData[] findProps(Type entityType) {
+	virtual BsonPropData[] findProps(Type entityType, BsonConvCtx? ctx := null) {
 		// I dunno wot synthetic fields are but I'm guessing I dun-wan-dem!
 		frops := entityType.fields.exclude { it.isStatic || it.isSynthetic }
-		if (pickleMode == false)
-			frops = frops.findAll { it.hasFacet(BsonProp#) }
-		else
+		
+		// todo should we be caching fields from pickled objs?
+		// hmm... I can't think of a reason not to!?
+		if (ctx?.optPickleMode == true)
 			frops = frops.exclude { it.hasFacet(Transient#) }
+		else
+			frops = frops.findAll { it.hasFacet(BsonProp#) }
+
 		props := (BsonPropData[]) frops.map { makeBsonPropData(it) }
 		names := props.map { it.name }.unique
 

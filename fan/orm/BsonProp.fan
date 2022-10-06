@@ -10,11 +10,9 @@ facet class BsonProp {
 	** The implementation 'Type' to be instantiated should this field reference a mixin or a superclass. 
 	** Used when mapping from BSON objects to Fantom objects. 
 	** 
-	** For dynamic typing evaluated at runtime, use a field named '_type':
-	** 
-	**   @BsonProp Type _type := this.typeof
-	** 
 	** Defaults to the field type.
+	** 
+	** Note that a property named '_type' in the field's value overrides this 'implType'.
 	const Type? implType
 
 	** When converting to BSON, any Fantom value that equals this 'defVal' will be treated as if 
@@ -24,4 +22,9 @@ facet class BsonProp {
 	** 
 	** This is most useful for saving marker booleans and to avoid saving empty lists and maps.
 	const Obj? defVal
+	
+	** Turns on *Pickle Mode* whereby all non '@Transient' fields are converted, 
+	** regardless of any '@BsonProp' facets.
+	** Data from '@BsonProp' facets, however, will still honoured if defined.
+	const Bool pickleMode	:= false
 }

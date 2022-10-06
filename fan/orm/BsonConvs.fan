@@ -94,14 +94,13 @@ internal const class BsonConvsImpl : BsonConvs {
 	new make(|This| f) { f(this) }
 	
 	new makeArgs(Type:BsonConv converters, [Str:Obj?]? options) {
-		pickleMode := options?.get("pickleMode", false) == true
 		this.typeLookup = BsonTypeLookup(converters)
 		this.optionsRef	= Unsafe(Str:Obj?[
 			"makeEntityFn"	: |Type type, Field:Obj? vals->Obj?| { BeanBuilder.build(type, vals) },
 			"makeBsonObjFn"	: |->Str:Obj? | { Str:Obj?[:] { ordered = true } },
 			"makeMapFn"		: |Type t->Map| { Map((t.isGeneric ? Obj:Obj?# : t).toNonNullable) { it.ordered = true } },
 			"strictMode"	: false,
-			"propertyCache"	: BsonPropCache(pickleMode),
+			"propertyCache"	: BsonPropCache(),
 		])
 		
 		if (options != null)
@@ -117,11 +116,7 @@ internal const class BsonConvsImpl : BsonConvs {
 	Str:Obj? options() { optionsRef.val }
 	
 	override BsonConvs withOptions(Str:Obj? newOptions) {
-		if (newOptions.containsKey("pickleMode")) {
-			pickleMode := newOptions.get("pickleMode", false) == true
-			newOptions["propertyCache"] = BsonPropCache(pickleMode)
-		}
-		return BsonConvsImpl {
+		BsonConvsImpl {
 			it.optionsRef		= Unsafe(this.options.rw.setAll(newOptions))
 			it.propertyCache	= it.options["propertyCache"] ?: this.propertyCache
 			it.typeLookup		= this.typeLookup

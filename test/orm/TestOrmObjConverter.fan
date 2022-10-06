@@ -51,7 +51,7 @@ internal class TestOrmObjConverter : Test {
 		verifyFalse(mongoObj.containsKey("empty"))
 	}
 	
-	Void testPickleMode() {
+	Void testPickleModeGlobal() {
 		convs	:= BsonConvs(null, ["pickleMode":true])
 		
 		// check that _type info is auto generated
@@ -73,10 +73,27 @@ internal class TestOrmObjConverter : Test {
 		fantObj2 := convs.fromBsonVal(bsonObj2) as T_Entity11
 		verifyEq(fantObj2.name.name, "Death")
 	}
+
+	Void testPickleModeLocal() {
+		convs	:= BsonConvs()
+		
+		// this doesn't test that @BsonProp isn't needed but... meh
+		
+		bsonObj2 := convs.toBsonDoc(T_Entity11())
+		verifyEq(bsonObj2["_type"], null)
+		verifyEq(bsonObj2["name"]->get("_type"), "afMorphia::T_Entity11_Name")
+		verifyEq(bsonObj2["name"]->get("name"), "Dredd")
+
+		// note how we don't pass in the Type
+		bsonObj2["name"]->set("name", "Death")
+		fantObj2 := convs.fromBsonVal(bsonObj2, T_Entity11#) as T_Entity11
+		verifyEq(fantObj2.name.name, "Death")
+	}
 }
 
 internal class T_Entity11 {
-	@BsonProp T_Entity11_Name name	:= T_Entity11_Name()
+	@BsonProp { pickleMode=true }
+	T_Entity11_Name name	:= T_Entity11_Name()
 	new make(|This|? in := null) { in?.call(this) }
 }
 internal class T_Entity11_Name {
