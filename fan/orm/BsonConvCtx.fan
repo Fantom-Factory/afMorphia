@@ -128,8 +128,8 @@ class BsonConvCtx {
 		options.get("strictMode", false)
 	}
 	
-	@NoDoc Bool optSerializableMode() {
-		options.get("serializableMode", false)
+	@NoDoc Bool optPickleMode() {
+		options.get("pickleMode", false)
 	}
 	
 	** Do we store null fields in the DB?

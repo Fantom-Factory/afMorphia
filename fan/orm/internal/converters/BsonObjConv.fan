@@ -31,7 +31,7 @@ internal const class BsonObjConv : BsonConv {
 		}
 		
 		// make sure we store the _type in serializable mode, so we can re-inflate the obj
-		if (bsonObj.containsKey("_type") == false && ctx.optSerializableMode == true)
+		if (bsonObj.containsKey("_type") == false && ctx.optPickleMode == true)
 			bsonObj["_type"] = fantomObj.typeof.qname
 
 		return bsonObj

@@ -14,6 +14,7 @@ const mixin BsonConvs {
 	** 
 	** If 'converters' is 'null' then 'defConvs' is used. Some defaults are:
 	** 
+	**   pickleMode        : false
 	**   makeEntityFn      : |Type type, Field:Obj? fieldVals->Obj?| { BeanBuilder.build(type, vals) }
 	**   makeBsonObjFn     : |->Str:Obj? |    { Str:Obj?[:] { ordered = true } }
 	**   makeMapFn         : |Type t->Map|    { Map((t.isGeneric ? Obj:Obj?# : t).toNonNullable) { it.ordered = true } }
@@ -21,14 +22,13 @@ const mixin BsonConvs {
 	**   storeNullFields   : false
 	**   strictMode        : false
 	**   propertyCache     : BsonPropCache()
-	**   serializableMode  : false
 	** 
 	** Override 'makeEntityFn' to have IoC create entity instances.
 	** 
 	** Set 'strictMode' to 'true' to Err if the BSON contains unmapped data.
 	** 
-	** *Serializable Mode* is where all non-transient fields are converted, regardless of any '@BsonProp' facets. 
-	** Data from '@BsonProp' facets, however, is still honoured if defined.
+	** *pickleMode* is where all non '@Transient' fields are converted, regardless of any '@BsonProp' facets. 
+	** Data from '@BsonProp' facets, however, will still honoured if defined.
 	static new make([Type:BsonConv]? converters := null, [Str:Obj?]? options := null) {
 		BsonConvsImpl(converters ?: defConvs, options)
 	}
@@ -62,12 +62,13 @@ const mixin BsonConvs {
 	abstract Obj? toBsonVal(Obj? fantomObj, Type? fantomType := null)
 	
 	** Converts a BSON value to the given Fantom type.
-	** If 'fantomType' is 'null' then a reasonable *guess* is made ('docToTypeFn' is called as a last resort.)
+	** If 'fantomType' is 'null' then the obj is inspected for a '_type' property,
+	** else a reasonable *guess* is made (and the option 'docToTypeFn' is then called as a last resort.)
 	** 
 	** 'bsonVal' is nullable so converters can choose whether or not to create empty lists and maps.
 	abstract Obj? fromBsonVal(Obj? bsonVal, Type? fantomType := null)	
 
-	
+
 	
 	** Converts the given Fantom object to its BSON object representation.
 	** 
@@ -77,6 +78,7 @@ const mixin BsonConvs {
 	** Converts a BSON object to the given Fantom type.
 	** 
 	** Convenience for calling 'fromBsonVal()' with a cast.
+	** If 'fantomType' is 'null' then the obj is inspected for a '_type' property.
 	abstract Obj? fromBsonDoc([Str:Obj?]? bsonObj, Type? fantomType := null)
 	
 	
@@ -92,14 +94,14 @@ internal const class BsonConvsImpl : BsonConvs {
 	new make(|This| f) { f(this) }
 	
 	new makeArgs(Type:BsonConv converters, [Str:Obj?]? options) {
-		serializableMode := options?.get("serializableMode", false) == true
+		pickleMode := options?.get("pickleMode", false) == true
 		this.typeLookup = BsonTypeLookup(converters)
 		this.optionsRef	= Unsafe(Str:Obj?[
 			"makeEntityFn"	: |Type type, Field:Obj? vals->Obj?| { BeanBuilder.build(type, vals) },
 			"makeBsonObjFn"	: |->Str:Obj? | { Str:Obj?[:] { ordered = true } },
 			"makeMapFn"		: |Type t->Map| { Map((t.isGeneric ? Obj:Obj?# : t).toNonNullable) { it.ordered = true } },
 			"strictMode"	: false,
-			"propertyCache"	: BsonPropCache(serializableMode),
+			"propertyCache"	: BsonPropCache(pickleMode),
 		])
 		
 		if (options != null)
@@ -115,9 +117,9 @@ internal const class BsonConvsImpl : BsonConvs {
 	Str:Obj? options() { optionsRef.val }
 	
 	override BsonConvs withOptions(Str:Obj? newOptions) {
-		if (newOptions.containsKey("serializableMode")) {
-			serializableMode := newOptions.get("serializableMode", false) == true
-			newOptions["propertyCache"] = BsonPropCache(serializableMode)
+		if (newOptions.containsKey("pickleMode")) {
+			pickleMode := newOptions.get("pickleMode", false) == true
+			newOptions["propertyCache"] = BsonPropCache(pickleMode)
 		}
 		return BsonConvsImpl {
 			it.optionsRef		= Unsafe(this.options.rw.setAll(newOptions))

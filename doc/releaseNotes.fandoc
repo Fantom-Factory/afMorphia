@@ -2,6 +2,10 @@ v2.0 [#2.0]
 ****
 A complete re-write from the ground up. ORM based on Fantom Factory's [afJson]`pod:afJson` library.
 
+v2.0.6 [#2.0.6]
+======
+ - New: **PickleMode** to serialise all fields of an class, except for '@Transient' fields.
+
 v2.0.4 [#2.0.4]
 ======
  - Chg: Introduced lenient 'Obj' conversion where non-explicit BSON objects are introspected to work out what they should be converted to; see 'BsonConvs.fromBsonVal()'.

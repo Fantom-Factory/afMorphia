@@ -51,8 +51,8 @@ internal class TestOrmObjConverter : Test {
 		verifyFalse(mongoObj.containsKey("empty"))
 	}
 	
-	Void testSerializableMode() {
-		convs	:= BsonConvs(null, ["serializableMode":true])
+	Void testPickleMode() {
+		convs	:= BsonConvs(null, ["pickleMode":true])
 		
 		// check that _type info is auto generated
 		bsonObj1 := convs.toBsonDoc(T_Entity11_Name())

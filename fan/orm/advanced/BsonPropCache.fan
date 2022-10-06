@@ -3,10 +3,10 @@ using afConcurrent::AtomicMap
 @NoDoc	// Advanced use only
 const class BsonPropCache {
 	private const AtomicMap cache := AtomicMap()
-	private const Bool serializableMode
+	private const Bool pickleMode
 
-	new make(Bool serializableMode := false) {
-		this.serializableMode = serializableMode
+	new make(Bool pickleMode := false) {
+		this.pickleMode = pickleMode
 	}
 
 	** The main public method to return field props.
@@ -21,7 +21,7 @@ const class BsonPropCache {
 	virtual BsonPropData[] findProps(Type entityType) {
 		// I dunno wot synthetic fields are but I'm guessing I dun-wan-dem!
 		frops := entityType.fields.exclude { it.isStatic || it.isSynthetic }
-		if (serializableMode == false)
+		if (pickleMode == false)
 			frops = frops.findAll { it.hasFacet(BsonProp#) }
 		else
 			frops = frops.exclude { it.hasFacet(Transient#) }
