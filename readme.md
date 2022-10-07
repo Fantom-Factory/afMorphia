@@ -387,7 +387,7 @@ See the [BsonConvs ctor](http://eggbox.fantomfactory.org/pods/afMorphia/api/Bson
 
 ## <a name="pickleMode"></a>Pickle Mode
 
-Sometimes you wish to read / write objects to Mongo that outside of your control, meaning their fields won't be annotated with `@BsonProp` facets. In this instance you can turn on *Pickle Mode* whereby all non `@Transient` fields are converted, regardless of any `@BsonProp` facets. Data from `@BsonProp` facets, however, will still honoured if defined.
+Sometimes you wish to read / write objects to Mongo that are outside of your control, meaning their fields won't be annotated with `@BsonProp` facets. To facilitate this, you can turn on *Pickle Mode* whereby all non `@Transient` fields are converted, regardless of any `@BsonProp` facets. Data from `@BsonProp` facets, however, will still honoured if defined.
 
 Pickle mode works by automatically writing out `_type` properties, which are them used when re-inflating objects back.
 
@@ -397,6 +397,8 @@ Pickle mode works by automatically writing out `_type` properties, which are the
     bsonConvs := BsonConvs(null, [
         "pickleMode" : true
     ])
+    
+    // ... or ...
     
     @Entity
     class User {

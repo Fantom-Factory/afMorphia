@@ -6,7 +6,7 @@ const class BsonPropCache {
 
 	** The main public method to return field props.
 	** 
-	** 'ctx' isn't used, but gives subclasses more context to adjust dynamically.
+	** 'ctx' is used to , but gives subclasses more context to adjust dynamically.
 	virtual BsonPropData[] getOrFindProps(Type type, BsonConvCtx? ctx := null) {
 		// try get() first to avoid creating the func - method.func binding doesn't work in JS
 		cache.get(type) ?: cache.getOrAdd(type) { findProps(type, ctx).toImmutable }
