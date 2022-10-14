@@ -5,6 +5,7 @@ A complete re-write from the ground up. ORM based on Fantom Factory's [afJson]`p
 v2.0.4 [#2.0.4]
 ======
  - New: **PickleMode** to serialise all fields of an class, except for '@Transient' fields.
+ - Fix: Added a guard against Mongo 'getMore()' returning an empty batch.
 
 v2.0.2 [#2.0.2]
 ======

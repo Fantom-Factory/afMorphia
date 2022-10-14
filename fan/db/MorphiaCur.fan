@@ -36,7 +36,8 @@ class MorphiaCur {
 	** cursor.kill
 	** <pre
 	Obj? next() {
-		bsonConvs.fromBsonDoc(mongoCur.next, type)
+		doc := mongoCur.next
+		return doc == null ? null : bsonConvs.fromBsonDoc(doc, type)
 	}
 	
 	** Kills this cursor.
@@ -79,11 +80,11 @@ class MorphiaCur {
 	Obj?[] map(|Obj ent, Int index->Obj?| fn) {
 		type := fn.returns == Void# ? Obj?# : fn.returns
 		list := List.make(type, 16)
-		try while (isAlive) {
-			obj := fn(next, mongoCur.index)
+		mongoCur.each |doc, i| {
+			ent := bsonConvs.fromBsonDoc(doc, type)
+			obj := fn(ent, i)
 			list.add(obj)
 		}
-		finally kill
 		return list
 	}
 
@@ -91,12 +92,12 @@ class MorphiaCur {
 	** 
 	** This cursor is guaranteed to be killed.
 	Obj[] toList() {
-		ents := List.make(type, 16)
-		try while (isAlive) {
-			ents.add(next)
+		list := List.make(type, 16)
+		mongoCur.each |doc, i| {
+			ent := bsonConvs.fromBsonDoc(doc, type)
+			list.add(ent)
 		}
-		finally kill
-		return  ents
+		return list
 	}
 	
 	** Returns 'true' if the cursor is alive on the server or more documents may be read.
