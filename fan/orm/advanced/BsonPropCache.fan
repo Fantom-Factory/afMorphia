@@ -22,7 +22,7 @@ const class BsonPropCache {
 		if (ctx?.optPickleMode == true)
 			frops = frops.exclude { it.hasFacet(Transient#) }
 		else
-			frops = frops.findAll { it.hasFacet(BsonProp#) }
+			frops = filterFields(frops)
 
 		props := (BsonPropData[]) frops.map { makeBsonPropData(it) }
 		names := props.map { it.name }.unique
@@ -36,6 +36,13 @@ const class BsonPropCache {
 			}
 		}
 		return props
+	}
+	
+	** Return just the fields we're interested in converting.
+	** 
+	** *Is not called during pickle mode - if needed, just override findProps() instead.*
+	virtual Field[] filterFields(Field[] fields) {
+		fields.findAll { it.hasFacet(BsonProp#) }
 	}
 
 	** Clears the tag cache.

@@ -2,6 +2,11 @@ v2.0 [#2.0]
 ****
 A complete re-write from the ground up. ORM based on Fantom Factory's [afJson]`pod:afJson` library.
 
+v2.0.6 [#2.0.6]
+======
+ - Chg: Made cursor more resilient against dodgy batch data.
+ - Chg: Tweaked the 'BsonPropCache' class (advanced) to make it easier to override.
+
 v2.0.4 [#2.0.4]
 ======
  - New: **PickleMode** to serialise all fields of an class, except for '@Transient' fields.

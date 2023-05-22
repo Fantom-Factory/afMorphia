@@ -51,7 +51,7 @@ const class BsonPropData {
 		stripSys("@BsonProp.implType of type '${facetType.signature}' does not fit field '${field.type.qname} ${field.qname}'")
 	}
 
-	static Str msgFacetDefValDoesNotFitField(Type facetType, Field field) {
+	private static Str msgFacetDefValDoesNotFitField(Type facetType, Field field) {
 		stripSys("@BsonProp.defVal of type '${facetType.signature}' does not fit field '${field.type.qname} ${field.qname}'")
 	}
 
